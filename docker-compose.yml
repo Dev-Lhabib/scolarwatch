@@ -1,6 +1,6 @@
 services:
   app:
-    image: serversideup/php:8.3-fpm-nginx
+    image: serversideup/php:8.4-fpm-nginx
     container_name: scolarwatch_app
     restart: unless-stopped
     ports:
