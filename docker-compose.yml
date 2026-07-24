@@ -1,0 +1,62 @@
+services:
+  app:
+    image: serversideup/php:8.3-fpm-nginx
+    container_name: scolarwatch_app
+    restart: unless-stopped
+    ports:
+      - "8000:8080"
+    volumes:
+      - .:/var/www/html
+    environment:
+      PHP_OPCACHE_ENABLE: 0
+      AUTORUN_ENABLED: "false"   # we run migrations manually, not on container start
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql:
+    image: mysql:8.0
+    container_name: scolarwatch_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: scolarwatch
+      MYSQL_USER: scolarwatch
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: rootsecret
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootsecret"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    container_name: scolarwatch_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: scolarwatch_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:
