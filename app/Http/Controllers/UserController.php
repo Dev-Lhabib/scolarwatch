@@ -10,10 +10,11 @@ class UserController extends Controller
 {
     /**
      * Store a newly created user in storage.
-     * Reserved to role=admin (enforced in StoreUserRequest::authorize()).
      */
     public function store(StoreUserRequest $request)
     {
+        $this->authorize('create', User::class);
+
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
 
