@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Concerns\HasAuditFields;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -10,10 +10,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @property int $id
- * @property string $name
+ * @property string $nom
+ * @property string $prenom
+ * @property string $username
+ * @property string|null $telephone
+ * @property string|null $adresse
+ * @property string $role
+ * @property bool $is_active
+ * @property int|null $id_matiere
+ * @property int|null $cree_par
+ * @property int|null $updated_by
  * @property string $email
  * @property Carbon|null $email_verified_at
  * @property string $password
@@ -21,12 +31,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['nom', 'prenom', 'username', 'email', 'password', 'telephone', 'adresse', 'role', 'is_active', 'id_matiere'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasAuditFields, HasFactory, Notifiable;
 
     /**
      * Get the attributes that should be cast.
@@ -38,6 +48,15 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * The matiere this user (enseignant) is fixed to teach.
+     */
+    public function matiere(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Matiere::class, 'id_matiere', 'id_matiere');
     }
 }
