@@ -7,6 +7,8 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -55,8 +57,16 @@ class User extends Authenticatable
     /**
      * The matiere this user (enseignant) is fixed to teach.
      */
-    public function matiere(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function matiere(): BelongsTo
     {
         return $this->belongsTo(Matiere::class, 'id_matiere', 'id_matiere');
+    }
+
+    /**
+     * The eleves this user is a tuteur of.
+     */
+    public function eleves(): BelongsToMany
+    {
+        return $this->belongsToMany(Eleve::class, 'est_tuteur_de', 'id_utilisateur', 'id_eleve');
     }
 }
