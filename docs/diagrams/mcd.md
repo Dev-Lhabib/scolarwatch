@@ -8,7 +8,7 @@ Version socle : 10 entités. APPRECIATION et le compte de connexion élève (COR
 
 ```
 UTILISATEUR
-    # id_utilisateur
+    # id
     nom
     prenom
     username (unique)

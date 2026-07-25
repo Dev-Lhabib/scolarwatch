@@ -8,12 +8,12 @@ Modèle Logique de Dérivé du MCD à 10 entités. Les colonnes `cree_par` et `u
 
 ### UTILISATEUR
 ```
-# id_utilisateur
+# id
 nom
 prenom
 username (unique)
 email
-mot_de_passe
+password
 telephone
 adresse
 role
@@ -28,7 +28,7 @@ nom
 niveau
 annee_scolaire
 capacite
-id_utilisateur_principal → UTILISATEUR(id_utilisateur)
+id_utilisateur_principal → UTILISATEUR(id)
 ```
 
 ### ELEVE
@@ -53,14 +53,14 @@ code
 ### ENSEIGNE
 ```
 # id_enseigne
-id_utilisateur → UTILISATEUR(id_utilisateur)
+id_utilisateur → UTILISATEUR(id)
 id_classe → CLASSE(id_classe)
 ```
 
 ### EST_TUTEUR_DE
 ```
 # id_tuteur
-id_utilisateur → UTILISATEUR(id_utilisateur)
+id_utilisateur → UTILISATEUR(id)
 id_eleve → ELEVE(id_eleve)
 ```
 
@@ -72,7 +72,7 @@ trimestre
 date
 id_eleve → ELEVE(id_eleve)
 id_matiere → MATIERE(id_matiere)
-id_utilisateur → UTILISATEUR(id_utilisateur)
+id_utilisateur → UTILISATEUR(id)
 ```
 
 ### ABSENCE
@@ -82,7 +82,7 @@ date_absence
 justifiee
 motif
 id_eleve → ELEVE(id_eleve)
-id_utilisateur → UTILISATEUR(id_utilisateur)
+id_utilisateur → UTILISATEUR(id)
 ```
 
 ### RETARD
@@ -93,7 +93,7 @@ justifiee
 minutes_retard
 motif
 id_eleve → ELEVE(id_eleve)
-id_utilisateur → UTILISATEUR(id_utilisateur)
+id_utilisateur → UTILISATEUR(id)
 ```
 
 ### REMARQUE
@@ -104,7 +104,7 @@ categorie
 trimestre
 date_remarque
 id_eleve → ELEVE(id_eleve)
-id_utilisateur → UTILISATEUR(id_utilisateur)
+id_utilisateur → UTILISATEUR(id)
 ```
 
 ### SYNTHESE_IA
@@ -120,7 +120,7 @@ recommandations
 message_parent
 genere_le
 id_eleve → ELEVE(id_eleve)
-id_utilisateur_demandeur → UTILISATEUR(id_utilisateur)
+id_utilisateur_demandeur → UTILISATEUR(id)
 ```
 
 ### NOTIFICATION
@@ -131,7 +131,7 @@ message
 statut_envoi
 envoye_le
 lu
-id_utilisateur_destinataire → UTILISATEUR(id_utilisateur)
+id_utilisateur_destinataire → UTILISATEUR(id)
 id_synthese → SYNTHESE_IA(id_synthese)
 ```
 
@@ -142,22 +142,22 @@ id_synthese → SYNTHESE_IA(id_synthese)
 | Table | FK | Référence | Type |
 |---|---|---|---|
 | UTILISATEUR | id_matiere | MATIERE(id_matiere) | (0,1) |
-| CLASSE | id_utilisateur_principal | UTILISATEUR(id_utilisateur) | (0,1) |
+| CLASSE | id_utilisateur_principal | UTILISATEUR(id) | (0,1) |
 | ELEVE | id_classe | CLASSE(id_classe) | (1,1) |
-| ENSEIGNE | id_utilisateur | UTILISATEUR(id_utilisateur) | (0,N) |
+| ENSEIGNE | id_utilisateur | UTILISATEUR(id) | (0,N) |
 | ENSEIGNE | id_classe | CLASSE(id_classe) | (0,N) |
-| EST_TUTEUR_DE | id_utilisateur | UTILISATEUR(id_utilisateur) | (0,N) |
+| EST_TUTEUR_DE | id_utilisateur | UTILISATEUR(id) | (0,N) |
 | EST_TUTEUR_DE | id_eleve | ELEVE(id_eleve) | (0,N) |
 | NOTE | id_eleve | ELEVE(id_eleve) | (1,1) |
 | NOTE | id_matiere | MATIERE(id_matiere) | (1,1) |
-| NOTE | id_utilisateur | UTILISATEUR(id_utilisateur) | (1,1) |
+| NOTE | id_utilisateur | UTILISATEUR(id) | (1,1) |
 | ABSENCE | id_eleve | ELEVE(id_eleve) | (1,1) |
-| ABSENCE | id_utilisateur | UTILISATEUR(id_utilisateur) | (1,1) |
+| ABSENCE | id_utilisateur | UTILISATEUR(id) | (1,1) |
 | RETARD | id_eleve | ELEVE(id_eleve) | (1,1) |
-| RETARD | id_utilisateur | UTILISATEUR(id_utilisateur) | (1,1) |
+| RETARD | id_utilisateur | UTILISATEUR(id) | (1,1) |
 | REMARQUE | id_eleve | ELEVE(id_eleve) | (1,1) |
-| REMARQUE | id_utilisateur | UTILISATEUR(id_utilisateur) | (1,1) |
+| REMARQUE | id_utilisateur | UTILISATEUR(id) | (1,1) |
 | SYNTHESE_IA | id_eleve | ELEVE(id_eleve) | (1,1) |
-| SYNTHESE_IA | id_utilisateur_demandeur | UTILISATEUR(id_utilisateur) | (1,1) |
-| NOTIFICATION | id_utilisateur_destinataire | UTILISATEUR(id_utilisateur) | (1,1) |
+| SYNTHESE_IA | id_utilisateur_demandeur | UTILISATEUR(id) | (1,1) |
+| NOTIFICATION | id_utilisateur_destinataire | UTILISATEUR(id) | (1,1) |
 | NOTIFICATION | id_synthese | SYNTHESE_IA(id_synthese) | (0,1) |
