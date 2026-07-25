@@ -69,4 +69,12 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Eleve::class, 'est_tuteur_de', 'id_utilisateur', 'id_eleve');
     }
+
+    /**
+     * The classes this user (enseignant) is assigned to teach in, via enseigne.
+     */
+    public function classesEnseignees(): BelongsToMany
+    {
+        return $this->belongsToMany(Classe::class, 'enseigne', 'id_utilisateur', 'id_classe');
+    }
 }
