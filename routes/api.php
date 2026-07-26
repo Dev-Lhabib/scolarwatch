@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClasseController;
+use App\Http\Controllers\EleveController;
 use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -25,4 +26,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/classes/{classe}/professeur-principal', [ClasseController::class, 'assignProfesseurPrincipal']);
     Route::post('/classes/{classe}/enseignants', [ClasseController::class, 'assignEnseignant']);
     Route::apiResource('classes', ClasseController::class)->parameters(['classes' => 'classe']);
+
+    Route::apiResource('eleves', EleveController::class)->parameters(['eleves' => 'eleve']);
 });
