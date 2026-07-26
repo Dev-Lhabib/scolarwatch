@@ -9,7 +9,8 @@
     { "key": "matiere_id", "value": "" },
     { "key": "classe_id", "value": "" },
     { "key": "eleve_id", "value": "" },
-    { "key": "note_id", "value": "" }
+    { "key": "note_id", "value": "" },
+    { "key": "synthese_id", "value": "" }
   ],
   "item": [
     {
@@ -52,7 +53,7 @@
         { "name": "List eleves (index)", "request": { "method": "GET", "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{auth_token}}" }], "url": "{{base_url}}/eleves" } },
         { "name": "Create eleve with tuteurs (admin only)", "request": { "method": "POST", "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{auth_token}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{base_url}}/eleves", "body": { "mode": "raw", "raw": "{\"nom\": \"Alaoui\", \"prenom\": \"Youssef\", \"genre\": \"M\", \"date_naissance\": \"2013-05-10\", \"id_classe\": {{classe_id}}, \"tuteur_ids\": []}", "options": { "raw": { "language": "json" } } } } },
         { "name": "Show eleve", "request": { "method": "GET", "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{auth_token}}" }], "url": "{{base_url}}/eleves/{{eleve_id}}" } },
-        { "name": "Update eleve (sync tuteurs)", "request": { "method": "PUT", "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{auth_token}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{base_url}}/eleves/{{eleve_id}}", "body": { "mode": "raw", "raw": "{\"nom\": \"Alaoui\", \"prenom\": \"Youssef\", \"genre\": \"M\", \"date_naissance\": \"2013-05-10\", \"id_classe\": {{classe_id}}", "options": { "raw": { "language": "json" } } } } },
+        { "name": "Update eleve (sync tuteurs)", "request": { "method": "PUT", "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{auth_token}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{base_url}}/eleves/{{eleve_id}}", "body": { "mode": "raw", "raw": "{\"nom\": \"Alaoui\", \"prenom\": \"Youssef\", \"genre\": \"M\", \"date_naissance\": \"2013-05-10\", \"id_classe\": {{classe_id}}}", "options": { "raw": { "language": "json" } } } } },
         { "name": "Delete eleve (admin only)", "request": { "method": "DELETE", "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{auth_token}}" }], "url": "{{base_url}}/eleves/{{eleve_id}}" } }
       ]
     },
@@ -68,7 +69,7 @@
       "name": "Absences",
       "item": [
         { "name": "List absences (index)", "request": { "method": "GET", "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{auth_token}}" }], "url": "{{base_url}}/absences" } },
-        { "name": "Create absence", "request": { "method": "POST", "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{auth_token}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{base_url}}/absences", "body": { "mode": "raw", "raw": "{\"date_absence\": \"2026-01-15\", \"justifiee\": false, \"id_eleve\": {{eleve_id}}", "options": { "raw": { "language": "json" } } } } }
+        { "name": "Create absence", "request": { "method": "POST", "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{auth_token}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{base_url}}/absences", "body": { "mode": "raw", "raw": "{\"date_absence\": \"2026-01-15\", \"justifiee\": false, \"id_eleve\": {{eleve_id}}}", "options": { "raw": { "language": "json" } } } } }
       ]
     },
     {
@@ -86,10 +87,20 @@
       ]
     },
     {
+      "name": "Synthese IA",
+      "item": [
+        { "name": "Declencher une synthese (professeur principal / direction)", "request": { "method": "POST", "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{auth_token}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{base_url}}/eleves/{{eleve_id}}/synthese", "body": { "mode": "raw", "raw": "{\"trimestre\": \"T1\"}", "options": { "raw": { "language": "json" } } } } },
+        { "name": "Declencher une synthese - non-professeur principal (403)", "request": { "method": "POST", "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{auth_token}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{base_url}}/eleves/{{eleve_id}}/synthese", "body": { "mode": "raw", "raw": "{\"trimestre\": \"T1\"}", "options": { "raw": { "language": "json" } } } } },
+        { "name": "Consulter le statut/resultat de la synthese", "request": { "method": "GET", "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{auth_token}}" }], "url": "{{base_url}}/eleves/{{eleve_id}}/synthese?trimestre=T1" } },
+        { "name": "Corriger le niveau d'alerte", "request": { "method": "PATCH", "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{auth_token}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{base_url}}/syntheses/{{synthese_id}}/niveau-alerte", "body": { "mode": "raw", "raw": "{\"niveau_alerte_corrige\": \"eleve\"}", "options": { "raw": { "language": "json" } } } } },
+        { "name": "Corriger le niveau d'alerte - valeur invalide (422)", "request": { "method": "PATCH", "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{auth_token}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{base_url}}/syntheses/{{synthese_id}}/niveau-alerte", "body": { "mode": "raw", "raw": "{\"niveau_alerte_corrige\": \"invalide\"}", "options": { "raw": { "language": "json" } } } } }
+      ]
+    },
+    {
       "name": "Health",
       "item": [
         { "name": "GET /health", "request": { "method": "GET", "url": "{{base_url}}/health" } }
       ]
     }
   ]
-} 
+}
