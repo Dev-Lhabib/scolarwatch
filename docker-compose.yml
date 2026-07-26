@@ -21,6 +21,22 @@ services:
       timeout: 5s
       retries: 5
 
+  queue:
+    image: serversideup/php:8.4-fpm-nginx
+    container_name: scolarwatch_queue
+    restart: unless-stopped
+    command: php artisan queue:work --tries=3
+    volumes:
+      - .:/var/www/html
+    environment:
+      PHP_OPCACHE_ENABLE: 0
+      AUTORUN_ENABLED: "false"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
   mysql:
     image: mysql:8.0
     container_name: scolarwatch_mysql
