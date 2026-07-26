@@ -6,6 +6,7 @@ use App\Http\Requests\StoreClasseRequest;
 use App\Models\Classe;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ClasseController extends Controller
 {
@@ -73,7 +74,10 @@ class ClasseController extends Controller
         $this->authorize('update', $classe);
 
         $validated = $request->validate([
-            'id_utilisateur_principal' => ['required', 'exists:users,id'],
+            'id_utilisateur_principal' => [
+                'required',
+                Rule::exists('users', 'id')->where('role', 'enseignant'),
+            ],
         ]);
 
         $classe->update(['id_utilisateur_principal' => $validated['id_utilisateur_principal']]);
@@ -89,7 +93,10 @@ class ClasseController extends Controller
         $this->authorize('update', $classe);
 
         $validated = $request->validate([
-            'id_utilisateur' => ['required', 'exists:users,id'],
+            'id_utilisateur' => [
+                'required',
+                Rule::exists('users', 'id')->where('role', 'enseignant'),
+            ],
         ]);
 
         $classe->enseignants()->syncWithoutDetaching([$validated['id_utilisateur']]);

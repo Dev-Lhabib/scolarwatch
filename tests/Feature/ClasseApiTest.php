@@ -123,6 +123,37 @@ it('does not duplicate an enseignant assignment when called twice', function () 
     expect($classe->enseignants()->count())->toBe(1);
 });
 
+it('rejects assigning a non-enseignant as enseignant to a classe', function () {
+    $classe = Classe::factory()->create();
+
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->postJson("/api/classes/{$classe->id_classe}/enseignants", ['id_utilisateur' => $this->admin->id]);
+
+    $response->assertUnprocessable();
+
+    $this->assertDatabaseMissing('enseigne', [
+        'id_classe' => $classe->id_classe,
+        'id_utilisateur' => $this->admin->id,
+    ]);
+});
+
+it('rejects assigning a non-enseignant as professeur principal', function () {
+    $classe = Classe::factory()->create(['id_utilisateur_principal' => null]);
+    $direction = User::factory()->direction()->create();
+
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->patchJson("/api/classes/{$classe->id_classe}/professeur-principal", [
+            'id_utilisateur_principal' => $direction->id,
+        ]);
+
+    $response->assertUnprocessable();
+
+    $this->assertDatabaseMissing('classes', [
+        'id_classe' => $classe->id_classe,
+        'id_utilisateur_principal' => $direction->id,
+    ]);
+});
+
 it('allows an admin to delete a classe', function () {
     $classe = Classe::factory()->create();
 
