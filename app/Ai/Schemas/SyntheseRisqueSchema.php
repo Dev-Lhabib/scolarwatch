@@ -1,6 +1,6 @@
 <?php
 
-namespace App\AI\Schemas;
+namespace App\Ai\Schemas;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 
