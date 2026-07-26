@@ -6,6 +6,7 @@ use App\Jobs\GenererSyntheseIA;
 use App\Models\Eleve;
 use App\Models\SyntheseIA;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SyntheseIAController extends Controller
 {
@@ -47,6 +48,23 @@ class SyntheseIAController extends Controller
             ->firstOrFail();
 
         $this->authorize('view', $synthese);
+
+        return response()->json($synthese);
+    }
+
+    /**
+     * Correct the AI-proposed niveau_alerte. The original niveau_alerte is never
+     * overwritten, preserving traceability of what the AI originally proposed.
+     */
+    public function corrigerNiveauAlerte(Request $request, SyntheseIA $synthese)
+    {
+        $this->authorize('corriger', $synthese);
+
+        $validated = $request->validate([
+            'niveau_alerte_corrige' => ['required', Rule::in(['faible', 'moyen', 'eleve'])],
+        ]);
+
+        $synthese->update(['niveau_alerte_corrige' => $validated['niveau_alerte_corrige']]);
 
         return response()->json($synthese);
     }

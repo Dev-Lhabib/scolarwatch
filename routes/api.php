@@ -36,6 +36,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/eleves/{eleve}/synthese', [SyntheseIAController::class, 'store']);
     Route::get('/eleves/{eleve}/synthese', [SyntheseIAController::class, 'show']);
 
+    Route::patch('/syntheses/{synthese}/niveau-alerte', [SyntheseIAController::class, 'corrigerNiveauAlerte']);
+
     Route::apiResource('notes', NoteController::class)->parameters(['notes' => 'note']);
     Route::apiResource('absences', AbsenceController::class)->parameters(['absences' => 'absence']);
     Route::apiResource('retards', RetardController::class)->parameters(['retards' => 'retard']);
