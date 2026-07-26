@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClasseController;
 use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -20,4 +21,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/users', [UserController::class, 'store']);
     Route::apiResource('matieres', MatiereController::class);
+
+    Route::patch('/classes/{classe}/professeur-principal', [ClasseController::class, 'assignProfesseurPrincipal']);
+    Route::post('/classes/{classe}/enseignants', [ClasseController::class, 'assignEnseignant']);
+    Route::apiResource('classes', ClasseController::class)->parameters(['classes' => 'classe']);
 });
