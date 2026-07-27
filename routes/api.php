@@ -8,6 +8,7 @@ use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\RemarqueController;
 use App\Http\Controllers\RetardController;
+use App\Http\Controllers\SyntheseIAController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('classes', ClasseController::class)->parameters(['classes' => 'classe']);
 
     Route::apiResource('eleves', EleveController::class)->parameters(['eleves' => 'eleve']);
+    Route::post('/eleves/{eleve}/synthese', [SyntheseIAController::class, 'store']);
+    Route::get('/eleves/{eleve}/synthese', [SyntheseIAController::class, 'show']);
+
+    Route::patch('/syntheses/{synthese}/niveau-alerte', [SyntheseIAController::class, 'corrigerNiveauAlerte']);
 
     Route::apiResource('notes', NoteController::class)->parameters(['notes' => 'note']);
     Route::apiResource('absences', AbsenceController::class)->parameters(['absences' => 'absence']);
