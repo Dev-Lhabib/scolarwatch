@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Jobs\GenererSyntheseIA;
 use App\Models\Eleve;
+use App\Models\Notification as NotificationModel;
 use App\Models\SyntheseIA;
+use App\Notifications\DecrochageAlertNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
 
 class SyntheseIAController extends Controller
@@ -67,5 +70,55 @@ class SyntheseIAController extends Controller
         $synthese->update(['niveau_alerte_corrige' => $validated['niveau_alerte_corrige']]);
 
         return response()->json($synthese);
+    }
+
+    /**
+     * Validate and send the synthese's message to all tuteurs of the eleve.
+     * Creates a Notification record per parent and dispatches the mail notification.
+     */
+    public function envoyer(SyntheseIA $synthese)
+    {
+        $this->authorize('corriger', $synthese);
+
+        if (is_null($synthese->message_parent)) {
+            return response()->json([
+                'message' => 'La synthèse n\'a pas encore de message à envoyer.',
+            ], 422);
+        }
+
+        $eleve = $synthese->eleve;
+        $tuteurs = $eleve->tuteurs;
+
+        if ($tuteurs->isEmpty()) {
+            return response()->json([
+                'message' => 'Aucun tuteur associé à cet élève.',
+            ], 422);
+        }
+
+        foreach ($tuteurs as $tuteur) {
+            $notification = NotificationModel::create([
+                'titre' => "Concernant la scolarité de {$eleve->prenom} {$eleve->nom}",
+                'message' => $synthese->message_parent,
+                'statut_envoi' => 'en_attente',
+                'id_utilisateur_destinataire' => $tuteur->id,
+                'id_synthese' => $synthese->id_synthese,
+            ]);
+
+            try {
+                Notification::send($tuteur, new DecrochageAlertNotification($synthese));
+
+                $notification->update([
+                    'statut_envoi' => 'envoye',
+                    'envoye_le' => now(),
+                ]);
+            } catch (\Throwable $e) {
+                $notification->update(['statut_envoi' => 'echec']);
+            }
+        }
+
+        return response()->json([
+            'message' => 'Notifications envoyées.',
+            'nombre_tuteurs' => $tuteurs->count(),
+        ]);
     }
 }

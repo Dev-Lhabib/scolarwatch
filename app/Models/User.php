@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -76,5 +77,13 @@ class User extends Authenticatable
     public function classesEnseignees(): BelongsToMany
     {
         return $this->belongsToMany(Classe::class, 'enseigne', 'id_utilisateur', 'id_classe');
+    }
+
+    /**
+     * The notifications received by this user (typically a parent).
+     */
+    public function notificationsRecues(): HasMany
+    {
+        return $this->hasMany(Notification::class, 'id_utilisateur_destinataire', 'id');
     }
 }
