@@ -80,6 +80,12 @@ class SyntheseIAController extends Controller
     {
         $this->authorize('corriger', $synthese);
 
+        if (is_null($synthese->message_parent)) {
+            return response()->json([
+                'message' => 'La synthèse n\'a pas encore de message à envoyer.',
+            ], 422);
+        }
+
         $eleve = $synthese->eleve;
         $tuteurs = $eleve->tuteurs;
 

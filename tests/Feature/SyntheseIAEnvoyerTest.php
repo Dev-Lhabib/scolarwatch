@@ -97,3 +97,24 @@ it('allows direction to send the synthese notification', function () {
 
     Notification::assertSentTo($parent, DecrochageAlertNotification::class);
 });
+
+it('returns 422 when the synthese has no message_parent yet', function () {
+    Notification::fake();
+
+    $syntheseEnAttente = SyntheseIA::create([
+        'trimestre' => 'T2',
+        'statut' => 'en_attente',
+        'id_eleve' => $this->eleve->id_eleve,
+        'id_utilisateur_demandeur' => $this->enseignant->id,
+    ]);
+
+    $parent = User::factory()->parent()->create();
+    $this->eleve->tuteurs()->attach($parent->id);
+
+    $response = $this->actingAs($this->enseignant, 'sanctum')
+        ->postJson("/api/syntheses/{$syntheseEnAttente->id_synthese}/envoyer");
+
+    $response->assertStatus(422);
+
+    Notification::assertNothingSent();
+});
