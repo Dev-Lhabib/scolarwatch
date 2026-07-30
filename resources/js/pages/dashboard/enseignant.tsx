@@ -7,6 +7,7 @@ type Classe = {
     nom: string;
     niveau: string;
     professeurPrincipal?: { id: number; prenom: string; nom: string } | null;
+    enseignants?: Array<{ id: number }>;
 };
 
 type Eleve = {
@@ -97,7 +98,8 @@ export default function EnseignantDashboard() {
                 const allEleves: Eleve[] = await elevesRes.json();
 
                 const mesClasses = allClasses.filter(
-                    (c) => c.professeurPrincipal?.id === user.id,
+                    (c) => c.professeurPrincipal?.id === user.id
+                        || c.enseignants?.some((e) => e.id === user.id),
                 );
                 const idsClasses = new Set(mesClasses.map((c) => c.id_classe));
                 const mesEleves = allEleves.filter((e) => idsClasses.has(e.id_classe));
@@ -117,6 +119,13 @@ export default function EnseignantDashboard() {
 
         load();
     }, []);
+
+    useEffect(() => {
+        if (window.location.hash === '#saisie') {
+            const el = document.getElementById('saisie');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [classes]);
 
     const matiereMap = Object.fromEntries(
         matieres.map((m) => [m.id_matiere, m.nom]),
@@ -255,16 +264,18 @@ export default function EnseignantDashboard() {
                                                         >
                                                             Voir
                                                         </button>
-                                                        <button
-                                                            type="button"
-                                                            disabled={syntheseLoading[eleve.id_eleve]}
-                                                            onClick={() => declencherSynthese(eleve.id_eleve)}
-                                                            className="rounded-sm border border-black bg-[#1b1b18] px-3 py-1 text-xs font-medium text-white hover:border-black hover:bg-black disabled:opacity-50 dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
-                                                        >
-                                                            {syntheseLoading[eleve.id_eleve]
-                                                                ? 'En cours...'
-                                                                : 'Synthèse'}
-                                                        </button>
+                                                        {classe.professeurPrincipal?.id === user?.id && (
+                                                            <button
+                                                                type="button"
+                                                                disabled={syntheseLoading[eleve.id_eleve]}
+                                                                onClick={() => declencherSynthese(eleve.id_eleve)}
+                                                                className="rounded-sm border border-black bg-[#1b1b18] px-3 py-1 text-xs font-medium text-white hover:border-black hover:bg-black disabled:opacity-50 dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
+                                                            >
+                                                                {syntheseLoading[eleve.id_eleve]
+                                                                    ? 'En cours...'
+                                                                    : 'Synthèse'}
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </td>
                                             </tr>

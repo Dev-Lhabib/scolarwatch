@@ -16,7 +16,7 @@ class ClasseController extends Controller
     {
         $this->authorize('viewAny', Classe::class);
 
-        return response()->json(Classe::with('professeurPrincipal')->get());
+        return response()->json(Classe::with('professeurPrincipal', 'enseignants')->get());
     }
 
     /**
