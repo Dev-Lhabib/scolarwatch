@@ -5,9 +5,9 @@ import { getAuthUser, logout } from '@/lib/auth';
 const NAV_LINKS: Record<string, Array<{ label: string; href: string }>> = {
     admin: [
         { label: 'Utilisateurs', href: '/admin/users/create' },
-        { label: 'Classes', href: '#' },
-        { label: 'Matières', href: '#' },
-        { label: 'Élèves', href: '#' },
+        { label: 'Classes', href: '/dashboard/admin#classes' },
+        { label: 'Matières', href: '/dashboard/admin#matieres' },
+        { label: 'Élèves', href: '/dashboard/admin#eleves' },
     ],
     enseignant: [
         { label: 'Mes Classes', href: '#' },
