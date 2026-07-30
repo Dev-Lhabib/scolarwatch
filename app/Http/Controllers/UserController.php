@@ -9,6 +9,16 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $this->authorize('viewAny', User::class);
+
+        return response()->json(User::all());
+    }
+
+    /**
      * Store a newly created user in storage.
      */
     public function store(StoreUserRequest $request)

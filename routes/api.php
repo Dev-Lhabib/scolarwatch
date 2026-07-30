@@ -25,7 +25,7 @@ Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/users', [UserController::class, 'store']);
+    Route::apiResource('users', UserController::class)->only(['index', 'store']);
     Route::apiResource('matieres', MatiereController::class);
 
     Route::patch('/classes/{classe}/professeur-principal', [ClasseController::class, 'assignProfesseurPrincipal']);
