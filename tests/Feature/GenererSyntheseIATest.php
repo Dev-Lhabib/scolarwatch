@@ -4,6 +4,7 @@ use App\Ai\Agents\GhostwriterAgent;
 use App\Jobs\GenererSyntheseIA;
 use App\Models\Eleve;
 use App\Models\SyntheseIA;
+use App\Models\User;
 use Illuminate\Support\Facades\Queue;
 
 it('processes a synthese successfully and updates statut to traite', function () {
@@ -13,7 +14,7 @@ it('processes a synthese successfully and updates statut to traite', function ()
         'trimestre' => 'T1',
         'statut' => 'en_attente',
         'id_eleve' => $eleve->id_eleve,
-        'id_utilisateur_demandeur' => \App\Models\User::factory()->admin()->create()->id,
+        'id_utilisateur_demandeur' => User::factory()->admin()->create()->id,
     ]);
 
     GhostwriterAgent::fake([
@@ -45,11 +46,11 @@ it('marks the synthese as echoue when the AI call fails', function () {
         'trimestre' => 'T1',
         'statut' => 'en_attente',
         'id_eleve' => $eleve->id_eleve,
-        'id_utilisateur_demandeur' => \App\Models\User::factory()->admin()->create()->id,
+        'id_utilisateur_demandeur' => User::factory()->admin()->create()->id,
     ]);
 
     GhostwriterAgent::fake(function () {
-        throw new \Exception('Groq API timeout');
+        throw new Exception('Groq API timeout');
     });
 
     (new GenererSyntheseIA($synthese))->handle();
@@ -69,7 +70,7 @@ it('dispatches the job to the queue', function () {
         'trimestre' => 'T1',
         'statut' => 'en_attente',
         'id_eleve' => $eleve->id_eleve,
-        'id_utilisateur_demandeur' => \App\Models\User::factory()->admin()->create()->id,
+        'id_utilisateur_demandeur' => User::factory()->admin()->create()->id,
     ]);
 
     GenererSyntheseIA::dispatch($synthese);

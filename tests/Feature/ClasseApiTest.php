@@ -173,4 +173,3 @@ it('forbids a non-admin from deleting a classe', function () {
 
     $response->assertForbidden();
 });
-

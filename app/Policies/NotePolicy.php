@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Eleve;
 use App\Models\Note;
 use App\Models\User;
 
@@ -87,7 +88,7 @@ class NotePolicy
             return false;
         }
 
-        $eleve = \App\Models\Eleve::find($idEleve);
+        $eleve = Eleve::find($idEleve);
 
         if (! $eleve) {
             return false;
