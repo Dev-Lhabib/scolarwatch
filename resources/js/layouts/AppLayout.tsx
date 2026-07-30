@@ -15,8 +15,8 @@ const NAV_LINKS: Record<string, Array<{ label: string; href: string }>> = {
         { label: 'Saisie', href: '#' },
     ],
     direction: [
-        { label: 'Tableau de bord', href: '#' },
-        { label: 'Statistiques', href: '#' },
+        { label: 'Tableau de bord', href: '/dashboard/direction' },
+        { label: 'Statistiques', href: '/dashboard/direction/statistiques' },
     ],
     parent: [
         { label: 'Mes Communications', href: '#' },
