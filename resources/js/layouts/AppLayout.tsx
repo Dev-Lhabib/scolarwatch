@@ -11,8 +11,8 @@ const NAV_LINKS: Record<string, Array<{ label: string; href: string }>> = {
         { label: 'Élèves', href: '/dashboard/admin/eleves' },
     ],
     enseignant: [
-        { label: 'Mes Classes', href: '#' },
-        { label: 'Saisie', href: '#' },
+        { label: 'Mes Classes', href: '/dashboard/enseignant' },
+        { label: 'Saisie', href: '/dashboard/enseignant#saisie' },
     ],
     direction: [
         { label: 'Tableau de bord', href: '/dashboard/direction' },
