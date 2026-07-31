@@ -83,6 +83,11 @@ export default function EnseignantDashboard() {
         }
 
         async function load() {
+            const authUserId = user?.id;
+            if (authUserId == null) {
+                return;
+            }
+
             try {
                 const [classesRes, elevesRes, absencesRes, retardsRes, remarquesRes, notesRes, matieresRes] = await Promise.all([
                     apiFetch('/api/classes'),
@@ -98,8 +103,8 @@ export default function EnseignantDashboard() {
                 const allEleves: Eleve[] = await elevesRes.json();
 
                 const mesClasses = allClasses.filter(
-                    (c) => c.professeurPrincipal?.id === user.id
-                        || c.enseignants?.some((e) => e.id === user.id),
+                    (c) => c.professeurPrincipal?.id === authUserId
+                        || c.enseignants?.some((e) => e.id === authUserId),
                 );
                 const idsClasses = new Set(mesClasses.map((c) => c.id_classe));
                 const mesEleves = allEleves.filter((e) => idsClasses.has(e.id_classe));
