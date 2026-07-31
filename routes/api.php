@@ -6,6 +6,7 @@ use App\Http\Controllers\ClasseController;
 use App\Http\Controllers\EleveController;
 use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RemarqueController;
 use App\Http\Controllers\RetardController;
 use App\Http\Controllers\SyntheseIAController;
@@ -44,4 +45,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('absences', AbsenceController::class)->parameters(['absences' => 'absence']);
     Route::apiResource('retards', RetardController::class)->parameters(['retards' => 'retard']);
     Route::apiResource('remarques', RemarqueController::class)->parameters(['remarques' => 'remarque']);
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::patch('/notifications/{notification}/lue', [NotificationController::class, 'marquerCommeLue']);
 });
