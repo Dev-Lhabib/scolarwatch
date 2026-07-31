@@ -1,11 +1,12 @@
 import { Head } from '@inertiajs/react';
-import { ReactNode, useEffect } from 'react';
+import { useEffect } from 'react';
+import type { ReactNode } from 'react';
 import { getAuthUser, logout } from '@/lib/auth';
 
 const NAV_LINKS: Record<string, Array<{ label: string; href: string }>> = {
     admin: [
         { label: 'Dashboard', href: '/dashboard/admin' },
-        { label: 'Utilisateurs', href: '/admin/users/create' },
+        { label: 'Utilisateurs', href: '/admin/users' },
         { label: 'Classes', href: '/dashboard/admin/classes' },
         { label: 'Matières', href: '/dashboard/admin/matieres' },
         { label: 'Élèves', href: '/dashboard/admin/eleves' },
@@ -18,9 +19,7 @@ const NAV_LINKS: Record<string, Array<{ label: string; href: string }>> = {
         { label: 'Tableau de bord', href: '/dashboard/direction' },
         { label: 'Statistiques', href: '/dashboard/direction/statistiques' },
     ],
-    parent: [
-        { label: 'Mes Communications', href: '#' },
-    ],
+    parent: [{ label: 'Mes Communications', href: '#' }],
 };
 
 export default function AppLayout({ children }: { children: ReactNode }) {

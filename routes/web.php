@@ -11,4 +11,6 @@ Route::inertia('/dashboard/direction/statistiques', 'dashboard/statistiques')->n
 Route::inertia('/dashboard/admin/classes', 'admin/classes')->name('admin.classes');
 Route::inertia('/dashboard/admin/matieres', 'admin/matieres')->name('admin.matieres');
 Route::inertia('/dashboard/admin/eleves', 'admin/eleves')->name('admin.eleves');
+Route::inertia('/admin/users', 'admin/users/index')->name('admin.users.index');
 Route::inertia('/admin/users/create', 'admin/users/create')->name('admin.users.create');
+Route::inertia('/admin/users/{user}', 'admin/users/edit')->name('admin.users.edit');
