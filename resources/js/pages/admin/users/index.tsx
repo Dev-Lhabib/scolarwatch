@@ -12,6 +12,7 @@ type User = {
     adresse: string | null;
     role: 'admin' | 'enseignant' | 'direction' | 'parent';
     is_active: boolean;
+    is_bootstrap_admin: boolean;
 };
 
 const ROLE_LABELS: Record<User['role'], string> = {
@@ -211,8 +212,16 @@ export default function AdminUsersIndex() {
                                     <button
                                         type="button"
                                         onClick={() => handleDelete(user)}
-                                        disabled={deletingId === user.id}
-                                        className="text-sm font-medium text-[#706f6c] hover:text-[#f53003] disabled:opacity-50 dark:text-[#A1A09A] dark:hover:text-[#FF4433]"
+                                        disabled={
+                                            user.is_bootstrap_admin ||
+                                            deletingId === user.id
+                                        }
+                                        title={
+                                            user.is_bootstrap_admin
+                                                ? "Le compte administrateur principal ne peut pas être supprimé."
+                                                : undefined
+                                        }
+                                        className="text-sm font-medium text-[#706f6c] hover:text-[#f53003] disabled:cursor-not-allowed disabled:opacity-50 dark:text-[#A1A09A] dark:hover:text-[#FF4433]"
                                     >
                                         {deletingId === user.id
                                             ? 'Suppression...'

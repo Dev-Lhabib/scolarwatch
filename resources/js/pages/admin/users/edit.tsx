@@ -22,6 +22,7 @@ export default function EditUser() {
     const [adresse, setAdresse] = useState('');
     const [role, setRole] = useState('parent');
     const [isActive, setIsActive] = useState(true);
+    const [isBootstrapAdmin, setIsBootstrapAdmin] = useState(false);
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -66,6 +67,7 @@ export default function EditUser() {
                 setAdresse(data.adresse ?? '');
                 setRole(data.role);
                 setIsActive(Boolean(data.is_active));
+                setIsBootstrapAdmin(Boolean(data.is_bootstrap_admin));
             })
             .catch(() => {
                 setNotFound(true);
@@ -179,6 +181,13 @@ export default function EditUser() {
                     Mettez à jour les informations du compte {username || ''}.
                 </p>
 
+                {isBootstrapAdmin && (
+                    <div className="mb-4 rounded border border-[#f53003]/30 bg-[#f53003]/10 px-3 py-2 text-sm text-[#f53003] dark:text-[#FF4433]">
+                        Compte administrateur principal : le rôle et le statut
+                        actif ne peuvent pas être modifiés.
+                    </div>
+                )}
+
                 {error && (
                     <div className="mb-4 rounded border border-[#f53003]/30 bg-[#f53003]/10 px-3 py-2 text-sm text-[#f53003] dark:text-[#FF4433]">
                         {error}
@@ -290,8 +299,14 @@ export default function EditUser() {
                                 onChange={(event) =>
                                     setRole(event.target.value)
                                 }
+                                disabled={isBootstrapAdmin}
+                                title={
+                                    isBootstrapAdmin
+                                        ? "Le rôle de l'administrateur principal ne peut pas être modifié."
+                                        : undefined
+                                }
                                 required
-                                className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                                className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
                             >
                                 {ROLES.map((option) => (
                                     <option
@@ -321,14 +336,22 @@ export default function EditUser() {
                         />
                     </div>
 
-                    <label className="flex items-center gap-2 text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                    <label
+                        className={`flex items-center gap-2 text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC] ${isBootstrapAdmin ? 'cursor-not-allowed opacity-50' : ''}`}
+                        title={
+                            isBootstrapAdmin
+                                ? 'Le compte administrateur principal doit rester actif.'
+                                : undefined
+                        }
+                    >
                         <input
                             type="checkbox"
                             checked={isActive}
                             onChange={(event) =>
                                 setIsActive(event.target.checked)
                             }
-                            className="h-4 w-4 rounded border-[#e3e3e0] accent-[#f53003]"
+                            disabled={isBootstrapAdmin}
+                            className="h-4 w-4 rounded border-[#e3e3e0] accent-[#f53003] disabled:cursor-not-allowed"
                         />
                         Compte actif
                     </label>

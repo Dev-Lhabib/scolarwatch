@@ -4,8 +4,10 @@ namespace App\Models;
 
 use App\Models\Concerns\HasAuditFields;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Attributes\Appends;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -34,6 +36,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
+#[Appends(['is_bootstrap_admin'])]
 #[Fillable(['nom', 'prenom', 'username', 'email', 'password', 'telephone', 'adresse', 'role', 'is_active', 'id_matiere'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
@@ -69,6 +72,15 @@ class User extends Authenticatable
     public function isBootstrapAdministrator(): bool
     {
         return $this->id === 1;
+    }
+
+    /**
+     * Expose the bootstrap administrator flag in API responses so the frontend
+     * does not depend on the account being id = 1.
+     */
+    protected function isBootstrapAdmin(): Attribute
+    {
+        return Attribute::get(fn (): bool => $this->isBootstrapAdministrator());
     }
 
     /**

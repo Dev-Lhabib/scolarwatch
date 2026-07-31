@@ -92,3 +92,19 @@ it('allows the bootstrap administrator to update their personal information', fu
 
     expect(Hash::check('nouveaumotdepasse', $this->admin->fresh()->password))->toBeTrue();
 });
+
+it('exposes the bootstrap administrator flag for the seeded account', function () {
+    $this->actingAs($this->admin, 'sanctum')
+        ->getJson("/api/users/{$this->admin->id}")
+        ->assertOk()
+        ->assertJsonPath('is_bootstrap_admin', true);
+});
+
+it('does not flag regular users as bootstrap administrators', function () {
+    $regular = User::factory()->create();
+
+    $this->actingAs($this->admin, 'sanctum')
+        ->getJson("/api/users/{$regular->id}")
+        ->assertOk()
+        ->assertJsonPath('is_bootstrap_admin', false);
+});
