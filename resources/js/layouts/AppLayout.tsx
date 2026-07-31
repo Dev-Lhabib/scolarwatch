@@ -19,7 +19,7 @@ const NAV_LINKS: Record<string, Array<{ label: string; href: string }>> = {
         { label: 'Tableau de bord', href: '/dashboard/direction' },
         { label: 'Statistiques', href: '/dashboard/direction/statistiques' },
     ],
-    parent: [{ label: 'Mes Communications', href: '#' }],
+    parent: [{ label: 'Mes Communications', href: '/dashboard/parent' }],
 };
 
 export default function AppLayout({ children }: { children: ReactNode }) {

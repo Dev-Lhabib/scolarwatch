@@ -7,6 +7,7 @@ Route::inertia('/login', 'auth/login')->name('login');
 Route::inertia('/dashboard/admin', 'dashboard/admin')->name('dashboard.admin');
 Route::inertia('/dashboard/enseignant', 'dashboard/enseignant')->name('dashboard.enseignant');
 Route::inertia('/dashboard/direction', 'dashboard/direction')->name('dashboard.direction');
+Route::inertia('/dashboard/parent', 'dashboard/parent')->name('dashboard.parent');
 Route::inertia('/dashboard/direction/statistiques', 'dashboard/statistiques')->name('dashboard.direction.statistiques');
 Route::inertia('/dashboard/admin/classes', 'admin/classes')->name('admin.classes');
 Route::inertia('/dashboard/admin/matieres', 'admin/matieres')->name('admin.matieres');
