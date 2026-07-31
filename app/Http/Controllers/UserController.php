@@ -24,7 +24,7 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        $this->authorize('create', User::class);
+        $this->authorize('create', [User::class, $request->validated()]);
 
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
@@ -49,7 +49,7 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
-        $this->authorize('update', $user);
+        $this->authorize('update', [$user, $request->validated()]);
 
         $data = $request->validated();
 

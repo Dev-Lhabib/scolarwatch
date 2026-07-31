@@ -64,6 +64,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Determine whether this is the bootstrap administrator account seeded with id = 1.
+     */
+    public function isBootstrapAdministrator(): bool
+    {
+        return $this->id === 1;
+    }
+
+    /**
      * The eleves this user is a tuteur of.
      */
     public function eleves(): BelongsToMany
