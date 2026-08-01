@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { getAuthUser, logout } from '@/lib/auth';
@@ -12,8 +12,10 @@ const NAV_LINKS: Record<string, Array<{ label: string; href: string }>> = {
         { label: 'Élèves', href: '/dashboard/admin/eleves' },
     ],
     enseignant: [
-        { label: 'Mes Classes', href: '/dashboard/enseignant' },
-        { label: 'Saisie', href: '/dashboard/enseignant#saisie' },
+        { label: 'Dashboard', href: '/dashboard/enseignant' },
+        { label: 'Mes Classes', href: '/dashboard/enseignant/classes' },
+        { label: 'Saisie', href: '/dashboard/enseignant/saisie' },
+        { label: 'Synthèses IA', href: '/dashboard/enseignant/syntheses' },
     ],
     direction: [
         { label: 'Tableau de bord', href: '/dashboard/direction' },
@@ -49,13 +51,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                         {links.length > 0 && (
                             <div className="hidden items-center gap-4 sm:flex">
                                 {links.map((link) => (
-                                    <a
+                                    <Link
                                         key={link.label}
                                         href={link.href}
                                         className="text-sm text-[#706f6c] hover:text-[#1b1b18] dark:text-[#A1A09A] dark:hover:text-[#EDEDEC]"
                                     >
                                         {link.label}
-                                    </a>
+                                    </Link>
                                 ))}
                             </div>
                         )}

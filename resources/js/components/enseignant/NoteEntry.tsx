@@ -303,7 +303,6 @@ export default function NoteEntry({
                             >
                                 <option value="T1">T1</option>
                                 <option value="T2">T2</option>
-                                <option value="T3">T3</option>
                             </select>
                         </div>
                         <div>
