@@ -1,4 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react';
+import AbsenceEntry from '@/components/enseignant/AbsenceEntry';
+import NoteEntry from '@/components/enseignant/NoteEntry';
+import RetardEntry from '@/components/enseignant/RetardEntry';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 import AppLayout from '@/layouts/AppLayout';
 
@@ -67,6 +70,7 @@ export default function EnseignantDashboard() {
     const [syntheseLoading, setSyntheseLoading] = useState<Record<number, boolean>>({});
     const [syntheseMsg, setSyntheseMsg] = useState<string | null>(null);
     const [selectedEleve, setSelectedEleve] = useState<Eleve | null>(null);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     const [selEleve, setSelEleve] = useState('');
     const [contenu, setContenu] = useState('');
@@ -123,7 +127,7 @@ export default function EnseignantDashboard() {
         }
 
         load();
-    }, []);
+    }, [refreshKey]);
 
     useEffect(() => {
         if (window.location.hash === '#saisie') {
@@ -135,6 +139,16 @@ export default function EnseignantDashboard() {
     const matiereMap = Object.fromEntries(
         matieres.map((m) => [m.id_matiere, m.nom]),
     );
+
+    const authUserId = user?.id ?? 0;
+    const classesOuEnseigne = classes.filter((c) =>
+        c.enseignants?.some((e) => e.id === authUserId),
+    );
+    const noteEleves = eleves.filter((e) =>
+        classesOuEnseigne.some((c) => c.id_classe === e.id_classe),
+    );
+    const maMatiere =
+        matieres.find((m) => m.id_matiere === user?.id_matiere) ?? null;
 
     function eleveAbsences(id: number): Absence[] {
         return absences.filter((a) => a.id_eleve === id);
@@ -299,7 +313,29 @@ export default function EnseignantDashboard() {
                 )}
             </div>
 
-            <section id="saisie">
+            <section id="saisie" className="space-y-6">
+                <NoteEntry
+                    eleves={noteEleves}
+                    matiere={maMatiere}
+                    authUserId={authUserId}
+                    onChanged={() => setRefreshKey((key) => key + 1)}
+                    refreshKey={refreshKey}
+                />
+
+                <AbsenceEntry
+                    eleves={eleves}
+                    authUserId={authUserId}
+                    onChanged={() => setRefreshKey((key) => key + 1)}
+                    refreshKey={refreshKey}
+                />
+
+                <RetardEntry
+                    eleves={eleves}
+                    authUserId={authUserId}
+                    onChanged={() => setRefreshKey((key) => key + 1)}
+                    refreshKey={refreshKey}
+                />
+
                 <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
                     <h2 className="mb-4 text-base font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
                         Ajouter une remarque

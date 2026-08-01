@@ -5,6 +5,7 @@ export type AuthUser = {
     username: string;
     email: string;
     role: 'admin' | 'enseignant' | 'direction' | 'parent';
+    id_matiere?: number | null;
 };
 
 export function getAuthUser(): AuthUser | null {
