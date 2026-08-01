@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreClasseRequest;
 use App\Models\Classe;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -17,7 +16,7 @@ class ClasseController extends Controller
     {
         $this->authorize('viewAny', Classe::class);
 
-        return response()->json(Classe::all());
+        return response()->json(Classe::with('professeurPrincipal', 'enseignants')->get());
     }
 
     /**

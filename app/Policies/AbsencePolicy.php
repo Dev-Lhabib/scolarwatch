@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Models\Absence;
+use App\Models\Eleve;
 use App\Models\User;
 
 class AbsencePolicy
@@ -62,7 +63,7 @@ class AbsencePolicy
 
     private function enseigneClasse(User $user, int $idEleve): bool
     {
-        $eleve = \App\Models\Eleve::find($idEleve);
+        $eleve = Eleve::find($idEleve);
 
         if (! $eleve) {
             return false;

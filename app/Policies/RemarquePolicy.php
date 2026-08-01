@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Eleve;
 use App\Models\Remarque;
 use App\Models\User;
 
@@ -62,7 +63,7 @@ class RemarquePolicy
 
     private function enseigneClasse(User $user, int $idEleve): bool
     {
-        $eleve = \App\Models\Eleve::find($idEleve);
+        $eleve = Eleve::find($idEleve);
 
         if (! $eleve) {
             return false;

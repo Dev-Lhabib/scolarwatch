@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Eleve;
 use App\Models\Retard;
 use App\Models\User;
 
@@ -62,7 +63,7 @@ class RetardPolicy
 
     private function enseigneClasse(User $user, int $idEleve): bool
     {
-        $eleve = \App\Models\Eleve::find($idEleve);
+        $eleve = Eleve::find($idEleve);
 
         if (! $eleve) {
             return false;
