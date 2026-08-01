@@ -10,7 +10,9 @@ Route::inertia('/dashboard/direction', 'dashboard/direction')->name('dashboard.d
 Route::inertia('/dashboard/parent', 'dashboard/parent')->name('dashboard.parent');
 Route::inertia('/dashboard/direction/statistiques', 'dashboard/statistiques')->name('dashboard.direction.statistiques');
 Route::inertia('/dashboard/admin/classes', 'admin/classes')->name('admin.classes');
-Route::inertia('/dashboard/admin/matieres', 'admin/matieres')->name('admin.matieres');
+Route::inertia('/dashboard/admin/matieres', 'admin/matieres/index')->name('admin.matieres');
+Route::inertia('/dashboard/admin/matieres/create', 'admin/matieres/create')->name('admin.matieres.create');
+Route::inertia('/dashboard/admin/matieres/{matiere}', 'admin/matieres/edit')->name('admin.matieres.edit');
 Route::inertia('/dashboard/admin/eleves', 'admin/eleves')->name('admin.eleves');
 Route::inertia('/admin/users', 'admin/users/index')->name('admin.users.index');
 Route::inertia('/admin/users/create', 'admin/users/create')->name('admin.users.create');
