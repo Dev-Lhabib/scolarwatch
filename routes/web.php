@@ -15,7 +15,9 @@ Route::inertia('/dashboard/admin/classes/{classe}', 'admin/classes/edit')->name(
 Route::inertia('/dashboard/admin/matieres', 'admin/matieres/index')->name('admin.matieres');
 Route::inertia('/dashboard/admin/matieres/create', 'admin/matieres/create')->name('admin.matieres.create');
 Route::inertia('/dashboard/admin/matieres/{matiere}', 'admin/matieres/edit')->name('admin.matieres.edit');
-Route::inertia('/dashboard/admin/eleves', 'admin/eleves')->name('admin.eleves');
+Route::inertia('/dashboard/admin/eleves', 'admin/eleves/index')->name('admin.eleves');
+Route::inertia('/dashboard/admin/eleves/create', 'admin/eleves/create')->name('admin.eleves.create');
+Route::inertia('/dashboard/admin/eleves/{eleve}', 'admin/eleves/edit')->name('admin.eleves.edit');
 Route::inertia('/admin/users', 'admin/users/index')->name('admin.users.index');
 Route::inertia('/admin/users/create', 'admin/users/create')->name('admin.users.create');
 Route::inertia('/admin/users/{user}', 'admin/users/edit')->name('admin.users.edit');
