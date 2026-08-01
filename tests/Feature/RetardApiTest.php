@@ -85,3 +85,106 @@ it('forbids a parent from viewing a retard outside their perimeter', function ()
 
     $response->assertForbidden();
 });
+
+it('lists retards for an authenticated user', function () {
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->getJson('/api/retards');
+
+    $response->assertOk();
+});
+
+it('allows the professeur principal to update a retard for their eleve', function () {
+    $retard = Retard::factory()->create([
+        'id_eleve' => $this->eleve->id_eleve,
+        'id_utilisateur' => $this->enseignant->id,
+    ]);
+
+    $response = $this->actingAs($this->enseignant, 'sanctum')
+        ->putJson("/api/retards/{$retard->id_retard}", [
+            'date_retard' => '2026-02-15',
+            'minutes_retard' => 20,
+            'id_eleve' => $this->eleve->id_eleve,
+        ]);
+
+    $response->assertOk()
+        ->assertJsonPath('id_retard', $retard->id_retard);
+});
+
+it('forbids an enseignant from updating a retard outside their classe', function () {
+    $autreEnseignant = User::factory()->enseignant()->create();
+    $autreClasse = Classe::factory()->create(['id_utilisateur_principal' => $autreEnseignant->id]);
+    $autreEleve = Eleve::factory()->create(['id_classe' => $autreClasse->id_classe]);
+    $retard = Retard::factory()->create([
+        'id_eleve' => $autreEleve->id_eleve,
+        'id_utilisateur' => $autreEnseignant->id,
+    ]);
+
+    $response = $this->actingAs($this->enseignant, 'sanctum')
+        ->putJson("/api/retards/{$retard->id_retard}", [
+            'date_retard' => '2026-02-15',
+            'minutes_retard' => 20,
+            'id_eleve' => $autreEleve->id_eleve,
+        ]);
+
+    $response->assertForbidden();
+});
+
+it('forbids a parent from updating a retard', function () {
+    $parent = User::factory()->parent()->create();
+    $this->eleve->tuteurs()->attach($parent->id);
+    $retard = Retard::factory()->create([
+        'id_eleve' => $this->eleve->id_eleve,
+        'id_utilisateur' => $this->enseignant->id,
+    ]);
+
+    $response = $this->actingAs($parent, 'sanctum')
+        ->putJson("/api/retards/{$retard->id_retard}", [
+            'date_retard' => '2026-02-15',
+            'minutes_retard' => 20,
+            'id_eleve' => $this->eleve->id_eleve,
+        ]);
+
+    $response->assertForbidden();
+});
+
+it('allows the professeur principal to delete a retard for their eleve', function () {
+    $retard = Retard::factory()->create([
+        'id_eleve' => $this->eleve->id_eleve,
+        'id_utilisateur' => $this->enseignant->id,
+    ]);
+
+    $response = $this->actingAs($this->enseignant, 'sanctum')
+        ->deleteJson("/api/retards/{$retard->id_retard}");
+
+    $response->assertNoContent();
+    $this->assertDatabaseMissing('retards', ['id_retard' => $retard->id_retard]);
+});
+
+it('forbids an enseignant from deleting a retard outside their classe', function () {
+    $autreEnseignant = User::factory()->enseignant()->create();
+    $autreClasse = Classe::factory()->create(['id_utilisateur_principal' => $autreEnseignant->id]);
+    $autreEleve = Eleve::factory()->create(['id_classe' => $autreClasse->id_classe]);
+    $retard = Retard::factory()->create([
+        'id_eleve' => $autreEleve->id_eleve,
+        'id_utilisateur' => $autreEnseignant->id,
+    ]);
+
+    $response = $this->actingAs($this->enseignant, 'sanctum')
+        ->deleteJson("/api/retards/{$retard->id_retard}");
+
+    $response->assertForbidden();
+});
+
+it('forbids a parent from deleting a retard', function () {
+    $parent = User::factory()->parent()->create();
+    $this->eleve->tuteurs()->attach($parent->id);
+    $retard = Retard::factory()->create([
+        'id_eleve' => $this->eleve->id_eleve,
+        'id_utilisateur' => $this->enseignant->id,
+    ]);
+
+    $response = $this->actingAs($parent, 'sanctum')
+        ->deleteJson("/api/retards/{$retard->id_retard}");
+
+    $response->assertForbidden();
+});
