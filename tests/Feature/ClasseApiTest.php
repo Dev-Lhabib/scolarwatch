@@ -173,3 +173,49 @@ it('forbids a non-admin from deleting a classe', function () {
 
     $response->assertForbidden();
 });
+
+it('allows an admin to update a classe', function () {
+    $classe = Classe::factory()->create();
+
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->putJson("/api/classes/{$classe->id_classe}", [
+            'nom' => '2AC-B',
+            'niveau' => '2AC',
+            'annee_scolaire' => '2025-2026',
+            'capacite' => 32,
+        ]);
+
+    $response->assertOk()
+        ->assertJsonPath('id_classe', $classe->id_classe);
+
+    $this->assertDatabaseHas('classes', ['id_classe' => $classe->id_classe, 'nom' => '2AC-B']);
+});
+
+it('forbids an enseignant from updating a classe', function () {
+    $classe = Classe::factory()->create();
+
+    $response = $this->actingAs($this->enseignant, 'sanctum')
+        ->patchJson("/api/classes/{$classe->id_classe}", [
+            'nom' => '2AC-B',
+            'niveau' => '2AC',
+            'annee_scolaire' => '2025-2026',
+            'capacite' => 32,
+        ]);
+
+    $response->assertForbidden();
+});
+
+it('forbids direction from updating a classe', function () {
+    $direction = User::factory()->direction()->create();
+    $classe = Classe::factory()->create();
+
+    $response = $this->actingAs($direction, 'sanctum')
+        ->putJson("/api/classes/{$classe->id_classe}", [
+            'nom' => '2AC-B',
+            'niveau' => '2AC',
+            'annee_scolaire' => '2025-2026',
+            'capacite' => 32,
+        ]);
+
+    $response->assertForbidden();
+});

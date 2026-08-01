@@ -87,3 +87,109 @@ it('forbids a parent from viewing a remarque outside their perimeter', function 
 
     $response->assertForbidden();
 });
+
+it('lists remarques for an authenticated user', function () {
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->getJson('/api/remarques');
+
+    $response->assertOk();
+});
+
+it('allows the professeur principal to update a remarque for their eleve', function () {
+    $remarque = Remarque::factory()->create([
+        'id_eleve' => $this->eleve->id_eleve,
+        'id_utilisateur' => $this->enseignant->id,
+    ]);
+
+    $response = $this->actingAs($this->enseignant, 'sanctum')
+        ->putJson("/api/remarques/{$remarque->id_remarque}", [
+            'contenu' => 'Comportement nettement amélioré depuis la dernière évaluation.',
+            'trimestre' => 'T1',
+            'date_remarque' => '2026-02-15',
+            'id_eleve' => $this->eleve->id_eleve,
+        ]);
+
+    $response->assertOk()
+        ->assertJsonPath('id_remarque', $remarque->id_remarque);
+});
+
+it('forbids an enseignant from updating a remarque outside their classe', function () {
+    $autreEnseignant = User::factory()->enseignant()->create();
+    $autreClasse = Classe::factory()->create(['id_utilisateur_principal' => $autreEnseignant->id]);
+    $autreEleve = Eleve::factory()->create(['id_classe' => $autreClasse->id_classe]);
+    $remarque = Remarque::factory()->create([
+        'id_eleve' => $autreEleve->id_eleve,
+        'id_utilisateur' => $autreEnseignant->id,
+    ]);
+
+    $response = $this->actingAs($this->enseignant, 'sanctum')
+        ->putJson("/api/remarques/{$remarque->id_remarque}", [
+            'contenu' => 'Test',
+            'trimestre' => 'T1',
+            'date_remarque' => '2026-02-15',
+            'id_eleve' => $autreEleve->id_eleve,
+        ]);
+
+    $response->assertForbidden();
+});
+
+it('forbids a parent from updating a remarque', function () {
+    $parent = User::factory()->parent()->create();
+    $this->eleve->tuteurs()->attach($parent->id);
+    $remarque = Remarque::factory()->create([
+        'id_eleve' => $this->eleve->id_eleve,
+        'id_utilisateur' => $this->enseignant->id,
+    ]);
+
+    $response = $this->actingAs($parent, 'sanctum')
+        ->putJson("/api/remarques/{$remarque->id_remarque}", [
+            'contenu' => 'Test',
+            'trimestre' => 'T1',
+            'date_remarque' => '2026-02-15',
+            'id_eleve' => $this->eleve->id_eleve,
+        ]);
+
+    $response->assertForbidden();
+});
+
+it('allows the professeur principal to delete a remarque for their eleve', function () {
+    $remarque = Remarque::factory()->create([
+        'id_eleve' => $this->eleve->id_eleve,
+        'id_utilisateur' => $this->enseignant->id,
+    ]);
+
+    $response = $this->actingAs($this->enseignant, 'sanctum')
+        ->deleteJson("/api/remarques/{$remarque->id_remarque}");
+
+    $response->assertNoContent();
+    $this->assertDatabaseMissing('remarques', ['id_remarque' => $remarque->id_remarque]);
+});
+
+it('forbids an enseignant from deleting a remarque outside their classe', function () {
+    $autreEnseignant = User::factory()->enseignant()->create();
+    $autreClasse = Classe::factory()->create(['id_utilisateur_principal' => $autreEnseignant->id]);
+    $autreEleve = Eleve::factory()->create(['id_classe' => $autreClasse->id_classe]);
+    $remarque = Remarque::factory()->create([
+        'id_eleve' => $autreEleve->id_eleve,
+        'id_utilisateur' => $autreEnseignant->id,
+    ]);
+
+    $response = $this->actingAs($this->enseignant, 'sanctum')
+        ->deleteJson("/api/remarques/{$remarque->id_remarque}");
+
+    $response->assertForbidden();
+});
+
+it('forbids a parent from deleting a remarque', function () {
+    $parent = User::factory()->parent()->create();
+    $this->eleve->tuteurs()->attach($parent->id);
+    $remarque = Remarque::factory()->create([
+        'id_eleve' => $this->eleve->id_eleve,
+        'id_utilisateur' => $this->enseignant->id,
+    ]);
+
+    $response = $this->actingAs($parent, 'sanctum')
+        ->deleteJson("/api/remarques/{$remarque->id_remarque}");
+
+    $response->assertForbidden();
+});
