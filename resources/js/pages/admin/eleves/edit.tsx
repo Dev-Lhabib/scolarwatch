@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
+import Select from '@/components/ui/Select';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 
@@ -246,15 +247,14 @@ export default function EditEleve() {
                         >
                             Genre
                         </label>
-                        <select
+                        <Select
                             id="genre"
                             value={genre}
                             onChange={(event) => setGenre(event.target.value)}
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
                         >
                             <option value="M">Masculin</option>
                             <option value="F">Féminin</option>
-                        </select>
+                        </Select>
                     </div>
 
                     <div>
@@ -302,14 +302,13 @@ export default function EditEleve() {
                         >
                             Classe
                         </label>
-                        <select
+                        <Select
                             id="id_classe"
                             value={idClasse}
                             onChange={(event) =>
                                 setIdClasse(event.target.value)
                             }
                             required
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
                         >
                             <option value="">— Sélectionner une classe —</option>
                             {classes.map((classe) => (
@@ -320,7 +319,7 @@ export default function EditEleve() {
                                     {classe.nom}
                                 </option>
                             ))}
-                        </select>
+                        </Select>
                     </div>
 
                     <div>

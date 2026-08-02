@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from 'react';
+import Select from '@/components/ui/Select';
 import { getAuthUser, apiFetch } from '@/lib/auth';
 import AppLayout from '@/layouts/AppLayout';
 
@@ -202,19 +203,18 @@ export default function CreateUser() {
                             >
                                 Rôle
                             </label>
-                            <select
+                            <Select
                                 id="role"
                                 value={role}
                                 onChange={(e) => setRole(e.target.value)}
                                 required
-                                className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
                             >
                                 {ROLES.map((r) => (
                                     <option key={r.value} value={r.value}>
                                         {r.label}
                                     </option>
                                 ))}
-                            </select>
+                            </Select>
                         </div>
                     </div>
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Select from '@/components/ui/Select';
 import { apiFetch } from '@/lib/auth';
 
 type Eleve = {
@@ -232,18 +233,17 @@ export default function SyntheseEntry({ eleve }: Props) {
                     >
                         Trimestre
                     </label>
-                    <select
+                    <Select
                         id="synthese-trimestre"
                         value={trimestreSynthese}
                         onChange={(e) => handleTrimestre(e.target.value)}
-                        className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
                     >
                         {TRIMESTRES.map((trimestre) => (
                             <option key={trimestre} value={trimestre}>
                                 {trimestre}
                             </option>
                         ))}
-                    </select>
+                    </Select>
                 </div>
             </div>
 
@@ -405,11 +405,10 @@ export default function SyntheseEntry({ eleve }: Props) {
                                     >
                                         Corriger le niveau d'alerte
                                     </label>
-                                    <select
+                                    <Select
                                         id="synthese-niveau-corrige"
                                         value={niveauCorrige}
                                         onChange={(e) => setNiveauCorrige(e.target.value)}
-                                        className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
                                     >
                                         <option value="">Aucun</option>
                                         {NIVEAUX_ALERTE.map((niveau) => (
@@ -417,7 +416,7 @@ export default function SyntheseEntry({ eleve }: Props) {
                                                 {NIVEAU_ALERTE_LABELS[niveau]}
                                             </option>
                                         ))}
-                                    </select>
+                                    </Select>
                                 </div>
                                 <button
                                     type="button"

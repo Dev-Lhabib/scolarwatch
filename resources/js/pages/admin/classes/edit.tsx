@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
+import Select from '@/components/ui/Select';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 
@@ -267,13 +268,12 @@ export default function EditClasse() {
                         >
                             Professeur principal
                         </label>
-                        <select
+                        <Select
                             id="id_utilisateur_principal"
                             value={idUtilisateurPrincipal}
                             onChange={(event) =>
                                 setIdUtilisateurPrincipal(event.target.value)
                             }
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
                         >
                             <option value="">— Aucun —</option>
                             {enseignants.map((enseignant) => (
@@ -284,7 +284,7 @@ export default function EditClasse() {
                                     {enseignant.prenom} {enseignant.nom}
                                 </option>
                             ))}
-                        </select>
+                        </Select>
                     </div>
 
                     <div className="flex gap-3">

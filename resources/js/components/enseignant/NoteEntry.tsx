@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
+import Select from '@/components/ui/Select';
 import { apiFetch } from '@/lib/auth';
 
 type Eleve = {
@@ -245,12 +246,11 @@ export default function NoteEntry({
                             >
                                 Élève
                             </label>
-                            <select
+                            <Select
                                 id="note-eleve"
                                 value={idEleve}
                                 onChange={(e) => setIdEleve(e.target.value)}
                                 required
-                                className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
                             >
                                 <option value="">
                                     Sélectionnez un élève
@@ -263,7 +263,7 @@ export default function NoteEntry({
                                         {eleve.prenom} {eleve.nom}
                                     </option>
                                 ))}
-                            </select>
+                            </Select>
                         </div>
                         <div>
                             <label
@@ -294,16 +294,15 @@ export default function NoteEntry({
                             >
                                 Trimestre
                             </label>
-                            <select
+                            <Select
                                 id="note-trimestre"
                                 value={trimestre}
                                 onChange={(e) => setTrimestre(e.target.value)}
                                 required
-                                className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
                             >
                                 <option value="T1">T1</option>
                                 <option value="T2">T2</option>
-                            </select>
+                            </Select>
                         </div>
                         <div>
                             <label
