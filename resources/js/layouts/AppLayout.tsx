@@ -42,9 +42,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     return (
         <>
             <Head title="ScolarWatch" />
-            <div className="min-h-screen bg-[#FDFDFC] dark:bg-[#0a0a0a]">
-                <nav className="flex items-center justify-between border-b border-[#e3e3e0] bg-white px-6 py-3 dark:border-[#3E3E3A] dark:bg-[#161615]">
-                    <span className="text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+            <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+                <nav className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-3 dark:border-slate-800 dark:bg-slate-900">
+                    <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
                         ScolarWatch
                     </span>
                     <div className="flex items-center gap-6">
@@ -54,7 +54,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                                     <Link
                                         key={link.label}
                                         href={link.href}
-                                        className="text-sm text-[#706f6c] hover:text-[#1b1b18] dark:text-[#A1A09A] dark:hover:text-[#EDEDEC]"
+                                        className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
                                     >
                                         {link.label}
                                     </Link>
@@ -62,16 +62,16 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                             </div>
                         )}
                         <div className="flex items-center gap-3">
-                            <span className="text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+                            <span className="text-sm text-slate-900 dark:text-slate-100">
                                 {user.prenom} {user.nom}
                             </span>
-                            <span className="rounded border border-[#e3e3e0] px-2 py-0.5 text-xs text-[#706f6c] dark:border-[#3E3E3A] dark:text-[#A1A09A]">
+                            <span className="rounded border border-slate-200 px-2 py-0.5 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
                                 {user.role}
                             </span>
                             <button
                                 type="button"
                                 onClick={logout}
-                                className="rounded-sm border border-black bg-[#1b1b18] px-3 py-1 text-xs font-medium text-white hover:border-black hover:bg-black dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
+                                className="rounded-sm border border-indigo-600 bg-indigo-600 px-3 py-1 text-xs font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
                             >
                                 Déconnexion
                             </button>

@@ -159,7 +159,7 @@ export default function EditEleve() {
     if (loading) {
         return (
             <AppLayout>
-                <div className="mx-auto max-w-lg rounded-lg bg-white p-8 text-sm text-[#706f6c] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:text-[#A1A09A] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
+                <div className="mx-auto max-w-lg rounded-lg bg-white p-8 text-sm text-slate-500 border border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800">
                     Chargement...
                 </div>
             </AppLayout>
@@ -169,16 +169,16 @@ export default function EditEleve() {
     if (notFound) {
         return (
             <AppLayout>
-                <div className="mx-auto max-w-lg rounded-lg bg-white p-8 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <h1 className="mb-1 text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                <div className="mx-auto max-w-lg rounded-lg bg-white p-8 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                    <h1 className="mb-1 text-xl font-medium text-slate-900 dark:text-slate-100">
                         Élève introuvable
                     </h1>
-                    <p className="mb-6 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                    <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
                         Cet élève n'existe pas ou n'est plus disponible.
                     </p>
                     <a
                         href="/dashboard/admin/eleves"
-                        className="rounded-sm border border-black bg-[#1b1b18] px-4 py-2 text-sm font-medium text-white hover:border-black hover:bg-black dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
+                        className="rounded-sm border border-indigo-600 bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
                     >
                         Retour à la liste
                     </a>
@@ -189,16 +189,16 @@ export default function EditEleve() {
 
     return (
         <AppLayout>
-            <div className="mx-auto max-w-lg rounded-lg bg-white p-8 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                <h1 className="mb-1 text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+            <div className="mx-auto max-w-lg rounded-lg bg-white p-8 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                <h1 className="mb-1 text-xl font-medium text-slate-900 dark:text-slate-100">
                     Modifier l'élève
                 </h1>
-                <p className="mb-6 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
                     Mettez à jour les informations de l'élève {prenom} {nom}.
                 </p>
 
                 {error && (
-                    <div className="mb-4 rounded border border-[#f53003]/30 bg-[#f53003]/10 px-3 py-2 text-sm text-[#f53003] dark:text-[#FF4433]">
+                    <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                         {error}
                     </div>
                 )}
@@ -207,7 +207,7 @@ export default function EditEleve() {
                     <div>
                         <label
                             htmlFor="nom"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Nom
                         </label>
@@ -218,14 +218,14 @@ export default function EditEleve() {
                             onChange={(event) => setNom(event.target.value)}
                             required
                             maxLength={255}
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <div>
                         <label
                             htmlFor="prenom"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Prénom
                         </label>
@@ -236,14 +236,14 @@ export default function EditEleve() {
                             onChange={(event) => setPrenom(event.target.value)}
                             required
                             maxLength={255}
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <div>
                         <label
                             htmlFor="genre"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Genre
                         </label>
@@ -260,7 +260,7 @@ export default function EditEleve() {
                     <div>
                         <label
                             htmlFor="date_naissance"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Date de naissance
                         </label>
@@ -272,14 +272,14 @@ export default function EditEleve() {
                                 setDateNaissance(event.target.value)
                             }
                             required
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <div>
                         <label
                             htmlFor="code_massar"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Code Massar
                         </label>
@@ -291,14 +291,14 @@ export default function EditEleve() {
                                 setCodeMassar(event.target.value)
                             }
                             maxLength={20}
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <div>
                         <label
                             htmlFor="id_classe"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Classe
                         </label>
@@ -323,19 +323,19 @@ export default function EditEleve() {
                     </div>
 
                     <div>
-                        <span className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                        <span className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100">
                             Parents / tuteurs
                         </span>
-                        <div className="max-h-48 overflow-y-auto rounded border border-[#e3e3e0] p-3 dark:border-[#3E3E3A]">
+                        <div className="max-h-48 overflow-y-auto rounded border border-slate-200 p-3 dark:border-slate-800">
                             {parents.length === 0 && (
-                                <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                <p className="text-sm text-slate-500 dark:text-slate-400">
                                     Aucun parent disponible.
                                 </p>
                             )}
                             {parents.map((parent) => (
                                 <label
                                     key={parent.id}
-                                    className="flex cursor-pointer items-center gap-2 py-1 text-sm text-[#1b1b18] dark:text-[#EDEDEC]"
+                                    className="flex cursor-pointer items-center gap-2 py-1 text-sm text-slate-900 dark:text-slate-100"
                                 >
                                     <input
                                         type="checkbox"
@@ -355,7 +355,7 @@ export default function EditEleve() {
                         <button
                             type="submit"
                             disabled={processing}
-                            className="rounded-sm border border-black bg-[#1b1b18] px-5 py-2 text-sm font-medium text-white hover:border-black hover:bg-black disabled:opacity-50 dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
+                            className="rounded-sm border border-indigo-600 bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 disabled:opacity-50 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
                         >
                             {processing
                                 ? 'Enregistrement...'
@@ -363,7 +363,7 @@ export default function EditEleve() {
                         </button>
                         <a
                             href="/dashboard/admin/eleves"
-                            className="rounded-sm border border-[#e3e3e0] px-5 py-2 text-sm font-medium text-[#706f6c] hover:text-[#1b1b18] dark:border-[#3E3E3A] dark:text-[#A1A09A] dark:hover:text-[#EDEDEC]"
+                            className="rounded-sm border border-slate-300 px-5 py-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:border-slate-700 dark:text-slate-400 dark:hover:text-slate-100"
                         >
                             Annuler
                         </a>

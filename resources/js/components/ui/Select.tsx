@@ -1,7 +1,7 @@
 import type { SelectHTMLAttributes } from 'react';
 
 const baseClass =
-    'w-full rounded border border-[#e3e3e0] bg-white px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#3E3E3A] dark:bg-slate-800 dark:text-slate-100';
+    'w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100';
 
 type SelectProps = SelectHTMLAttributes<HTMLSelectElement>;
 

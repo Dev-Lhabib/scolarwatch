@@ -144,7 +144,7 @@ export default function EditUser() {
     if (loading) {
         return (
             <AppLayout>
-                <div className="mx-auto max-w-lg rounded-lg bg-white p-8 text-sm text-[#706f6c] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:text-[#A1A09A] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
+                <div className="mx-auto max-w-lg rounded-lg bg-white p-8 text-sm text-slate-500 border border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800">
                     Chargement...
                 </div>
             </AppLayout>
@@ -154,16 +154,16 @@ export default function EditUser() {
     if (notFound) {
         return (
             <AppLayout>
-                <div className="mx-auto max-w-lg rounded-lg bg-white p-8 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <h1 className="mb-1 text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                <div className="mx-auto max-w-lg rounded-lg bg-white p-8 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                    <h1 className="mb-1 text-xl font-medium text-slate-900 dark:text-slate-100">
                         Utilisateur introuvable
                     </h1>
-                    <p className="mb-6 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                    <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
                         Cet utilisateur n'existe pas ou n'est plus disponible.
                     </p>
                     <a
                         href="/admin/users"
-                        className="rounded-sm border border-black bg-[#1b1b18] px-4 py-2 text-sm font-medium text-white hover:border-black hover:bg-black dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
+                        className="rounded-sm border border-indigo-600 bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
                     >
                         Retour à la liste
                     </a>
@@ -174,23 +174,23 @@ export default function EditUser() {
 
     return (
         <AppLayout>
-            <div className="mx-auto max-w-lg rounded-lg bg-white p-8 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                <h1 className="mb-1 text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+            <div className="mx-auto max-w-lg rounded-lg bg-white p-8 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                <h1 className="mb-1 text-xl font-medium text-slate-900 dark:text-slate-100">
                     Modifier l'utilisateur
                 </h1>
-                <p className="mb-6 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
                     Mettez à jour les informations du compte {username || ''}.
                 </p>
 
                 {isBootstrapAdmin && (
-                    <div className="mb-4 rounded border border-[#f53003]/30 bg-[#f53003]/10 px-3 py-2 text-sm text-[#f53003] dark:text-[#FF4433]">
+                    <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                         Compte administrateur principal : le rôle et le statut
                         actif ne peuvent pas être modifiés.
                     </div>
                 )}
 
                 {error && (
-                    <div className="mb-4 rounded border border-[#f53003]/30 bg-[#f53003]/10 px-3 py-2 text-sm text-[#f53003] dark:text-[#FF4433]">
+                    <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                         {error}
                     </div>
                 )}
@@ -200,7 +200,7 @@ export default function EditUser() {
                         <div>
                             <label
                                 htmlFor="nom"
-                                className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                                className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                             >
                                 Nom
                             </label>
@@ -210,13 +210,13 @@ export default function EditUser() {
                                 value={nom}
                                 onChange={(event) => setNom(event.target.value)}
                                 required
-                                className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                                className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             />
                         </div>
                         <div>
                             <label
                                 htmlFor="prenom"
-                                className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                                className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                             >
                                 Prénom
                             </label>
@@ -228,7 +228,7 @@ export default function EditUser() {
                                     setPrenom(event.target.value)
                                 }
                                 required
-                                className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                                className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             />
                         </div>
                     </div>
@@ -236,7 +236,7 @@ export default function EditUser() {
                     <div>
                         <label
                             htmlFor="username"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Nom d'utilisateur
                         </label>
@@ -248,14 +248,14 @@ export default function EditUser() {
                                 setUsername(event.target.value)
                             }
                             required
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <div>
                         <label
                             htmlFor="email"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Email
                         </label>
@@ -265,7 +265,7 @@ export default function EditUser() {
                             value={email}
                             onChange={(event) => setEmail(event.target.value)}
                             required
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
@@ -273,7 +273,7 @@ export default function EditUser() {
                         <div>
                             <label
                                 htmlFor="telephone"
-                                className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                                className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                             >
                                 Téléphone
                             </label>
@@ -284,13 +284,13 @@ export default function EditUser() {
                                 onChange={(event) =>
                                     setTelephone(event.target.value)
                                 }
-                                className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                                className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             />
                         </div>
                         <div>
                             <label
                                 htmlFor="role"
-                                className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                                className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                             >
                                 Rôle
                             </label>
@@ -323,7 +323,7 @@ export default function EditUser() {
                     <div>
                         <label
                             htmlFor="adresse"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Adresse
                         </label>
@@ -332,12 +332,12 @@ export default function EditUser() {
                             value={adresse}
                             onChange={(event) => setAdresse(event.target.value)}
                             rows={2}
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <label
-                        className={`flex items-center gap-2 text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC] ${isBootstrapAdmin ? 'cursor-not-allowed opacity-50' : ''}`}
+                        className={`flex items-center gap-2 text-sm font-medium text-slate-900 dark:text-slate-100 ${isBootstrapAdmin ? 'cursor-not-allowed opacity-50' : ''}`}
                         title={
                             isBootstrapAdmin
                                 ? 'Le compte administrateur principal doit rester actif.'
@@ -351,7 +351,7 @@ export default function EditUser() {
                                 setIsActive(event.target.checked)
                             }
                             disabled={isBootstrapAdmin}
-                            className="h-4 w-4 rounded border-[#e3e3e0] accent-[#f53003] disabled:cursor-not-allowed"
+                            className="h-4 w-4 rounded border-slate-200 accent-indigo-600 disabled:cursor-not-allowed"
                         />
                         Compte actif
                     </label>
@@ -360,7 +360,7 @@ export default function EditUser() {
                         <div>
                             <label
                                 htmlFor="password"
-                                className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                                className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                             >
                                 Nouveau mot de passe
                             </label>
@@ -373,13 +373,13 @@ export default function EditUser() {
                                 }
                                 minLength={8}
                                 placeholder="Laisser vide pour conserver"
-                                className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                                className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             />
                         </div>
                         <div>
                             <label
                                 htmlFor="password_confirmation"
-                                className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                                className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                             >
                                 Confirmer le mot de passe
                             </label>
@@ -392,7 +392,7 @@ export default function EditUser() {
                                 }
                                 minLength={8}
                                 placeholder="Laisser vide pour conserver"
-                                className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                                className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             />
                         </div>
                     </div>
@@ -401,7 +401,7 @@ export default function EditUser() {
                         <button
                             type="submit"
                             disabled={processing}
-                            className="rounded-sm border border-black bg-[#1b1b18] px-5 py-2 text-sm font-medium text-white hover:border-black hover:bg-black disabled:opacity-50 dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
+                            className="rounded-sm border border-indigo-600 bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 disabled:opacity-50 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
                         >
                             {processing
                                 ? 'Enregistrement...'
@@ -409,7 +409,7 @@ export default function EditUser() {
                         </button>
                         <a
                             href="/admin/users"
-                            className="rounded-sm border border-[#e3e3e0] px-5 py-2 text-sm font-medium text-[#706f6c] hover:text-[#1b1b18] dark:border-[#3E3E3A] dark:text-[#A1A09A] dark:hover:text-[#EDEDEC]"
+                            className="rounded-sm border border-slate-300 px-5 py-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:border-slate-700 dark:text-slate-400 dark:hover:text-slate-100"
                         >
                             Annuler
                         </a>

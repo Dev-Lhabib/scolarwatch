@@ -32,9 +32,9 @@ const NIVEAU_ALERTE_LABELS: Record<string, string> = {
 };
 
 const NIVEAU_ALERTE_BADGE: Record<string, string> = {
-    faible: 'rounded bg-green-500/10 px-1.5 py-0.5 text-xs text-green-700 dark:text-green-400',
+    faible: 'rounded bg-emerald-100 px-1.5 py-0.5 text-xs text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300',
     moyen: 'rounded bg-yellow-500/10 px-1.5 py-0.5 text-xs text-yellow-700 dark:text-yellow-400',
-    eleve: 'rounded bg-[#f53003]/10 px-1.5 py-0.5 text-xs text-[#f53003] dark:text-[#FF4433]',
+    eleve: 'rounded bg-red-100 px-1.5 py-0.5 text-xs text-red-800 dark:bg-red-900/40 dark:text-red-300',
 };
 
 type Props = {
@@ -223,13 +223,13 @@ export default function SyntheseEntry({ eleve }: Props) {
     return (
         <div>
             <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-sm font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">
                     Synthèse IA
                 </h3>
                 <div className="flex items-center gap-2">
                     <label
                         htmlFor="synthese-trimestre"
-                        className="text-sm text-[#706f6c] dark:text-[#A1A09A]"
+                        className="text-sm text-slate-500 dark:text-slate-400"
                     >
                         Trimestre
                     </label>
@@ -248,26 +248,26 @@ export default function SyntheseEntry({ eleve }: Props) {
             </div>
 
             {syntheseErreur && (
-                <div className="mb-4 rounded border border-[#f53003]/30 bg-[#f53003]/10 px-3 py-2 text-sm text-[#f53003] dark:text-[#FF4433]">
+                <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                     {syntheseErreur}
                 </div>
             )}
 
             {syntheseSuccess && (
-                <div className="mb-4 rounded border border-green-500/30 bg-green-500/10 px-3 py-2 text-sm text-green-700 dark:text-green-400">
+                <div className="mb-4 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-400">
                     {syntheseSuccess}
                 </div>
             )}
 
             {syntheseEtat === 'chargement' && (
-                <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                     Chargement de la synthèse...
                 </p>
             )}
 
             {syntheseEtat === 'introuvable' && (
                 <div className="space-y-4">
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
                         Aucune synthèse générée pour le trimestre {trimestreSynthese}.
                     </p>
                     <div className="flex gap-3">
@@ -275,14 +275,14 @@ export default function SyntheseEntry({ eleve }: Props) {
                             type="button"
                             onClick={genererSynthese}
                             disabled={syntheseGenerating}
-                            className="rounded-sm border border-black bg-[#1b1b18] px-5 py-2 text-sm font-medium text-white hover:border-black hover:bg-black disabled:opacity-50 dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
+                            className="rounded-sm border border-indigo-600 bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 disabled:opacity-50 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
                         >
                             {syntheseGenerating ? 'Génération...' : 'Générer la synthèse'}
                         </button>
                         <button
                             type="button"
                             onClick={actualiser}
-                            className="rounded-sm border border-[#e3e3e0] px-5 py-2 text-sm font-medium text-[#706f6c] hover:text-[#1b1b18] dark:border-[#3E3E3A] dark:text-[#A1A09A] dark:hover:text-[#EDEDEC]"
+                            className="rounded-sm border border-slate-300 px-5 py-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:border-slate-700 dark:text-slate-400 dark:hover:text-slate-100"
                         >
                             Actualiser
                         </button>
@@ -294,7 +294,7 @@ export default function SyntheseEntry({ eleve }: Props) {
                 <button
                     type="button"
                     onClick={actualiser}
-                    className="rounded-sm border border-[#e3e3e0] px-5 py-2 text-sm font-medium text-[#706f6c] hover:text-[#1b1b18] dark:border-[#3E3E3A] dark:text-[#A1A09A] dark:hover:text-[#EDEDEC]"
+                    className="rounded-sm border border-slate-300 px-5 py-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:border-slate-700 dark:text-slate-400 dark:hover:text-slate-100"
                 >
                     Réessayer
                 </button>
@@ -304,14 +304,14 @@ export default function SyntheseEntry({ eleve }: Props) {
                 <div className="space-y-4">
                     {synthese.statut === 'en_attente' && (
                         <div className="space-y-4">
-                            <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                            <p className="text-sm text-slate-500 dark:text-slate-400">
                                 Synthèse en attente de génération. Actualisez pour voir
                                 le résultat.
                             </p>
                             <button
                                 type="button"
                                 onClick={actualiser}
-                                className="rounded-sm border border-[#e3e3e0] px-5 py-2 text-sm font-medium text-[#706f6c] hover:text-[#1b1b18] dark:border-[#3E3E3A] dark:text-[#A1A09A] dark:hover:text-[#EDEDEC]"
+                                className="rounded-sm border border-slate-300 px-5 py-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:border-slate-700 dark:text-slate-400 dark:hover:text-slate-100"
                             >
                                 Actualiser
                             </button>
@@ -320,14 +320,14 @@ export default function SyntheseEntry({ eleve }: Props) {
 
                     {synthese.statut === 'echoue' && (
                         <div className="space-y-4">
-                            <p className="text-sm text-[#f53003] dark:text-[#FF4433]">
+                            <p className="text-sm text-red-600 dark:text-red-400">
                                 La génération de la synthèse a échoué. Réessayez.
                             </p>
                             <button
                                 type="button"
                                 onClick={genererSynthese}
                                 disabled={syntheseGenerating}
-                                className="rounded-sm border border-black bg-[#1b1b18] px-5 py-2 text-sm font-medium text-white hover:border-black hover:bg-black disabled:opacity-50 dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
+                                className="rounded-sm border border-indigo-600 bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 disabled:opacity-50 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
                             >
                                 {syntheseGenerating ? 'Génération...' : 'Réessayer'}
                             </button>
@@ -337,61 +337,61 @@ export default function SyntheseEntry({ eleve }: Props) {
                     {synthese.statut === 'traite' && (
                         <div className="space-y-4">
                             <div className="flex flex-wrap items-center gap-3">
-                                <span className="text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                                <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
                                     Niveau d'alerte
                                 </span>
                                 {alerteBadge(synthese.niveau_alerte)}
                                 {synthese.niveau_alerte_corrige && (
-                                    <span className="text-xs text-[#706f6c] dark:text-[#A1A09A]">
+                                    <span className="text-xs text-slate-500 dark:text-slate-400">
                                         Corrigé : {alerteBadge(synthese.niveau_alerte_corrige)}
                                     </span>
                                 )}
                             </div>
 
                             <div>
-                                <h4 className="mb-2 text-sm font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                                <h4 className="mb-2 text-sm font-medium text-slate-500 dark:text-slate-400">
                                     Facteurs de risque
                                 </h4>
                                 {synthese.facteurs_risque?.length ? (
-                                    <ul className="list-disc space-y-1 pl-5 text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+                                    <ul className="list-disc space-y-1 pl-5 text-sm text-slate-900 dark:text-slate-100">
                                         {synthese.facteurs_risque.map((facteur, index) => (
                                             <li key={index}>{facteur}</li>
                                         ))}
                                     </ul>
                                 ) : (
-                                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">
                                         Aucun facteur identifié.
                                     </p>
                                 )}
                             </div>
 
                             <div>
-                                <h4 className="mb-2 text-sm font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                                <h4 className="mb-2 text-sm font-medium text-slate-500 dark:text-slate-400">
                                     Recommandations
                                 </h4>
                                 {synthese.recommandations?.length ? (
-                                    <ul className="list-disc space-y-1 pl-5 text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+                                    <ul className="list-disc space-y-1 pl-5 text-sm text-slate-900 dark:text-slate-100">
                                         {synthese.recommandations.map((recommandation, index) => (
                                             <li key={index}>{recommandation}</li>
                                         ))}
                                     </ul>
                                 ) : (
-                                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">
                                         Aucune recommandation.
                                     </p>
                                 )}
                             </div>
 
                             <div>
-                                <h4 className="mb-2 text-sm font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                                <h4 className="mb-2 text-sm font-medium text-slate-500 dark:text-slate-400">
                                     Message aux parents
                                 </h4>
                                 {synthese.message_parent ? (
-                                    <p className="whitespace-pre-wrap text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+                                    <p className="whitespace-pre-wrap text-sm text-slate-900 dark:text-slate-100">
                                         {synthese.message_parent}
                                     </p>
                                 ) : (
-                                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">
                                         Aucun message disponible.
                                     </p>
                                 )}
@@ -401,7 +401,7 @@ export default function SyntheseEntry({ eleve }: Props) {
                                 <div className="flex-1">
                                     <label
                                         htmlFor="synthese-niveau-corrige"
-                                        className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                                        className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                                     >
                                         Corriger le niveau d'alerte
                                     </label>
@@ -422,7 +422,7 @@ export default function SyntheseEntry({ eleve }: Props) {
                                     type="button"
                                     onClick={corrigerNiveau}
                                     disabled={correctionProcessing}
-                                    className="rounded-sm border border-black bg-[#1b1b18] px-5 py-2 text-sm font-medium text-white hover:border-black hover:bg-black disabled:opacity-50 dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
+                                    className="rounded-sm border border-indigo-600 bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 disabled:opacity-50 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
                                 >
                                     {correctionProcessing
                                         ? 'Enregistrement...'
@@ -434,7 +434,7 @@ export default function SyntheseEntry({ eleve }: Props) {
                                 type="button"
                                 onClick={envoyerSynthese}
                                 disabled={envoiProcessing || !synthese.message_parent}
-                                className="rounded-sm border border-black bg-[#1b1b18] px-5 py-2 text-sm font-medium text-white hover:border-black hover:bg-black disabled:opacity-50 dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
+                                className="rounded-sm border border-indigo-600 bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 disabled:opacity-50 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
                             >
                                 {envoiProcessing
                                     ? 'Envoi...'

@@ -58,54 +58,54 @@ export default function AdminDashboard() {
     if (loading) {
         return (
             <AppLayout>
-                <div className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Chargement...</div>
+                <div className="text-sm text-slate-500 dark:text-slate-400">Chargement...</div>
             </AppLayout>
         );
     }
 
     return (
         <AppLayout>
-            <h1 className="mb-6 text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+            <h1 className="mb-6 text-xl font-medium text-slate-900 dark:text-slate-100">
                 Tableau de bord administrateur
             </h1>
 
             <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Classes</p>
-                    <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Classes</p>
+                    <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
                         {classesCount}
                     </p>
                 </div>
-                <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Matières</p>
-                    <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Matières</p>
+                    <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
                         {matieresCount}
                     </p>
                 </div>
-                <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Élèves</p>
-                    <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Élèves</p>
+                    <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
                         {elevesCount}
                     </p>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Total utilisateurs</p>
-                    <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Total utilisateurs</p>
+                    <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
                         {totalUsers}
                     </p>
                 </div>
-                <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Enseignants</p>
-                    <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Enseignants</p>
+                    <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
                         {enseignantsCount}
                     </p>
                 </div>
-                <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Direction</p>
-                    <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Direction</p>
+                    <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
                         {directionCount}
                     </p>
                 </div>

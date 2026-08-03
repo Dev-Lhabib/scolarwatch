@@ -37,7 +37,7 @@ type Note = {
 };
 
 const cardClass =
-    'block rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] transition hover:shadow-[inset_0px_0px_0px_1px_#f53003] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] dark:hover:shadow-[inset_0px_0px_0px_1px_#FF4433]';
+    'block rounded-lg border border-slate-200 bg-white p-6 transition hover:border-indigo-400 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-500';
 
 type StatCardProps = {
     href: string;
@@ -49,18 +49,18 @@ type StatCardProps = {
 function StatCard({ href, label, value, hint }: StatCardProps) {
     return (
         <Link href={href} className={cardClass}>
-            <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">{label}</p>
-            <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">{value}</p>
-            <p className="mt-2 text-xs text-[#706f6c] dark:text-[#A1A09A]">{hint}</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{label}</p>
+            <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">{value}</p>
+            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{hint}</p>
         </Link>
     );
 }
 
 function StatSkeleton() {
     return (
-        <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-            <div className="h-3 w-1/2 animate-pulse rounded bg-[#e3e3e0] dark:bg-[#3E3E3A]" />
-            <div className="mt-2 h-6 w-1/3 animate-pulse rounded bg-[#e3e3e0] dark:bg-[#3E3E3A]" />
+        <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+            <div className="h-3 w-1/2 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+            <div className="mt-2 h-6 w-1/3 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
         </div>
     );
 }
@@ -144,7 +144,7 @@ export default function EnseignantDashboard() {
 
     return (
         <AppLayout>
-            <h1 className="mb-6 text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+            <h1 className="mb-6 text-xl font-medium text-slate-900 dark:text-slate-100">
                 Tableau de bord
             </h1>
 

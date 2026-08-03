@@ -107,24 +107,24 @@ export default function AdminClassesIndex() {
         <AppLayout>
             <div className="mb-6 flex items-center justify-between">
                 <div>
-                    <h1 className="text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                    <h1 className="text-xl font-medium text-slate-900 dark:text-slate-100">
                         Gestion des classes
                     </h1>
-                    <p className="mt-1 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                         {classes.length} classe{classes.length > 1 ? 's' : ''}{' '}
                         enregistrée{classes.length > 1 ? 's' : ''}.
                     </p>
                 </div>
                 <a
                     href="/dashboard/admin/classes/create"
-                    className="rounded-sm border border-black bg-[#1b1b18] px-4 py-2 text-sm font-medium text-white hover:border-black hover:bg-black dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
+                    className="rounded-sm border border-indigo-600 bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
                 >
                     Nouvelle classe
                 </a>
             </div>
 
             {error && (
-                <div className="mb-4 rounded border border-[#f53003]/30 bg-[#f53003]/10 px-3 py-2 text-sm text-[#f53003] dark:text-[#FF4433]">
+                <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                     {error}
                 </div>
             )}
@@ -135,30 +135,30 @@ export default function AdminClassesIndex() {
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                     placeholder="Rechercher une classe..."
-                    className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                    className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
             </div>
 
-            <div className="overflow-x-auto rounded-lg bg-white shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                <table className="w-full text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+            <div className="overflow-x-auto rounded-lg bg-white border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                <table className="w-full text-sm text-slate-900 dark:text-slate-100">
                     <thead>
-                        <tr className="border-b border-[#e3e3e0] dark:border-[#3E3E3A]">
-                            <th className="px-4 py-3 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                        <tr className="border-b border-slate-200 dark:border-slate-800">
+                            <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">
                                 Nom
                             </th>
-                            <th className="px-4 py-3 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                            <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">
                                 Niveau
                             </th>
-                            <th className="px-4 py-3 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                            <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">
                                 Année
                             </th>
-                            <th className="px-4 py-3 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                            <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">
                                 Capacité
                             </th>
-                            <th className="px-4 py-3 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                            <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">
                                 Professeur principal
                             </th>
-                            <th className="px-4 py-3 text-right font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                            <th className="px-4 py-3 text-right font-medium text-slate-500 dark:text-slate-400">
                                 Actions
                             </th>
                         </tr>
@@ -167,7 +167,7 @@ export default function AdminClassesIndex() {
                         {filteredClasses.map((classe) => (
                             <tr
                                 key={classe.id_classe}
-                                className="border-b border-[#e3e3e0] dark:border-[#3E3E3A]"
+                                className="border-b border-slate-200 dark:border-slate-800"
                             >
                                 <td className="px-4 py-3">{classe.nom}</td>
                                 <td className="px-4 py-3">{classe.niveau}</td>
@@ -183,7 +183,7 @@ export default function AdminClassesIndex() {
                                 <td className="px-4 py-3 text-right">
                                     <a
                                         href={`/dashboard/admin/classes/${classe.id_classe}`}
-                                        className="mr-4 text-sm font-medium text-[#f53003] hover:underline dark:text-[#FF4433]"
+                                        className="mr-4 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
                                     >
                                         Modifier
                                     </a>
@@ -191,7 +191,7 @@ export default function AdminClassesIndex() {
                                         type="button"
                                         onClick={() => handleDelete(classe)}
                                         disabled={deletingId === classe.id_classe}
-                                        className="text-sm font-medium text-[#706f6c] hover:text-[#f53003] disabled:cursor-not-allowed disabled:opacity-50 dark:text-[#A1A09A] dark:hover:text-[#FF4433]"
+                                        className="text-sm font-medium text-slate-500 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:text-red-400"
                                     >
                                         {deletingId === classe.id_classe
                                             ? 'Suppression...'
@@ -204,7 +204,7 @@ export default function AdminClassesIndex() {
                             <tr>
                                 <td
                                     colSpan={6}
-                                    className="px-4 py-6 text-center text-[#706f6c] dark:text-[#A1A09A]"
+                                    className="px-4 py-6 text-center text-slate-500 dark:text-slate-400"
                                 >
                                     Aucune classe trouvée.
                                 </td>
@@ -214,7 +214,7 @@ export default function AdminClassesIndex() {
                             <tr>
                                 <td
                                     colSpan={6}
-                                    className="px-4 py-6 text-center text-[#706f6c] dark:text-[#A1A09A]"
+                                    className="px-4 py-6 text-center text-slate-500 dark:text-slate-400"
                                 >
                                     Chargement...
                                 </td>

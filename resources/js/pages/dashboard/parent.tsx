@@ -46,7 +46,7 @@ function formatDate(value: string | null | undefined): string {
     });
 }
 
-const cardClass = 'rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]';
+const cardClass = 'rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800';
 
 export default function ParentDashboard() {
     const user = getAuthUser();
@@ -132,12 +132,12 @@ export default function ParentDashboard() {
 
     return (
         <AppLayout>
-            <h1 className="mb-6 text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+            <h1 className="mb-6 text-xl font-medium text-slate-900 dark:text-slate-100">
                 Mes Communications
             </h1>
 
             {error && (
-                <div className="mb-4 rounded border border-[#f53003]/30 bg-[#f53003]/10 px-3 py-2 text-sm text-[#f53003] dark:text-[#FF4433]">
+                <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                     {error}
                 </div>
             )}
@@ -147,8 +147,8 @@ export default function ParentDashboard() {
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
                         {[0, 1, 2].map((i) => (
                             <div key={i}>
-                                <div className="h-3 w-1/3 animate-pulse rounded bg-[#e3e3e0] dark:bg-[#3E3E3A]" />
-                                <div className="mt-2 h-5 w-2/3 animate-pulse rounded bg-[#e3e3e0] dark:bg-[#3E3E3A]" />
+                                <div className="h-3 w-1/3 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+                                <div className="mt-2 h-5 w-2/3 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
                             </div>
                         ))}
                     </div>
@@ -158,27 +158,27 @@ export default function ParentDashboard() {
                     <div className={`${cardClass} mb-8`}>
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
                             <div>
-                                <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Parent</p>
-                                <p className="mt-1 text-lg font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                                <p className="text-sm text-slate-500 dark:text-slate-400">Parent</p>
+                                <p className="mt-1 text-lg font-medium text-slate-900 dark:text-slate-100">
                                     {user?.prenom} {user?.nom}
                                 </p>
                             </div>
                             <div>
-                                <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Enfant</p>
-                                <p className="mt-1 text-lg font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                                <p className="text-sm text-slate-500 dark:text-slate-400">Enfant</p>
+                                <p className="mt-1 text-lg font-medium text-slate-900 dark:text-slate-100">
                                     {childLabel ?? '—'}
                                 </p>
                                 {classLabel && (
-                                    <p className="mt-1 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                                         {classLabel}
                                     </p>
                                 )}
                             </div>
                             <div>
-                                <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                <p className="text-sm text-slate-500 dark:text-slate-400">
                                     Dernière communication
                                 </p>
-                                <p className="mt-1 text-lg font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                                <p className="mt-1 text-lg font-medium text-slate-900 dark:text-slate-100">
                                     {latestDate ? formatDate(latestDate) : '—'}
                                 </p>
                             </div>
@@ -187,22 +187,22 @@ export default function ParentDashboard() {
 
                     <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
                         <div className={cardClass}>
-                            <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                            <p className="text-sm text-slate-500 dark:text-slate-400">
                                 Total communications
                             </p>
-                            <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                            <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
                                 {notifications.length}
                             </p>
                         </div>
                         <div className={cardClass}>
-                            <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Non lues</p>
-                            <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                            <p className="text-sm text-slate-500 dark:text-slate-400">Non lues</p>
+                            <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
                                 {unreadCount}
                             </p>
                         </div>
                         <div className={cardClass}>
-                            <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Classe</p>
-                            <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                            <p className="text-sm text-slate-500 dark:text-slate-400">Classe</p>
+                            <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
                                 {classLabel ?? '—'}
                             </p>
                         </div>
@@ -213,7 +213,7 @@ export default function ParentDashboard() {
             {!loading && notifications.length === 0 && (
                 <div className={`${cardClass} flex flex-col items-center justify-center py-16 text-center`}>
                     <svg
-                        className="mb-4 h-10 w-10 text-[#706f6c] dark:text-[#A1A09A]"
+                        className="mb-4 h-10 w-10 text-slate-500 dark:text-slate-400"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -225,7 +225,7 @@ export default function ParentDashboard() {
                             d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
                         />
                     </svg>
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
                         Aucune communication reçue pour le moment.
                     </p>
                 </div>
@@ -237,33 +237,33 @@ export default function ParentDashboard() {
                         <div key={notification.id_notification} className={cardClass}>
                             <div className="flex flex-wrap items-start justify-between gap-2">
                                 <div>
-                                    <p className="text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
                                         {studentName(notification)}
                                     </p>
-                                    <p className="mt-0.5 text-xs text-[#706f6c] dark:text-[#A1A09A]">
+                                    <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                                         {formatDate(notification.envoye_le ?? notification.created_at)}
                                     </p>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <span className={`rounded px-2 py-0.5 text-xs ${
                                         notification.lu
-                                            ? 'bg-[#e3e3e0]/60 text-[#706f6c] dark:bg-[#3E3E3A]/60 dark:text-[#A1A09A]'
-                                            : 'bg-[#f53003]/10 text-[#f53003] dark:bg-[#FF4433]/10 dark:text-[#FF4433]'
+                                            ? 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+                                            : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300'
                                     }`}>
                                         {notification.lu ? 'Lue' : 'Non lue'}
                                     </span>
                                     <span className={`rounded px-2 py-0.5 text-xs ${
                                         notification.statut_envoi === 'envoye'
-                                            ? 'bg-green-500/10 text-green-700 dark:text-green-400'
+                                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300'
                                             : notification.statut_envoi === 'echec'
-                                                ? 'bg-[#f53003]/10 text-[#f53003] dark:text-[#FF4433]'
-                                                : 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400'
+                                                ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'
+                                                : 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300'
                                     }`}>
                                         {STATUT_LABELS[notification.statut_envoi]}
                                     </span>
                                 </div>
                             </div>
-                            <p className="mt-3 text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+                            <p className="mt-3 text-sm text-slate-900 dark:text-slate-100">
                                 {notification.message}
                             </p>
                             {!notification.lu && (
@@ -271,7 +271,7 @@ export default function ParentDashboard() {
                                     type="button"
                                     disabled={readingId === notification.id_notification}
                                     onClick={() => marquerLue(notification)}
-                                    className="mt-4 rounded-sm border border-black bg-[#1b1b18] px-3 py-1 text-xs font-medium text-white hover:border-black hover:bg-black disabled:opacity-50 dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
+                                    className="mt-4 rounded-sm border border-indigo-600 bg-indigo-600 px-3 py-1 text-xs font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 disabled:opacity-50 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
                                 >
                                     {readingId === notification.id_notification
                                         ? 'En cours...'

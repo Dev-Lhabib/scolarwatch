@@ -75,7 +75,7 @@ export default function EnseignantSyntheses() {
 
     return (
         <AppLayout>
-            <h1 className="mb-6 text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+            <h1 className="mb-6 text-xl font-medium text-slate-900 dark:text-slate-100">
                 Synthèses IA
             </h1>
 
@@ -84,15 +84,15 @@ export default function EnseignantSyntheses() {
                     {[0, 1].map((item) => (
                         <div
                             key={item}
-                            className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"
+                            className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800"
                         >
-                            <div className="h-4 w-1/3 animate-pulse rounded bg-[#e3e3e0] dark:bg-[#3E3E3A]" />
-                            <div className="mt-4 h-8 animate-pulse rounded bg-[#e3e3e0] dark:bg-[#3E3E3A]" />
+                            <div className="h-4 w-1/3 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+                            <div className="mt-4 h-8 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
                         </div>
                     ))}
                 </div>
             ) : classesWithEleves.length === 0 ? (
-                <div className="rounded-lg bg-white p-6 text-center text-sm text-[#706f6c] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:text-[#A1A09A] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
+                <div className="rounded-lg bg-white p-6 text-center text-sm text-slate-500 border border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800">
                     Aucune classe dont vous êtes professeur principal.
                 </div>
             ) : (
@@ -100,31 +100,31 @@ export default function EnseignantSyntheses() {
                     {classesWithEleves.map((classe) => (
                         <div
                             key={classe.id_classe}
-                            className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"
+                            className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800"
                         >
-                            <h2 className="mb-4 text-base font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                            <h2 className="mb-4 text-base font-medium text-slate-900 dark:text-slate-100">
                                 {classe.nom} — {classe.niveau}
                             </h2>
 
                             {classe.eleves.length === 0 ? (
-                                <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                <p className="text-sm text-slate-500 dark:text-slate-400">
                                     Aucun élève dans cette classe.
                                 </p>
                             ) : (
                                 <div className="overflow-x-auto">
-                                    <table className="w-full text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+                                    <table className="w-full text-sm text-slate-900 dark:text-slate-100">
                                         <thead>
-                                            <tr className="border-b border-[#e3e3e0] dark:border-[#3E3E3A]">
-                                                <th className="px-3 py-2 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">Nom</th>
-                                                <th className="px-3 py-2 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">Prénom</th>
-                                                <th className="px-3 py-2 text-right font-medium text-[#706f6c] dark:text-[#A1A09A]">Actions</th>
+                                            <tr className="border-b border-slate-200 dark:border-slate-800">
+                                                <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">Nom</th>
+                                                <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">Prénom</th>
+                                                <th className="px-3 py-2 text-right font-medium text-slate-500 dark:text-slate-400">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {classe.eleves.map((eleve) => (
                                                 <tr
                                                     key={eleve.id_eleve}
-                                                    className="border-b border-[#e3e3e0] dark:border-[#3E3E3A]"
+                                                    className="border-b border-slate-200 dark:border-slate-800"
                                                 >
                                                     <td className="px-3 py-2">{eleve.nom}</td>
                                                     <td className="px-3 py-2">{eleve.prenom}</td>
@@ -134,7 +134,7 @@ export default function EnseignantSyntheses() {
                                                             onClick={() =>
                                                                 setSelectedEleve(eleve)
                                                             }
-                                                            className="rounded-sm border border-[#706f6c] px-3 py-1 text-xs font-medium text-[#706f6c] hover:border-[#1b1b18] hover:text-[#1b1b18] dark:border-[#A1A09A] dark:text-[#A1A09A] dark:hover:border-[#EDEDEC] dark:hover:text-[#EDEDEC]"
+                                                            className="rounded-sm border border-slate-400 px-3 py-1 text-xs font-medium text-slate-500 hover:border-slate-900 hover:text-slate-900 dark:border-slate-600 dark:text-slate-400 dark:hover:border-slate-100 dark:hover:text-slate-100"
                                                         >
                                                             Voir la synthèse
                                                         </button>
@@ -156,17 +156,17 @@ export default function EnseignantSyntheses() {
                     onClick={() => setSelectedEleve(null)}
                 >
                     <div
-                        className="mx-4 w-full max-w-2xl rounded-lg bg-white p-6 shadow-lg dark:bg-[#161615]"
+                        className="mx-4 w-full max-w-2xl rounded-lg bg-white p-6 shadow-lg dark:bg-slate-900"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="mb-4 flex items-center justify-between">
-                            <h2 className="text-lg font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                            <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">
                                 {selectedEleve.prenom} {selectedEleve.nom}
                             </h2>
                             <button
                                 type="button"
                                 onClick={() => setSelectedEleve(null)}
-                                className="text-sm text-[#706f6c] hover:text-[#1b1b18] dark:text-[#A1A09A] dark:hover:text-[#EDEDEC]"
+                                className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
                             >
                                 Fermer
                             </button>
