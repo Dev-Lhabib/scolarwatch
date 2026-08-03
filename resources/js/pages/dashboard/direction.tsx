@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
+import Card from '@/components/ui/Card';
+import StatCard from '@/components/ui/StatCard';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 import AppLayout from '@/layouts/AppLayout';
 
@@ -125,34 +127,14 @@ export default function DirectionDashboard() {
             </h1>
 
             <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-4">
-                <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Total classes</p>
-                    <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
-                        {classes.length}
-                    </p>
-                </div>
-                <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Total élèves</p>
-                    <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
-                        {eleves.length}
-                    </p>
-                </div>
-                <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Absences</p>
-                    <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
-                        {totalAbsences}
-                    </p>
-                </div>
-                <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Retards</p>
-                    <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
-                        {totalRetards}
-                    </p>
-                </div>
+                <StatCard label="Total classes" value={String(classes.length)} />
+                <StatCard label="Total élèves" value={String(eleves.length)} />
+                <StatCard label="Absences" value={String(totalAbsences)} />
+                <StatCard label="Retards" value={String(totalRetards)} />
             </div>
 
             <div className="mb-8 space-y-8">
-                <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                <Card>
                     <h2 className="mb-4 text-base font-medium text-slate-900 dark:text-slate-100">
                         Élèves les plus concernés
                     </h2>
@@ -185,9 +167,9 @@ export default function DirectionDashboard() {
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </Card>
 
-                <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                <Card>
                     <h2 className="mb-4 text-base font-medium text-slate-900 dark:text-slate-100">
                         Classes les plus touchées
                     </h2>
@@ -218,7 +200,7 @@ export default function DirectionDashboard() {
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </Card>
             </div>
         </AppLayout>
     );

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import Card from '@/components/ui/Card';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 import AppLayout from '@/layouts/AppLayout';
 
@@ -52,7 +53,7 @@ export default function DirectionStatistiques() {
                 Statistiques
             </h1>
 
-            <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+            <Card>
                 <h2 className="mb-4 text-base font-medium text-slate-900 dark:text-slate-100">
                     Élèves par classe
                 </h2>
@@ -73,7 +74,7 @@ export default function DirectionStatistiques() {
                         <Bar dataKey="élèves" fill="#4f46e5" radius={[4, 4, 0, 0]} />
                     </BarChart>
                 </ResponsiveContainer>
-            </div>
+            </Card>
         </AppLayout>
     );
 }

@@ -1,5 +1,6 @@
-import { Link } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
+import { StatCardSkeleton } from '@/components/ui/Skeleton';
+import StatCard from '@/components/ui/StatCard';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 
@@ -35,35 +36,6 @@ type Note = {
     valeur: number;
     id_eleve: number;
 };
-
-const cardClass =
-    'block rounded-lg border border-slate-200 bg-white p-6 transition hover:border-indigo-400 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-500';
-
-type StatCardProps = {
-    href: string;
-    label: string;
-    value: string;
-    hint: string;
-};
-
-function StatCard({ href, label, value, hint }: StatCardProps) {
-    return (
-        <Link href={href} className={cardClass}>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{label}</p>
-            <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">{value}</p>
-            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{hint}</p>
-        </Link>
-    );
-}
-
-function StatSkeleton() {
-    return (
-        <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
-            <div className="h-3 w-1/2 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
-            <div className="mt-2 h-6 w-1/3 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
-        </div>
-    );
-}
 
 export default function EnseignantDashboard() {
     const user = getAuthUser();
@@ -150,14 +122,14 @@ export default function EnseignantDashboard() {
 
             {loading ? (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <StatSkeleton />
-                    <StatSkeleton />
-                    <StatSkeleton />
-                    <StatSkeleton />
-                    <StatSkeleton />
-                    <StatSkeleton />
-                    <StatSkeleton />
-                    <StatSkeleton />
+                    <StatCardSkeleton />
+                    <StatCardSkeleton />
+                    <StatCardSkeleton />
+                    <StatCardSkeleton />
+                    <StatCardSkeleton />
+                    <StatCardSkeleton />
+                    <StatCardSkeleton />
+                    <StatCardSkeleton />
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

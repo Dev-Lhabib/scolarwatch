@@ -1,4 +1,9 @@
 import { useEffect, useState } from 'react';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import Skeleton from '@/components/ui/Skeleton';
+import StatCard from '@/components/ui/StatCard';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 
@@ -45,8 +50,6 @@ function formatDate(value: string | null | undefined): string {
         year: 'numeric',
     });
 }
-
-const cardClass = 'rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800';
 
 export default function ParentDashboard() {
     const user = getAuthUser();
@@ -143,19 +146,19 @@ export default function ParentDashboard() {
             )}
 
             {loading ? (
-                <div className={`${cardClass}`}>
+                <Card>
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
                         {[0, 1, 2].map((i) => (
                             <div key={i}>
-                                <div className="h-3 w-1/3 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
-                                <div className="mt-2 h-5 w-2/3 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+                                <Skeleton className="h-3 w-1/3" />
+                                <Skeleton className="mt-2 h-5 w-2/3" />
                             </div>
                         ))}
                     </div>
-                </div>
+                </Card>
             ) : (
                 <>
-                    <div className={`${cardClass} mb-8`}>
+                    <Card className="mb-8">
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
                             <div>
                                 <p className="text-sm text-slate-500 dark:text-slate-400">Parent</p>
@@ -183,35 +186,18 @@ export default function ParentDashboard() {
                                 </p>
                             </div>
                         </div>
-                    </div>
+                    </Card>
 
                     <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                        <div className={cardClass}>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">
-                                Total communications
-                            </p>
-                            <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
-                                {notifications.length}
-                            </p>
-                        </div>
-                        <div className={cardClass}>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">Non lues</p>
-                            <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
-                                {unreadCount}
-                            </p>
-                        </div>
-                        <div className={cardClass}>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">Classe</p>
-                            <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
-                                {classLabel ?? '—'}
-                            </p>
-                        </div>
+                        <StatCard label="Total communications" value={String(notifications.length)} />
+                        <StatCard label="Non lues" value={String(unreadCount)} />
+                        <StatCard label="Classe" value={classLabel ?? '—'} />
                     </div>
                 </>
             )}
 
             {!loading && notifications.length === 0 && (
-                <div className={`${cardClass} flex flex-col items-center justify-center py-16 text-center`}>
+                <Card className="flex flex-col items-center justify-center py-16 text-center">
                     <svg
                         className="mb-4 h-10 w-10 text-slate-500 dark:text-slate-400"
                         viewBox="0 0 24 24"
@@ -228,13 +214,13 @@ export default function ParentDashboard() {
                     <p className="text-sm text-slate-500 dark:text-slate-400">
                         Aucune communication reçue pour le moment.
                     </p>
-                </div>
+                </Card>
             )}
 
             {!loading && notifications.length > 0 && (
                 <div className="space-y-4">
                     {notifications.map((notification) => (
-                        <div key={notification.id_notification} className={cardClass}>
+                        <Card key={notification.id_notification}>
                             <div className="flex flex-wrap items-start justify-between gap-2">
                                 <div>
                                     <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
@@ -245,40 +231,39 @@ export default function ParentDashboard() {
                                     </p>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <span className={`rounded px-2 py-0.5 text-xs ${
-                                        notification.lu
-                                            ? 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
-                                            : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300'
-                                    }`}>
+                                    <Badge tone={notification.lu ? 'default' : 'info'}>
                                         {notification.lu ? 'Lue' : 'Non lue'}
-                                    </span>
-                                    <span className={`rounded px-2 py-0.5 text-xs ${
-                                        notification.statut_envoi === 'envoye'
-                                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300'
-                                            : notification.statut_envoi === 'echec'
-                                                ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'
-                                                : 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300'
-                                    }`}>
+                                    </Badge>
+                                    <Badge
+                                        tone={
+                                            notification.statut_envoi === 'envoye'
+                                                ? 'success'
+                                                : notification.statut_envoi === 'echec'
+                                                    ? 'danger'
+                                                    : 'warning'
+                                        }
+                                    >
                                         {STATUT_LABELS[notification.statut_envoi]}
-                                    </span>
+                                    </Badge>
                                 </div>
                             </div>
                             <p className="mt-3 text-sm text-slate-900 dark:text-slate-100">
                                 {notification.message}
                             </p>
                             {!notification.lu && (
-                                <button
+                                <Button
                                     type="button"
+                                    size="sm"
+                                    className="mt-4"
                                     disabled={readingId === notification.id_notification}
                                     onClick={() => marquerLue(notification)}
-                                    className="mt-4 rounded-sm border border-indigo-600 bg-indigo-600 px-3 py-1 text-xs font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 disabled:opacity-50 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
                                 >
                                     {readingId === notification.id_notification
                                         ? 'En cours...'
                                         : 'Marquer comme lue'}
-                                </button>
+                                </Button>
                             )}
-                        </div>
+                        </Card>
                     ))}
                 </div>
             )}

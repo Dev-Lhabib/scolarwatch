@@ -1,5 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { FormEvent, useState } from 'react';
+import Button from '@/components/ui/Button';
 
 export default function Login() {
     const [identifiant, setIdentifiant] = useState('');
@@ -101,13 +102,12 @@ export default function Login() {
                             />
                         </div>
 
-                        <button
+                        <Button
                             type="submit"
                             disabled={processing}
-                            className="mt-2 rounded-sm border border-indigo-600 bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 disabled:opacity-50 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
                         >
                             {processing ? 'Connexion...' : 'Se connecter'}
-                        </button>
+                        </Button>
                     </form>
                 </div>
             </div>

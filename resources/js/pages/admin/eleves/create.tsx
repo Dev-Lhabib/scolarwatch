@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
+import Button from '@/components/ui/Button';
 import Select from '@/components/ui/Select';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
@@ -280,13 +281,12 @@ export default function CreateEleve() {
                         </div>
                     </div>
 
-                    <button
+                    <Button
                         type="submit"
                         disabled={processing}
-                        className="mt-2 rounded-sm border border-indigo-600 bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 disabled:opacity-50 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
                     >
                         {processing ? 'Création...' : 'Créer l\'élève'}
-                    </button>
+                    </Button>
                 </form>
             </div>
         </AppLayout>

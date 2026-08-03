@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 
@@ -111,12 +113,7 @@ export default function AdminMatieresIndex() {
                         enregistrée{matieres.length > 1 ? 's' : ''}.
                     </p>
                 </div>
-                <a
-                    href="/dashboard/admin/matieres/create"
-                    className="rounded-sm border border-indigo-600 bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
-                >
-                    Nouvelle matière
-                </a>
+                <Button href="/dashboard/admin/matieres/create">Nouvelle matière</Button>
             </div>
 
             {error && (
@@ -135,7 +132,7 @@ export default function AdminMatieresIndex() {
                 />
             </div>
 
-            <div className="overflow-x-auto rounded-lg bg-white border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+            <Card className="overflow-x-auto p-0">
                 <table className="w-full text-sm text-slate-900 dark:text-slate-100">
                     <thead>
                         <tr className="border-b border-slate-200 dark:border-slate-800">
@@ -200,7 +197,7 @@ export default function AdminMatieresIndex() {
                         )}
                     </tbody>
                 </table>
-            </div>
+            </Card>
         </AppLayout>
     );
 }

@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 
@@ -131,12 +134,7 @@ export default function AdminUsersIndex() {
                         enregistré{users.length > 1 ? 's' : ''}.
                     </p>
                 </div>
-                <a
-                    href="/admin/users/create"
-                    className="rounded-sm border border-indigo-600 bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
-                >
-                    Nouvel utilisateur
-                </a>
+                <Button href="/admin/users/create">Nouvel utilisateur</Button>
             </div>
 
             {error && (
@@ -155,7 +153,7 @@ export default function AdminUsersIndex() {
                 />
             </div>
 
-            <div className="overflow-x-auto rounded-lg bg-white border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+            <Card className="overflow-x-auto p-0">
                 <table className="w-full text-sm text-slate-900 dark:text-slate-100">
                     <thead>
                         <tr className="border-b border-slate-200 dark:border-slate-800">
@@ -195,13 +193,11 @@ export default function AdminUsersIndex() {
                                 <td className="px-4 py-3">
                                     {ROLE_LABELS[user.role]}
                                 </td>
-                                <td className="px-4 py-3">
-                                    <span
-                                        className={`rounded px-2 py-0.5 text-xs font-medium ${user.is_active ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'}`}
-                                    >
-                                        {user.is_active ? 'Actif' : 'Inactif'}
-                                    </span>
-                                </td>
+                <td className="px-4 py-3">
+                    <Badge tone={user.is_active ? 'success' : 'danger'}>
+                        {user.is_active ? 'Actif' : 'Inactif'}
+                    </Badge>
+                </td>
                                 <td className="px-4 py-3 text-right">
                                     <a
                                         href={`/admin/users/${user.id}`}
@@ -252,7 +248,7 @@ export default function AdminUsersIndex() {
                         )}
                     </tbody>
                 </table>
-            </div>
+            </Card>
         </AppLayout>
     );
 }

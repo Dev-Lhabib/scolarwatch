@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import StatCard from '@/components/ui/StatCard';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 import AppLayout from '@/layouts/AppLayout';
 
@@ -70,45 +71,15 @@ export default function AdminDashboard() {
             </h1>
 
             <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Classes</p>
-                    <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
-                        {classesCount}
-                    </p>
-                </div>
-                <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Matières</p>
-                    <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
-                        {matieresCount}
-                    </p>
-                </div>
-                <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Élèves</p>
-                    <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
-                        {elevesCount}
-                    </p>
-                </div>
+                <StatCard label="Classes" value={String(classesCount)} />
+                <StatCard label="Matières" value={String(matieresCount)} />
+                <StatCard label="Élèves" value={String(elevesCount)} />
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Total utilisateurs</p>
-                    <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
-                        {totalUsers}
-                    </p>
-                </div>
-                <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Enseignants</p>
-                    <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
-                        {enseignantsCount}
-                    </p>
-                </div>
-                <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Direction</p>
-                    <p className="mt-1 text-2xl font-medium text-slate-900 dark:text-slate-100">
-                        {directionCount}
-                    </p>
-                </div>
+                <StatCard label="Total utilisateurs" value={String(totalUsers)} />
+                <StatCard label="Enseignants" value={String(enseignantsCount)} />
+                <StatCard label="Direction" value={String(directionCount)} />
             </div>
         </AppLayout>
     );

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Button from '@/components/ui/Button';
 import Select from '@/components/ui/Select';
 import { apiFetch } from '@/lib/auth';
 
@@ -271,14 +272,13 @@ export default function SyntheseEntry({ eleve }: Props) {
                         Aucune synthèse générée pour le trimestre {trimestreSynthese}.
                     </p>
                     <div className="flex gap-3">
-                        <button
+                        <Button
                             type="button"
                             onClick={genererSynthese}
                             disabled={syntheseGenerating}
-                            className="rounded-sm border border-indigo-600 bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 disabled:opacity-50 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
                         >
                             {syntheseGenerating ? 'Génération...' : 'Générer la synthèse'}
-                        </button>
+                        </Button>
                         <button
                             type="button"
                             onClick={actualiser}
@@ -323,14 +323,13 @@ export default function SyntheseEntry({ eleve }: Props) {
                             <p className="text-sm text-red-600 dark:text-red-400">
                                 La génération de la synthèse a échoué. Réessayez.
                             </p>
-                            <button
+                            <Button
                                 type="button"
                                 onClick={genererSynthese}
                                 disabled={syntheseGenerating}
-                                className="rounded-sm border border-indigo-600 bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 disabled:opacity-50 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
                             >
                                 {syntheseGenerating ? 'Génération...' : 'Réessayer'}
-                            </button>
+                            </Button>
                         </div>
                     )}
 
@@ -418,28 +417,26 @@ export default function SyntheseEntry({ eleve }: Props) {
                                         ))}
                                     </Select>
                                 </div>
-                                <button
+                                <Button
                                     type="button"
                                     onClick={corrigerNiveau}
                                     disabled={correctionProcessing}
-                                    className="rounded-sm border border-indigo-600 bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 disabled:opacity-50 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
                                 >
                                     {correctionProcessing
                                         ? 'Enregistrement...'
                                         : 'Enregistrer'}
-                                </button>
+                                </Button>
                             </div>
 
-                            <button
+                            <Button
                                 type="button"
                                 onClick={envoyerSynthese}
                                 disabled={envoiProcessing || !synthese.message_parent}
-                                className="rounded-sm border border-indigo-600 bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:border-indigo-700 hover:bg-indigo-700 disabled:opacity-50 dark:border-indigo-500 dark:bg-indigo-500 dark:text-white dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
                             >
                                 {envoiProcessing
                                     ? 'Envoi...'
                                     : 'Envoyer aux parents'}
-                            </button>
+                            </Button>
                         </div>
                     )}
                 </div>
