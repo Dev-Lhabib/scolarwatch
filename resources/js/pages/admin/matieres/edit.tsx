@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
+import Button from '@/components/ui/Button';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 
@@ -93,7 +94,7 @@ export default function EditMatiere() {
     if (loading) {
         return (
             <AppLayout>
-                <div className="mx-auto max-w-lg rounded-lg bg-white p-8 text-sm text-[#706f6c] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:text-[#A1A09A] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
+                <div className="mx-auto max-w-lg rounded-lg bg-white p-8 text-sm text-slate-500 border border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800">
                     Chargement...
                 </div>
             </AppLayout>
@@ -103,19 +104,18 @@ export default function EditMatiere() {
     if (notFound) {
         return (
             <AppLayout>
-                <div className="mx-auto max-w-lg rounded-lg bg-white p-8 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <h1 className="mb-1 text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                <div className="mx-auto max-w-lg rounded-lg bg-white p-8 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                    <h1 className="mb-1 text-xl font-medium text-slate-900 dark:text-slate-100">
                         Matière introuvable
                     </h1>
-                    <p className="mb-6 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                    <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
                         Cette matière n'existe pas ou n'est plus disponible.
                     </p>
-                    <a
+                    <Button
                         href="/dashboard/admin/matieres"
-                        className="rounded-sm border border-black bg-[#1b1b18] px-4 py-2 text-sm font-medium text-white hover:border-black hover:bg-black dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
                     >
                         Retour à la liste
-                    </a>
+                    </Button>
                 </div>
             </AppLayout>
         );
@@ -123,16 +123,16 @@ export default function EditMatiere() {
 
     return (
         <AppLayout>
-            <div className="mx-auto max-w-lg rounded-lg bg-white p-8 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                <h1 className="mb-1 text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+            <div className="mx-auto max-w-lg rounded-lg bg-white p-8 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                <h1 className="mb-1 text-xl font-medium text-slate-900 dark:text-slate-100">
                     Modifier la matière
                 </h1>
-                <p className="mb-6 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
                     Mettez à jour les informations de la matière {code || ''}.
                 </p>
 
                 {error && (
-                    <div className="mb-4 rounded border border-[#f53003]/30 bg-[#f53003]/10 px-3 py-2 text-sm text-[#f53003] dark:text-[#FF4433]">
+                    <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                         {error}
                     </div>
                 )}
@@ -141,7 +141,7 @@ export default function EditMatiere() {
                     <div>
                         <label
                             htmlFor="nom"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Nom
                         </label>
@@ -152,14 +152,14 @@ export default function EditMatiere() {
                             onChange={(event) => setNom(event.target.value)}
                             required
                             maxLength={255}
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <div>
                         <label
                             htmlFor="code"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Code
                         </label>
@@ -170,23 +170,22 @@ export default function EditMatiere() {
                             onChange={(event) => setCode(event.target.value)}
                             required
                             maxLength={20}
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <div className="flex gap-3">
-                        <button
+                        <Button
                             type="submit"
                             disabled={processing}
-                            className="rounded-sm border border-black bg-[#1b1b18] px-5 py-2 text-sm font-medium text-white hover:border-black hover:bg-black disabled:opacity-50 dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
                         >
                             {processing
                                 ? 'Enregistrement...'
                                 : 'Enregistrer les modifications'}
-                        </button>
+                        </Button>
                         <a
                             href="/dashboard/admin/matieres"
-                            className="rounded-sm border border-[#e3e3e0] px-5 py-2 text-sm font-medium text-[#706f6c] hover:text-[#1b1b18] dark:border-[#3E3E3A] dark:text-[#A1A09A] dark:hover:text-[#EDEDEC]"
+                            className="rounded-sm border border-slate-300 px-5 py-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:border-slate-700 dark:text-slate-400 dark:hover:text-slate-100"
                         >
                             Annuler
                         </a>

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
+import Button from '@/components/ui/Button';
+import Select from '@/components/ui/Select';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 
@@ -117,22 +119,22 @@ export default function CreateEleve() {
 
     return (
         <AppLayout>
-            <div className="mx-auto max-w-lg rounded-lg bg-white p-8 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                <h1 className="mb-1 text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+            <div className="mx-auto max-w-lg rounded-lg bg-white p-8 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                <h1 className="mb-1 text-xl font-medium text-slate-900 dark:text-slate-100">
                     Créer un élève
                 </h1>
-                <p className="mb-6 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
                     Ajoutez un nouvel élève à l'établissement.
                 </p>
 
                 {error && (
-                    <div className="mb-4 rounded border border-[#f53003]/30 bg-[#f53003]/10 px-3 py-2 text-sm text-[#f53003] dark:text-[#FF4433]">
+                    <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                         {error}
                     </div>
                 )}
 
                 {success && (
-                    <div className="mb-4 rounded border border-green-500/30 bg-green-500/10 px-3 py-2 text-sm text-green-700 dark:text-green-400">
+                    <div className="mb-4 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-400">
                         {success}
                     </div>
                 )}
@@ -141,7 +143,7 @@ export default function CreateEleve() {
                     <div>
                         <label
                             htmlFor="nom"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Nom
                         </label>
@@ -152,14 +154,14 @@ export default function CreateEleve() {
                             onChange={(e) => setNom(e.target.value)}
                             required
                             maxLength={255}
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <div>
                         <label
                             htmlFor="prenom"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Prénom
                         </label>
@@ -170,32 +172,31 @@ export default function CreateEleve() {
                             onChange={(e) => setPrenom(e.target.value)}
                             required
                             maxLength={255}
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <div>
                         <label
                             htmlFor="genre"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Genre
                         </label>
-                        <select
+                        <Select
                             id="genre"
                             value={genre}
                             onChange={(e) => setGenre(e.target.value)}
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
                         >
                             <option value="M">Masculin</option>
                             <option value="F">Féminin</option>
-                        </select>
+                        </Select>
                     </div>
 
                     <div>
                         <label
                             htmlFor="date_naissance"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Date de naissance
                         </label>
@@ -205,14 +206,14 @@ export default function CreateEleve() {
                             value={dateNaissance}
                             onChange={(e) => setDateNaissance(e.target.value)}
                             required
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <div>
                         <label
                             htmlFor="code_massar"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Code Massar
                         </label>
@@ -222,23 +223,22 @@ export default function CreateEleve() {
                             value={codeMassar}
                             onChange={(e) => setCodeMassar(e.target.value)}
                             maxLength={20}
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <div>
                         <label
                             htmlFor="id_classe"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Classe
                         </label>
-                        <select
+                        <Select
                             id="id_classe"
                             value={idClasse}
                             onChange={(e) => setIdClasse(e.target.value)}
                             required
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
                         >
                             <option value="">— Sélectionner une classe —</option>
                             {classes.map((classe) => (
@@ -249,23 +249,23 @@ export default function CreateEleve() {
                                     {classe.nom}
                                 </option>
                             ))}
-                        </select>
+                        </Select>
                     </div>
 
                     <div>
-                        <span className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                        <span className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100">
                             Parents / tuteurs
                         </span>
-                        <div className="max-h-48 overflow-y-auto rounded border border-[#e3e3e0] p-3 dark:border-[#3E3E3A]">
+                        <div className="max-h-48 overflow-y-auto rounded border border-slate-200 p-3 dark:border-slate-800">
                             {parents.length === 0 && (
-                                <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                <p className="text-sm text-slate-500 dark:text-slate-400">
                                     Aucun parent disponible.
                                 </p>
                             )}
                             {parents.map((parent) => (
                                 <label
                                     key={parent.id}
-                                    className="flex cursor-pointer items-center gap-2 py-1 text-sm text-[#1b1b18] dark:text-[#EDEDEC]"
+                                    className="flex cursor-pointer items-center gap-2 py-1 text-sm text-slate-900 dark:text-slate-100"
                                 >
                                     <input
                                         type="checkbox"
@@ -281,13 +281,12 @@ export default function CreateEleve() {
                         </div>
                     </div>
 
-                    <button
+                    <Button
                         type="submit"
                         disabled={processing}
-                        className="mt-2 rounded-sm border border-black bg-[#1b1b18] px-5 py-2 text-sm font-medium text-white hover:border-black hover:bg-black disabled:opacity-50 dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
                     >
                         {processing ? 'Création...' : 'Créer l\'élève'}
-                    </button>
+                    </Button>
                 </form>
             </div>
         </AppLayout>

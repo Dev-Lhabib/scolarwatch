@@ -90,7 +90,7 @@ export default function EnseignantSaisie() {
 
     return (
         <AppLayout>
-            <h1 className="mb-6 text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+            <h1 className="mb-6 text-xl font-medium text-slate-900 dark:text-slate-100">
                 Saisie
             </h1>
 
@@ -99,10 +99,10 @@ export default function EnseignantSaisie() {
                     {[0, 1, 2, 3].map((item) => (
                         <div
                             key={item}
-                            className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"
+                            className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800"
                         >
-                            <div className="h-4 w-1/3 animate-pulse rounded bg-[#e3e3e0] dark:bg-[#3E3E3A]" />
-                            <div className="mt-4 h-8 animate-pulse rounded bg-[#e3e3e0] dark:bg-[#3E3E3A]" />
+                            <div className="h-4 w-1/3 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+                            <div className="mt-4 h-8 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
                         </div>
                     ))}
                 </div>

@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 
@@ -123,24 +126,19 @@ export default function AdminUsersIndex() {
         <AppLayout>
             <div className="mb-6 flex items-center justify-between">
                 <div>
-                    <h1 className="text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                    <h1 className="text-xl font-medium text-slate-900 dark:text-slate-100">
                         Gestion des utilisateurs
                     </h1>
-                    <p className="mt-1 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                         {users.length} utilisateur{users.length > 1 ? 's' : ''}{' '}
                         enregistré{users.length > 1 ? 's' : ''}.
                     </p>
                 </div>
-                <a
-                    href="/admin/users/create"
-                    className="rounded-sm border border-black bg-[#1b1b18] px-4 py-2 text-sm font-medium text-white hover:border-black hover:bg-black dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
-                >
-                    Nouvel utilisateur
-                </a>
+                <Button href="/admin/users/create">Nouvel utilisateur</Button>
             </div>
 
             {error && (
-                <div className="mb-4 rounded border border-[#f53003]/30 bg-[#f53003]/10 px-3 py-2 text-sm text-[#f53003] dark:text-[#FF4433]">
+                <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                     {error}
                 </div>
             )}
@@ -151,33 +149,33 @@ export default function AdminUsersIndex() {
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                     placeholder="Rechercher un utilisateur..."
-                    className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                    className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
             </div>
 
-            <div className="overflow-x-auto rounded-lg bg-white shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                <table className="w-full text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+            <Card className="overflow-x-auto p-0">
+                <table className="w-full text-sm text-slate-900 dark:text-slate-100">
                     <thead>
-                        <tr className="border-b border-[#e3e3e0] dark:border-[#3E3E3A]">
-                            <th className="px-4 py-3 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                        <tr className="border-b border-slate-200 dark:border-slate-800">
+                            <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">
                                 Nom
                             </th>
-                            <th className="px-4 py-3 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                            <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">
                                 Prénom
                             </th>
-                            <th className="px-4 py-3 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                            <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">
                                 Nom d'utilisateur
                             </th>
-                            <th className="px-4 py-3 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                            <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">
                                 Email
                             </th>
-                            <th className="px-4 py-3 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                            <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">
                                 Rôle
                             </th>
-                            <th className="px-4 py-3 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                            <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">
                                 Actif
                             </th>
-                            <th className="px-4 py-3 text-right font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                            <th className="px-4 py-3 text-right font-medium text-slate-500 dark:text-slate-400">
                                 Actions
                             </th>
                         </tr>
@@ -186,7 +184,7 @@ export default function AdminUsersIndex() {
                         {filteredUsers.map((user) => (
                             <tr
                                 key={user.id}
-                                className="border-b border-[#e3e3e0] dark:border-[#3E3E3A]"
+                                className="border-b border-slate-200 dark:border-slate-800"
                             >
                                 <td className="px-4 py-3">{user.nom}</td>
                                 <td className="px-4 py-3">{user.prenom}</td>
@@ -195,17 +193,15 @@ export default function AdminUsersIndex() {
                                 <td className="px-4 py-3">
                                     {ROLE_LABELS[user.role]}
                                 </td>
-                                <td className="px-4 py-3">
-                                    <span
-                                        className={`rounded px-2 py-0.5 text-xs font-medium ${user.is_active ? 'bg-green-500/10 text-green-700 dark:text-green-400' : 'bg-[#f53003]/10 text-[#f53003] dark:text-[#FF4433]'}`}
-                                    >
-                                        {user.is_active ? 'Actif' : 'Inactif'}
-                                    </span>
-                                </td>
+                <td className="px-4 py-3">
+                    <Badge tone={user.is_active ? 'success' : 'danger'}>
+                        {user.is_active ? 'Actif' : 'Inactif'}
+                    </Badge>
+                </td>
                                 <td className="px-4 py-3 text-right">
                                     <a
                                         href={`/admin/users/${user.id}`}
-                                        className="mr-4 text-sm font-medium text-[#f53003] hover:underline dark:text-[#FF4433]"
+                                        className="mr-4 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
                                     >
                                         Modifier
                                     </a>
@@ -221,7 +217,7 @@ export default function AdminUsersIndex() {
                                                 ? "Le compte administrateur principal ne peut pas être supprimé."
                                                 : undefined
                                         }
-                                        className="text-sm font-medium text-[#706f6c] hover:text-[#f53003] disabled:cursor-not-allowed disabled:opacity-50 dark:text-[#A1A09A] dark:hover:text-[#FF4433]"
+                                        className="text-sm font-medium text-slate-500 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:text-red-400"
                                     >
                                         {deletingId === user.id
                                             ? 'Suppression...'
@@ -234,7 +230,7 @@ export default function AdminUsersIndex() {
                             <tr>
                                 <td
                                     colSpan={7}
-                                    className="px-4 py-6 text-center text-[#706f6c] dark:text-[#A1A09A]"
+                                    className="px-4 py-6 text-center text-slate-500 dark:text-slate-400"
                                 >
                                     Aucun utilisateur trouvé.
                                 </td>
@@ -244,7 +240,7 @@ export default function AdminUsersIndex() {
                             <tr>
                                 <td
                                     colSpan={7}
-                                    className="px-4 py-6 text-center text-[#706f6c] dark:text-[#A1A09A]"
+                                    className="px-4 py-6 text-center text-slate-500 dark:text-slate-400"
                                 >
                                     Chargement...
                                 </td>
@@ -252,7 +248,7 @@ export default function AdminUsersIndex() {
                         )}
                     </tbody>
                 </table>
-            </div>
+            </Card>
         </AppLayout>
     );
 }

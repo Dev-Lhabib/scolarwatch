@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import StatCard from '@/components/ui/StatCard';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 import AppLayout from '@/layouts/AppLayout';
 
@@ -58,57 +59,27 @@ export default function AdminDashboard() {
     if (loading) {
         return (
             <AppLayout>
-                <div className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Chargement...</div>
+                <div className="text-sm text-slate-500 dark:text-slate-400">Chargement...</div>
             </AppLayout>
         );
     }
 
     return (
         <AppLayout>
-            <h1 className="mb-6 text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+            <h1 className="mb-6 text-xl font-medium text-slate-900 dark:text-slate-100">
                 Tableau de bord administrateur
             </h1>
 
             <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Classes</p>
-                    <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
-                        {classesCount}
-                    </p>
-                </div>
-                <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Matières</p>
-                    <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
-                        {matieresCount}
-                    </p>
-                </div>
-                <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Élèves</p>
-                    <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
-                        {elevesCount}
-                    </p>
-                </div>
+                <StatCard label="Classes" value={String(classesCount)} />
+                <StatCard label="Matières" value={String(matieresCount)} />
+                <StatCard label="Élèves" value={String(elevesCount)} />
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Total utilisateurs</p>
-                    <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
-                        {totalUsers}
-                    </p>
-                </div>
-                <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Enseignants</p>
-                    <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
-                        {enseignantsCount}
-                    </p>
-                </div>
-                <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Direction</p>
-                    <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
-                        {directionCount}
-                    </p>
-                </div>
+                <StatCard label="Total utilisateurs" value={String(totalUsers)} />
+                <StatCard label="Enseignants" value={String(enseignantsCount)} />
+                <StatCard label="Direction" value={String(directionCount)} />
             </div>
         </AppLayout>
     );

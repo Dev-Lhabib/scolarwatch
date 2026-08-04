@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import Card from '@/components/ui/Card';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 import AppLayout from '@/layouts/AppLayout';
 
@@ -48,32 +49,32 @@ export default function DirectionStatistiques() {
 
     return (
         <AppLayout>
-            <h1 className="mb-6 text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+            <h1 className="mb-6 text-xl font-medium text-slate-900 dark:text-slate-100">
                 Statistiques
             </h1>
 
-            <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                <h2 className="mb-4 text-base font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+            <Card>
+                <h2 className="mb-4 text-base font-medium text-slate-900 dark:text-slate-100">
                     Élèves par classe
                 </h2>
                 <ResponsiveContainer width="100%" height={400}>
                     <BarChart data={chartData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e3e3e0" />
-                        <XAxis dataKey="name" stroke="#706f6c" fontSize={13} />
-                        <YAxis stroke="#706f6c" fontSize={13} allowDecimals={false} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                        <XAxis dataKey="name" stroke="#64748b" fontSize={13} />
+                        <YAxis stroke="#64748b" fontSize={13} allowDecimals={false} />
                         <Tooltip
                             contentStyle={{
-                                backgroundColor: '#161615',
-                                border: '1px solid #3E3E3A',
+                                backgroundColor: '#0f172a',
+                                border: '1px solid #1e293b',
                                 borderRadius: 8,
-                                color: '#EDEDEC',
+                                color: '#f1f5f9',
                                 fontSize: 13,
                             }}
                         />
-                        <Bar dataKey="élèves" fill="#1b1b18" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="élèves" fill="#4f46e5" radius={[4, 4, 0, 0]} />
                     </BarChart>
                 </ResponsiveContainer>
-            </div>
+            </Card>
         </AppLayout>
     );
 }

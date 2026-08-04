@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
+import Button from '@/components/ui/Button';
+import Select from '@/components/ui/Select';
 import { apiFetch } from '@/lib/auth';
 
 type Eleve = {
@@ -210,19 +212,19 @@ export default function AbsenceEntry({
     }
 
     return (
-        <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-            <h2 className="mb-4 text-base font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+        <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+            <h2 className="mb-4 text-base font-medium text-slate-900 dark:text-slate-100">
                 Saisie des absences
             </h2>
 
             {error && (
-                <div className="mb-4 rounded border border-[#f53003]/30 bg-[#f53003]/10 px-3 py-2 text-sm text-[#f53003] dark:text-[#FF4433]">
+                <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                     {error}
                 </div>
             )}
 
             {success && (
-                <div className="mb-4 rounded border border-green-500/30 bg-green-500/10 px-3 py-2 text-sm text-green-700 dark:text-green-400">
+                <div className="mb-4 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-400">
                     {success}
                 </div>
             )}
@@ -235,16 +237,15 @@ export default function AbsenceEntry({
                     <div>
                         <label
                             htmlFor="absence-eleve"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Élève
                         </label>
-                        <select
+                        <Select
                             id="absence-eleve"
                             value={idEleve}
                             onChange={(e) => setIdEleve(e.target.value)}
                             required
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
                         >
                             <option value="">
                                 Sélectionnez un élève
@@ -257,12 +258,12 @@ export default function AbsenceEntry({
                                     {eleve.prenom} {eleve.nom}
                                 </option>
                             ))}
-                        </select>
+                        </Select>
                     </div>
                     <div>
                         <label
                             htmlFor="absence-date"
-                            className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                         >
                             Date
                         </label>
@@ -272,12 +273,12 @@ export default function AbsenceEntry({
                             value={dateAbsence}
                             onChange={(e) => setDateAbsence(e.target.value)}
                             required
-                            className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
                 </div>
 
-                <label className="flex cursor-pointer items-center gap-2 text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+                <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-900 dark:text-slate-100">
                     <input
                         type="checkbox"
                         checked={justifiee}
@@ -290,7 +291,7 @@ export default function AbsenceEntry({
                 <div>
                     <label
                         htmlFor="absence-motif"
-                        className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                        className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                     >
                         Motif
                     </label>
@@ -300,22 +301,21 @@ export default function AbsenceEntry({
                         value={motif}
                         onChange={(e) => setMotif(e.target.value)}
                         maxLength={255}
-                        className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                        className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     />
                 </div>
 
                 <div className="flex gap-3">
-                    <button
+                    <Button
                         type="submit"
                         disabled={processing}
-                        className="rounded-sm border border-black bg-[#1b1b18] px-5 py-2 text-sm font-medium text-white hover:border-black hover:bg-black disabled:opacity-50 dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
                     >
                         {processing
                             ? 'Enregistrement...'
                             : editingId != null
                               ? 'Enregistrer l\'absence'
                               : 'Ajouter l\'absence'}
-                    </button>
+                    </Button>
                     {editingId != null && (
                         <button
                             type="button"
@@ -323,7 +323,7 @@ export default function AbsenceEntry({
                                 setEditingId(null);
                                 resetForm();
                             }}
-                            className="rounded-sm border border-[#e3e3e0] px-5 py-2 text-sm font-medium text-[#706f6c] hover:text-[#1b1b18] dark:border-[#3E3E3A] dark:text-[#A1A09A] dark:hover:text-[#EDEDEC]"
+                            className="rounded-sm border border-slate-300 px-5 py-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:border-slate-700 dark:text-slate-400 dark:hover:text-slate-100"
                         >
                             Annuler
                         </button>
@@ -332,31 +332,31 @@ export default function AbsenceEntry({
             </form>
 
             {loading ? (
-                <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                     Chargement...
                 </p>
             ) : absences.length === 0 ? (
-                <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                     Aucune absence enregistrée.
                 </p>
             ) : (
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+                    <table className="w-full text-sm text-slate-900 dark:text-slate-100">
                         <thead>
-                            <tr className="border-b border-[#e3e3e0] dark:border-[#3E3E3A]">
-                                <th className="px-3 py-2 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                            <tr className="border-b border-slate-200 dark:border-slate-800">
+                                <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">
                                     Élève
                                 </th>
-                                <th className="px-3 py-2 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                                <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">
                                     Date
                                 </th>
-                                <th className="px-3 py-2 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                                <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">
                                     Justifiée
                                 </th>
-                                <th className="px-3 py-2 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                                <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">
                                     Motif
                                 </th>
-                                <th className="px-3 py-2 text-right font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                                <th className="px-3 py-2 text-right font-medium text-slate-500 dark:text-slate-400">
                                     Actions
                                 </th>
                             </tr>
@@ -365,7 +365,7 @@ export default function AbsenceEntry({
                             {absences.map((absence) => (
                                 <tr
                                     key={absence.id_absence}
-                                    className="border-b border-[#e3e3e0] dark:border-[#3E3E3A]"
+                                    className="border-b border-slate-200 dark:border-slate-800"
                                 >
                                     <td className="px-3 py-2">
                                         {eleveName(absence.id_eleve)}
@@ -378,11 +378,11 @@ export default function AbsenceEntry({
                                     </td>
                                     <td className="px-3 py-2">
                                         {absence.justifiee ? (
-                                            <span className="rounded bg-green-500/10 px-1.5 py-0.5 text-xs text-green-700 dark:text-green-400">
+                                            <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-xs text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
                                                 Justifiée
                                             </span>
                                         ) : (
-                                            <span className="rounded bg-[#f53003]/10 px-1.5 py-0.5 text-xs text-[#f53003] dark:text-[#FF4433]">
+                                            <span className="rounded bg-red-100 px-1.5 py-0.5 text-xs text-red-800 dark:bg-red-900/40 dark:text-red-300">
                                                 Non justifiée
                                             </span>
                                         )}
@@ -396,7 +396,7 @@ export default function AbsenceEntry({
                                             onClick={() =>
                                                 startEdit(absence)
                                             }
-                                            className="mr-4 text-sm font-medium text-[#f53003] hover:underline dark:text-[#FF4433]"
+                                            className="mr-4 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
                                         >
                                             Modifier
                                         </button>
@@ -409,7 +409,7 @@ export default function AbsenceEntry({
                                                 deletingId ===
                                                 absence.id_absence
                                             }
-                                            className="text-sm font-medium text-[#706f6c] hover:text-[#f53003] disabled:cursor-not-allowed disabled:opacity-50 dark:text-[#A1A09A] dark:hover:text-[#FF4433]"
+                                            className="text-sm font-medium text-slate-500 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:text-red-400"
                                         >
                                             {deletingId === absence.id_absence
                                                 ? 'Suppression...'

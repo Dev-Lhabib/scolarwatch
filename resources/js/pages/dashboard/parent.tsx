@@ -1,4 +1,9 @@
 import { useEffect, useState } from 'react';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import Skeleton from '@/components/ui/Skeleton';
+import StatCard from '@/components/ui/StatCard';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 
@@ -45,8 +50,6 @@ function formatDate(value: string | null | undefined): string {
         year: 'numeric',
     });
 }
-
-const cardClass = 'rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]';
 
 export default function ParentDashboard() {
     const user = getAuthUser();
@@ -132,88 +135,71 @@ export default function ParentDashboard() {
 
     return (
         <AppLayout>
-            <h1 className="mb-6 text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+            <h1 className="mb-6 text-xl font-medium text-slate-900 dark:text-slate-100">
                 Mes Communications
             </h1>
 
             {error && (
-                <div className="mb-4 rounded border border-[#f53003]/30 bg-[#f53003]/10 px-3 py-2 text-sm text-[#f53003] dark:text-[#FF4433]">
+                <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                     {error}
                 </div>
             )}
 
             {loading ? (
-                <div className={`${cardClass}`}>
+                <Card>
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
                         {[0, 1, 2].map((i) => (
                             <div key={i}>
-                                <div className="h-3 w-1/3 animate-pulse rounded bg-[#e3e3e0] dark:bg-[#3E3E3A]" />
-                                <div className="mt-2 h-5 w-2/3 animate-pulse rounded bg-[#e3e3e0] dark:bg-[#3E3E3A]" />
+                                <Skeleton className="h-3 w-1/3" />
+                                <Skeleton className="mt-2 h-5 w-2/3" />
                             </div>
                         ))}
                     </div>
-                </div>
+                </Card>
             ) : (
                 <>
-                    <div className={`${cardClass} mb-8`}>
+                    <Card className="mb-8">
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
                             <div>
-                                <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Parent</p>
-                                <p className="mt-1 text-lg font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                                <p className="text-sm text-slate-500 dark:text-slate-400">Parent</p>
+                                <p className="mt-1 text-lg font-medium text-slate-900 dark:text-slate-100">
                                     {user?.prenom} {user?.nom}
                                 </p>
                             </div>
                             <div>
-                                <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Enfant</p>
-                                <p className="mt-1 text-lg font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                                <p className="text-sm text-slate-500 dark:text-slate-400">Enfant</p>
+                                <p className="mt-1 text-lg font-medium text-slate-900 dark:text-slate-100">
                                     {childLabel ?? '—'}
                                 </p>
                                 {classLabel && (
-                                    <p className="mt-1 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                                         {classLabel}
                                     </p>
                                 )}
                             </div>
                             <div>
-                                <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                <p className="text-sm text-slate-500 dark:text-slate-400">
                                     Dernière communication
                                 </p>
-                                <p className="mt-1 text-lg font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                                <p className="mt-1 text-lg font-medium text-slate-900 dark:text-slate-100">
                                     {latestDate ? formatDate(latestDate) : '—'}
                                 </p>
                             </div>
                         </div>
-                    </div>
+                    </Card>
 
                     <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                        <div className={cardClass}>
-                            <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                                Total communications
-                            </p>
-                            <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
-                                {notifications.length}
-                            </p>
-                        </div>
-                        <div className={cardClass}>
-                            <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Non lues</p>
-                            <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
-                                {unreadCount}
-                            </p>
-                        </div>
-                        <div className={cardClass}>
-                            <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Classe</p>
-                            <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
-                                {classLabel ?? '—'}
-                            </p>
-                        </div>
+                        <StatCard label="Total communications" value={String(notifications.length)} />
+                        <StatCard label="Non lues" value={String(unreadCount)} />
+                        <StatCard label="Classe" value={classLabel ?? '—'} />
                     </div>
                 </>
             )}
 
             {!loading && notifications.length === 0 && (
-                <div className={`${cardClass} flex flex-col items-center justify-center py-16 text-center`}>
+                <Card className="flex flex-col items-center justify-center py-16 text-center">
                     <svg
-                        className="mb-4 h-10 w-10 text-[#706f6c] dark:text-[#A1A09A]"
+                        className="mb-4 h-10 w-10 text-slate-500 dark:text-slate-400"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -225,60 +211,59 @@ export default function ParentDashboard() {
                             d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
                         />
                     </svg>
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
                         Aucune communication reçue pour le moment.
                     </p>
-                </div>
+                </Card>
             )}
 
             {!loading && notifications.length > 0 && (
                 <div className="space-y-4">
                     {notifications.map((notification) => (
-                        <div key={notification.id_notification} className={cardClass}>
+                        <Card key={notification.id_notification}>
                             <div className="flex flex-wrap items-start justify-between gap-2">
                                 <div>
-                                    <p className="text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
                                         {studentName(notification)}
                                     </p>
-                                    <p className="mt-0.5 text-xs text-[#706f6c] dark:text-[#A1A09A]">
+                                    <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                                         {formatDate(notification.envoye_le ?? notification.created_at)}
                                     </p>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <span className={`rounded px-2 py-0.5 text-xs ${
-                                        notification.lu
-                                            ? 'bg-[#e3e3e0]/60 text-[#706f6c] dark:bg-[#3E3E3A]/60 dark:text-[#A1A09A]'
-                                            : 'bg-[#f53003]/10 text-[#f53003] dark:bg-[#FF4433]/10 dark:text-[#FF4433]'
-                                    }`}>
+                                    <Badge tone={notification.lu ? 'default' : 'info'}>
                                         {notification.lu ? 'Lue' : 'Non lue'}
-                                    </span>
-                                    <span className={`rounded px-2 py-0.5 text-xs ${
-                                        notification.statut_envoi === 'envoye'
-                                            ? 'bg-green-500/10 text-green-700 dark:text-green-400'
-                                            : notification.statut_envoi === 'echec'
-                                                ? 'bg-[#f53003]/10 text-[#f53003] dark:text-[#FF4433]'
-                                                : 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400'
-                                    }`}>
+                                    </Badge>
+                                    <Badge
+                                        tone={
+                                            notification.statut_envoi === 'envoye'
+                                                ? 'success'
+                                                : notification.statut_envoi === 'echec'
+                                                    ? 'danger'
+                                                    : 'warning'
+                                        }
+                                    >
                                         {STATUT_LABELS[notification.statut_envoi]}
-                                    </span>
+                                    </Badge>
                                 </div>
                             </div>
-                            <p className="mt-3 text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+                            <p className="mt-3 text-sm text-slate-900 dark:text-slate-100">
                                 {notification.message}
                             </p>
                             {!notification.lu && (
-                                <button
+                                <Button
                                     type="button"
+                                    size="sm"
+                                    className="mt-4"
                                     disabled={readingId === notification.id_notification}
                                     onClick={() => marquerLue(notification)}
-                                    className="mt-4 rounded-sm border border-black bg-[#1b1b18] px-3 py-1 text-xs font-medium text-white hover:border-black hover:bg-black disabled:opacity-50 dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
                                 >
                                     {readingId === notification.id_notification
                                         ? 'En cours...'
                                         : 'Marquer comme lue'}
-                                </button>
+                                </Button>
                             )}
-                        </div>
+                        </Card>
                     ))}
                 </div>
             )}

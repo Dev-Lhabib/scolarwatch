@@ -1,5 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { FormEvent, useState } from 'react';
+import Button from '@/components/ui/Button';
 
 export default function Login() {
     const [identifiant, setIdentifiant] = useState('');
@@ -50,17 +51,17 @@ export default function Login() {
     return (
         <>
             <Head title="Connexion" />
-            <div className="flex min-h-screen items-center justify-center bg-[#FDFDFC] p-6 dark:bg-[#0a0a0a]">
-                <div className="w-full max-w-sm rounded-lg bg-white p-8 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <h1 className="mb-1 text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+            <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6 dark:bg-slate-950">
+                <div className="w-full max-w-sm rounded-lg bg-white p-8 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                    <h1 className="mb-1 text-xl font-medium text-slate-900 dark:text-slate-100">
                         ScolarWatch
                     </h1>
-                    <p className="mb-6 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                    <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
                         Connectez-vous avec votre email ou nom d'utilisateur.
                     </p>
 
                     {error && (
-                        <div className="mb-4 rounded border border-[#f53003]/30 bg-[#f53003]/10 px-3 py-2 text-sm text-[#f53003] dark:text-[#FF4433]">
+                        <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                             {error}
                         </div>
                     )}
@@ -69,7 +70,7 @@ export default function Login() {
                         <div>
                             <label
                                 htmlFor="identifiant"
-                                className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                                className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                             >
                                 Email ou nom d'utilisateur
                             </label>
@@ -80,14 +81,14 @@ export default function Login() {
                                 onChange={(e) => setIdentifiant(e.target.value)}
                                 required
                                 autoFocus
-                                className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                                className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             />
                         </div>
 
                         <div>
                             <label
                                 htmlFor="password"
-                                className="mb-1 block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                                className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
                             >
                                 Mot de passe
                             </label>
@@ -97,17 +98,16 @@ export default function Login() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                className="w-full rounded border border-[#e3e3e0] bg-transparent px-3 py-2 text-sm text-[#1b1b18] focus:border-[#f53003] focus:outline-none dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
+                                className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             />
                         </div>
 
-                        <button
+                        <Button
                             type="submit"
                             disabled={processing}
-                            className="mt-2 rounded-sm border border-black bg-[#1b1b18] px-5 py-2 text-sm font-medium text-white hover:border-black hover:bg-black disabled:opacity-50 dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
                         >
                             {processing ? 'Connexion...' : 'Se connecter'}
-                        </button>
+                        </Button>
                     </form>
                 </div>
             </div>

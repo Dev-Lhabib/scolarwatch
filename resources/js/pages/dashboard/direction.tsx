@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
+import Card from '@/components/ui/Card';
+import StatCard from '@/components/ui/StatCard';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 import AppLayout from '@/layouts/AppLayout';
 
@@ -120,55 +122,35 @@ export default function DirectionDashboard() {
 
     return (
         <AppLayout>
-            <h1 className="mb-6 text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+            <h1 className="mb-6 text-xl font-medium text-slate-900 dark:text-slate-100">
                 Tableau de bord direction
             </h1>
 
             <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-4">
-                <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Total classes</p>
-                    <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
-                        {classes.length}
-                    </p>
-                </div>
-                <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Total élèves</p>
-                    <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
-                        {eleves.length}
-                    </p>
-                </div>
-                <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Absences</p>
-                    <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
-                        {totalAbsences}
-                    </p>
-                </div>
-                <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Retards</p>
-                    <p className="mt-1 text-2xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
-                        {totalRetards}
-                    </p>
-                </div>
+                <StatCard label="Total classes" value={String(classes.length)} />
+                <StatCard label="Total élèves" value={String(eleves.length)} />
+                <StatCard label="Absences" value={String(totalAbsences)} />
+                <StatCard label="Retards" value={String(totalRetards)} />
             </div>
 
             <div className="mb-8 space-y-8">
-                <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <h2 className="mb-4 text-base font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                <Card>
+                    <h2 className="mb-4 text-base font-medium text-slate-900 dark:text-slate-100">
                         Élèves les plus concernés
                     </h2>
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+                        <table className="w-full text-sm text-slate-900 dark:text-slate-100">
                             <thead>
-                                <tr className="border-b border-[#e3e3e0] dark:border-[#3E3E3A]">
-                                    <th className="px-3 py-2 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">Élève</th>
-                                    <th className="px-3 py-2 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">Classe</th>
-                                    <th className="px-3 py-2 text-center font-medium text-[#706f6c] dark:text-[#A1A09A]">Absences</th>
-                                    <th className="px-3 py-2 text-center font-medium text-[#706f6c] dark:text-[#A1A09A]">Retards</th>
+                                <tr className="border-b border-slate-200 dark:border-slate-800">
+                                    <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">Élève</th>
+                                    <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">Classe</th>
+                                    <th className="px-3 py-2 text-center font-medium text-slate-500 dark:text-slate-400">Absences</th>
+                                    <th className="px-3 py-2 text-center font-medium text-slate-500 dark:text-slate-400">Retards</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {eleveStats.map((s) => (
-                                    <tr key={s.id_eleve} className="border-b border-[#e3e3e0] dark:border-[#3E3E3A]">
+                                    <tr key={s.id_eleve} className="border-b border-slate-200 dark:border-slate-800">
                                         <td className="px-3 py-2">{s.prenom} {s.nom}</td>
                                         <td className="px-3 py-2">{s.classeNom}</td>
                                         <td className="px-3 py-2 text-center">{s.absences}</td>
@@ -177,7 +159,7 @@ export default function DirectionDashboard() {
                                 ))}
                                 {eleveStats.length === 0 && (
                                     <tr>
-                                        <td colSpan={4} className="px-3 py-4 text-center text-[#706f6c] dark:text-[#A1A09A]">
+                                        <td colSpan={4} className="px-3 py-4 text-center text-slate-500 dark:text-slate-400">
                                             Aucune donnée.
                                         </td>
                                     </tr>
@@ -185,24 +167,24 @@ export default function DirectionDashboard() {
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </Card>
 
-                <div className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                    <h2 className="mb-4 text-base font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                <Card>
+                    <h2 className="mb-4 text-base font-medium text-slate-900 dark:text-slate-100">
                         Classes les plus touchées
                     </h2>
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+                        <table className="w-full text-sm text-slate-900 dark:text-slate-100">
                             <thead>
-                                <tr className="border-b border-[#e3e3e0] dark:border-[#3E3E3A]">
-                                    <th className="px-3 py-2 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">Classe</th>
-                                    <th className="px-3 py-2 text-center font-medium text-[#706f6c] dark:text-[#A1A09A]">Absences</th>
-                                    <th className="px-3 py-2 text-center font-medium text-[#706f6c] dark:text-[#A1A09A]">Retards</th>
+                                <tr className="border-b border-slate-200 dark:border-slate-800">
+                                    <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">Classe</th>
+                                    <th className="px-3 py-2 text-center font-medium text-slate-500 dark:text-slate-400">Absences</th>
+                                    <th className="px-3 py-2 text-center font-medium text-slate-500 dark:text-slate-400">Retards</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {classeStats.map((s) => (
-                                    <tr key={s.nom} className="border-b border-[#e3e3e0] dark:border-[#3E3E3A]">
+                                    <tr key={s.nom} className="border-b border-slate-200 dark:border-slate-800">
                                         <td className="px-3 py-2">{s.nom}</td>
                                         <td className="px-3 py-2 text-center">{s.absences}</td>
                                         <td className="px-3 py-2 text-center">{s.retards}</td>
@@ -210,7 +192,7 @@ export default function DirectionDashboard() {
                                 ))}
                                 {classeStats.length === 0 && (
                                     <tr>
-                                        <td colSpan={3} className="px-3 py-4 text-center text-[#706f6c] dark:text-[#A1A09A]">
+                                        <td colSpan={3} className="px-3 py-4 text-center text-slate-500 dark:text-slate-400">
                                             Aucune donnée.
                                         </td>
                                     </tr>
@@ -218,7 +200,7 @@ export default function DirectionDashboard() {
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </Card>
             </div>
         </AppLayout>
     );

@@ -153,7 +153,7 @@ export default function EnseignantClasses() {
 
     return (
         <AppLayout>
-            <h1 className="mb-6 text-xl font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+            <h1 className="mb-6 text-xl font-medium text-slate-900 dark:text-slate-100">
                 Mes Classes
             </h1>
 
@@ -162,10 +162,10 @@ export default function EnseignantClasses() {
                     {[0, 1, 2].map((item) => (
                         <div
                             key={item}
-                            className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"
+                            className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800"
                         >
-                            <div className="h-4 w-1/3 animate-pulse rounded bg-[#e3e3e0] dark:bg-[#3E3E3A]" />
-                            <div className="mt-4 h-8 animate-pulse rounded bg-[#e3e3e0] dark:bg-[#3E3E3A]" />
+                            <div className="h-4 w-1/3 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+                            <div className="mt-4 h-8 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
                         </div>
                     ))}
                 </div>
@@ -174,33 +174,33 @@ export default function EnseignantClasses() {
                     {classesWithEleves.map((classe) => (
                         <div
                             key={classe.id_classe}
-                            className="rounded-lg bg-white p-6 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"
+                            className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800"
                         >
-                            <h2 className="mb-4 text-base font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                            <h2 className="mb-4 text-base font-medium text-slate-900 dark:text-slate-100">
                                 {classe.nom} — {classe.niveau}
                             </h2>
 
                             {classe.eleves.length === 0 ? (
-                                <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                <p className="text-sm text-slate-500 dark:text-slate-400">
                                     Aucun élève dans cette classe.
                                 </p>
                             ) : (
                                 <div className="overflow-x-auto">
-                                    <table className="w-full text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+                                    <table className="w-full text-sm text-slate-900 dark:text-slate-100">
                                         <thead>
-                                            <tr className="border-b border-[#e3e3e0] dark:border-[#3E3E3A]">
-                                                <th className="px-3 py-2 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">Nom</th>
-                                                <th className="px-3 py-2 text-left font-medium text-[#706f6c] dark:text-[#A1A09A]">Prénom</th>
-                                                <th className="px-3 py-2 text-center font-medium text-[#706f6c] dark:text-[#A1A09A]">Absences</th>
-                                                <th className="px-3 py-2 text-center font-medium text-[#706f6c] dark:text-[#A1A09A]">Retards</th>
-                                                <th className="px-3 py-2 text-right font-medium text-[#706f6c] dark:text-[#A1A09A]">Actions</th>
+                                            <tr className="border-b border-slate-200 dark:border-slate-800">
+                                                <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">Nom</th>
+                                                <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">Prénom</th>
+                                                <th className="px-3 py-2 text-center font-medium text-slate-500 dark:text-slate-400">Absences</th>
+                                                <th className="px-3 py-2 text-center font-medium text-slate-500 dark:text-slate-400">Retards</th>
+                                                <th className="px-3 py-2 text-right font-medium text-slate-500 dark:text-slate-400">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {classe.eleves.map((eleve) => (
                                                 <tr
                                                     key={eleve.id_eleve}
-                                                    className="border-b border-[#e3e3e0] dark:border-[#3E3E3A]"
+                                                    className="border-b border-slate-200 dark:border-slate-800"
                                                 >
                                                     <td className="px-3 py-2">{eleve.nom}</td>
                                                     <td className="px-3 py-2">{eleve.prenom}</td>
@@ -210,7 +210,7 @@ export default function EnseignantClasses() {
                                                         <button
                                                             type="button"
                                                             onClick={() => setSelectedEleve(eleve)}
-                                                            className="rounded-sm border border-[#706f6c] px-3 py-1 text-xs font-medium text-[#706f6c] hover:border-[#1b1b18] hover:text-[#1b1b18] dark:border-[#A1A09A] dark:text-[#A1A09A] dark:hover:border-[#EDEDEC] dark:hover:text-[#EDEDEC]"
+                                                            className="rounded-sm border border-slate-400 px-3 py-1 text-xs font-medium text-slate-500 hover:border-slate-900 hover:text-slate-900 dark:border-slate-600 dark:text-slate-400 dark:hover:border-slate-100 dark:hover:text-slate-100"
                                                         >
                                                             Voir
                                                         </button>
@@ -225,7 +225,7 @@ export default function EnseignantClasses() {
                     ))}
 
                     {classesWithEleves.length === 0 && (
-                        <div className="rounded-lg bg-white p-6 text-center text-sm text-[#706f6c] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615] dark:text-[#A1A09A] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
+                        <div className="rounded-lg bg-white p-6 text-center text-sm text-slate-500 border border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800">
                             Aucune classe assignée.
                         </div>
                     )}
@@ -238,17 +238,17 @@ export default function EnseignantClasses() {
                     onClick={() => setSelectedEleve(null)}
                 >
                     <div
-                        className="mx-4 w-full max-w-2xl rounded-lg bg-white p-6 shadow-lg dark:bg-[#161615]"
+                        className="mx-4 w-full max-w-2xl rounded-lg bg-white p-6 shadow-lg dark:bg-slate-900"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="mb-4 flex items-center justify-between">
-                            <h2 className="text-lg font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                            <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">
                                 {selectedEleve.prenom} {selectedEleve.nom}
                             </h2>
                             <button
                                 type="button"
                                 onClick={() => setSelectedEleve(null)}
-                                className="text-sm text-[#706f6c] hover:text-[#1b1b18] dark:text-[#A1A09A] dark:hover:text-[#EDEDEC]"
+                                className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
                             >
                                 Fermer
                             </button>
@@ -256,20 +256,20 @@ export default function EnseignantClasses() {
 
                         <div className="space-y-4">
                             <div>
-                                <h3 className="mb-2 text-sm font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                                <h3 className="mb-2 text-sm font-medium text-slate-500 dark:text-slate-400">
                                     Absences ({eleveAbsences(selectedEleve.id_eleve).length})
                                 </h3>
                                 {eleveAbsences(selectedEleve.id_eleve).length === 0 ? (
-                                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Aucune absence.</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Aucune absence.</p>
                                 ) : (
                                     <ul className="space-y-1">
                                         {eleveAbsences(selectedEleve.id_eleve).map((absence) => (
-                                            <li key={absence.id_absence} className="flex items-center gap-3 text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+                                            <li key={absence.id_absence} className="flex items-center gap-3 text-sm text-slate-900 dark:text-slate-100">
                                                 <span className="font-medium">{absence.date_absence}</span>
                                                 {absence.justifiee && (
-                                                    <span className="rounded bg-green-500/10 px-1.5 py-0.5 text-xs text-green-700 dark:text-green-400">Justifiée</span>
+                                                    <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-xs text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">Justifiée</span>
                                                 )}
-                                                {absence.motif && <span className="text-[#706f6c] dark:text-[#A1A09A]">— {absence.motif}</span>}
+                                                {absence.motif && <span className="text-slate-500 dark:text-slate-400">— {absence.motif}</span>}
                                             </li>
                                         ))}
                                     </ul>
@@ -277,18 +277,18 @@ export default function EnseignantClasses() {
                             </div>
 
                             <div>
-                                <h3 className="mb-2 mt-4 text-sm font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                                <h3 className="mb-2 mt-4 text-sm font-medium text-slate-500 dark:text-slate-400">
                                     Retards ({eleveRetards(selectedEleve.id_eleve).length})
                                 </h3>
                                 {eleveRetards(selectedEleve.id_eleve).length === 0 ? (
-                                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Aucun retard.</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Aucun retard.</p>
                                 ) : (
                                     <ul className="space-y-1">
                                         {eleveRetards(selectedEleve.id_eleve).map((retard) => (
-                                            <li key={retard.id_retard} className="flex items-center gap-3 text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+                                            <li key={retard.id_retard} className="flex items-center gap-3 text-sm text-slate-900 dark:text-slate-100">
                                                 <span className="font-medium">{retard.date_retard}</span>
-                                                <span className="text-[#706f6c] dark:text-[#A1A09A]">{retard.minutes_retard} min</span>
-                                                {retard.motif && <span className="text-[#706f6c] dark:text-[#A1A09A]">— {retard.motif}</span>}
+                                                <span className="text-slate-500 dark:text-slate-400">{retard.minutes_retard} min</span>
+                                                {retard.motif && <span className="text-slate-500 dark:text-slate-400">— {retard.motif}</span>}
                                             </li>
                                         ))}
                                     </ul>
@@ -296,18 +296,18 @@ export default function EnseignantClasses() {
                             </div>
 
                             <div>
-                                <h3 className="mb-2 mt-4 text-sm font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                                <h3 className="mb-2 mt-4 text-sm font-medium text-slate-500 dark:text-slate-400">
                                     Notes ({eleveNotes(selectedEleve.id_eleve).length})
                                 </h3>
                                 {eleveNotes(selectedEleve.id_eleve).length === 0 ? (
-                                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Aucune note.</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Aucune note.</p>
                                 ) : (
                                     <ul className="space-y-1">
                                         {eleveNotes(selectedEleve.id_eleve).map((note) => (
-                                            <li key={note.id_note} className="flex items-center gap-3 text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+                                            <li key={note.id_note} className="flex items-center gap-3 text-sm text-slate-900 dark:text-slate-100">
                                                 <span className="font-medium">{note.valeur}/20</span>
-                                                <span className="text-[#706f6c] dark:text-[#A1A09A]">{matiereMap[note.id_matiere] ?? `Matière #${note.id_matiere}`}</span>
-                                                <span className="text-[#706f6c] dark:text-[#A1A09A]">— {note.date}</span>
+                                                <span className="text-slate-500 dark:text-slate-400">{matiereMap[note.id_matiere] ?? `Matière #${note.id_matiere}`}</span>
+                                                <span className="text-slate-500 dark:text-slate-400">— {note.date}</span>
                                             </li>
                                         ))}
                                     </ul>
@@ -315,15 +315,15 @@ export default function EnseignantClasses() {
                             </div>
 
                             <div>
-                                <h3 className="mb-2 mt-4 text-sm font-medium text-[#706f6c] dark:text-[#A1A09A]">
+                                <h3 className="mb-2 mt-4 text-sm font-medium text-slate-500 dark:text-slate-400">
                                     Remarques ({eleveRemarques(selectedEleve.id_eleve).length})
                                 </h3>
                                 {eleveRemarques(selectedEleve.id_eleve).length === 0 ? (
-                                    <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">Aucune remarque.</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Aucune remarque.</p>
                                 ) : (
                                     <ul className="space-y-2">
                                         {eleveRemarques(selectedEleve.id_eleve).map((remarque) => (
-                                            <li key={remarque.id_remarque} className="text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+                                            <li key={remarque.id_remarque} className="text-sm text-slate-900 dark:text-slate-100">
                                                 <span className="font-medium">{remarque.date_remarque}</span> ({remarque.trimestre})
                                                 <br />
                                                 {remarque.contenu}
