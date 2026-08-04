@@ -33,7 +33,7 @@ type Remarque = {
 
 type Note = {
     id_note: number;
-    valeur: number;
+    valeur: string;
     id_eleve: number;
 };
 
@@ -108,7 +108,7 @@ export default function EnseignantDashboard() {
     const totalMinutesRetards = retards.reduce((sum, retard) => sum + retard.minutes_retard, 0);
     const moyenneGenerale =
         notes.length > 0
-            ? `${(notes.reduce((sum, note) => sum + note.valeur, 0) / notes.length).toFixed(2).replace('.', ',')}/20`
+            ? `${(notes.reduce((sum, note) => sum + Number(note.valeur), 0) / notes.length).toFixed(2).replace('.', ',')}/20`
             : '—';
     const nbClassesPrincipales = classes.filter(
         (classe) => classe.professeur_principal?.id === user?.id,
@@ -179,7 +179,7 @@ export default function EnseignantDashboard() {
                         href="/dashboard/enseignant/classes"
                         label="Moyenne générale"
                         value={moyenneGenerale}
-                        hint="T1 et T2"
+                        hint="Moyenne de toutes les notes (toutes matières et trimestres confondus). Détail par matière : page Saisie"
                     />
                 </div>
             )}
