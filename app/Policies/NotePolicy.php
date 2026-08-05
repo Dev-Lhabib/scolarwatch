@@ -94,6 +94,10 @@ class NotePolicy
             return false;
         }
 
+        if ($user->id === $eleve->classe->id_utilisateur_principal) {
+            return true;
+        }
+
         return $user->classesEnseignees()->where('classes.id_classe', $eleve->id_classe)->exists();
     }
 }

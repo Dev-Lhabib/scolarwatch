@@ -179,7 +179,7 @@ export default function EnseignantDashboard() {
                         href="/dashboard/enseignant/classes"
                         label="Moyenne générale"
                         value={moyenneGenerale}
-                        hint="Moyenne de toutes les notes (toutes matières et trimestres confondus). Détail par matière : page Saisie"
+                        hint="Moyenne de vos notes (toutes trimestres et classes confondues)"
                     />
                 </div>
             )}
