@@ -34,6 +34,26 @@ it('lists only the records of the parent own children', function (string $url, s
         ->assertJsonPath('0.id_eleve', $child->id_eleve);
 })->with('parent consultation endpoints');
 
+it('exposes the enseignant who entered the record', function (string $url, string $model) {
+    $parent = User::factory()->parent()->create();
+    $child = Eleve::factory()->create();
+    $child->tuteurs()->attach($parent->id);
+
+    $enseignant = User::factory()->enseignant()->create();
+
+    $model::factory()->create([
+        'id_eleve' => $child->id_eleve,
+        'id_utilisateur' => $enseignant->id,
+    ]);
+
+    $this->actingAs($parent, 'sanctum')
+        ->getJson($url)
+        ->assertOk()
+        ->assertJsonPath('0.utilisateur.id', $enseignant->id)
+        ->assertJsonPath('0.utilisateur.prenom', $enseignant->prenom)
+        ->assertJsonPath('0.utilisateur.nom', $enseignant->nom);
+})->with('parent consultation endpoints');
+
 it('filters the records by an id_eleve of one of the own children', function (string $url, string $model) {
     $parent = User::factory()->parent()->create();
 

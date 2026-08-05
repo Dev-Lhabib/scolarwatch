@@ -24,7 +24,11 @@ type Synthese = {
 
 const TRIMESTRES = ['T1', 'T2'] as const;
 
-const NIVEAUX_ALERTE: Array<'faible' | 'moyen' | 'eleve'> = ['faible', 'moyen', 'eleve'];
+const NIVEAUX_ALERTE: Array<'faible' | 'moyen' | 'eleve'> = [
+    'faible',
+    'moyen',
+    'eleve',
+];
 
 const NIVEAU_ALERTE_LABELS: Record<string, string> = {
     faible: 'Faible',
@@ -40,21 +44,30 @@ const NIVEAU_ALERTE_BADGE: Record<string, string> = {
 
 type Props = {
     eleve: Eleve;
+    trimestre?: string;
 };
 
-export default function SyntheseEntry({ eleve }: Props) {
+export default function SyntheseEntry({ eleve, trimestre }: Props) {
     const [synthese, setSynthese] = useState<Synthese | null>(null);
     const [syntheseEtat, setSyntheseEtat] = useState<
         'chargement' | 'introuvable' | 'pret' | 'erreur'
     >('chargement');
     const [syntheseErreur, setSyntheseErreur] = useState<string | null>(null);
     const [syntheseSuccess, setSyntheseSuccess] = useState<string | null>(null);
-    const [trimestreSynthese, setTrimestreSynthese] = useState('T1');
+    const [trimestreSynthese, setTrimestreSynthese] = useState(
+        trimestre ?? 'T1',
+    );
     const [niveauCorrige, setNiveauCorrige] = useState('');
     const [syntheseGenerating, setSyntheseGenerating] = useState(false);
     const [correctionProcessing, setCorrectionProcessing] = useState(false);
     const [envoiProcessing, setEnvoiProcessing] = useState(false);
     const [loadVersion, setLoadVersion] = useState(0);
+
+    useEffect(() => {
+        if (trimestre !== undefined) {
+            setTrimestreSynthese(trimestre);
+        }
+    }, [trimestre]);
 
     useEffect(() => {
         apiFetch(
@@ -73,7 +86,8 @@ export default function SyntheseEntry({ eleve }: Props) {
                 if (!response.ok) {
                     setSyntheseEtat('erreur');
                     setSyntheseErreur(
-                        data.message ?? 'Erreur lors du chargement de la synthèse.',
+                        data.message ??
+                            'Erreur lors du chargement de la synthèse.',
                     );
 
                     return;
@@ -81,7 +95,9 @@ export default function SyntheseEntry({ eleve }: Props) {
 
                 setSynthese(data as Synthese);
                 setSyntheseEtat('pret');
-                setNiveauCorrige(data.niveau_alerte_corrige ?? data.niveau_alerte ?? '');
+                setNiveauCorrige(
+                    data.niveau_alerte_corrige ?? data.niveau_alerte ?? '',
+                );
             })
             .catch(() => {
                 setSyntheseEtat('erreur');
@@ -108,10 +124,13 @@ export default function SyntheseEntry({ eleve }: Props) {
         setSyntheseSuccess(null);
 
         try {
-            const response = await apiFetch(`/api/eleves/${eleve.id_eleve}/synthese`, {
-                method: 'POST',
-                body: JSON.stringify({ trimestre: trimestreSynthese }),
-            });
+            const response = await apiFetch(
+                `/api/eleves/${eleve.id_eleve}/synthese`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({ trimestre: trimestreSynthese }),
+                },
+            );
 
             const data = await response.json();
 
@@ -119,7 +138,8 @@ export default function SyntheseEntry({ eleve }: Props) {
                 setSyntheseGenerating(false);
                 setSyntheseEtat(synthese ? 'pret' : 'introuvable');
                 setSyntheseErreur(
-                    data.message ?? 'Erreur lors du déclenchement de la synthèse.',
+                    data.message ??
+                        'Erreur lors du déclenchement de la synthèse.',
                 );
 
                 return;
@@ -148,7 +168,9 @@ export default function SyntheseEntry({ eleve }: Props) {
                 `/api/syntheses/${synthese.id_synthese}/niveau-alerte`,
                 {
                     method: 'PATCH',
-                    body: JSON.stringify({ niveau_alerte_corrige: niveauCorrige }),
+                    body: JSON.stringify({
+                        niveau_alerte_corrige: niveauCorrige,
+                    }),
                 },
             );
 
@@ -157,14 +179,17 @@ export default function SyntheseEntry({ eleve }: Props) {
             if (!response.ok) {
                 setCorrectionProcessing(false);
                 setSyntheseErreur(
-                    data.message ?? "Erreur lors de la correction du niveau d'alerte.",
+                    data.message ??
+                        "Erreur lors de la correction du niveau d'alerte.",
                 );
 
                 return;
             }
 
             setSynthese(data as Synthese);
-            setNiveauCorrige(data.niveau_alerte_corrige ?? data.niveau_alerte ?? '');
+            setNiveauCorrige(
+                data.niveau_alerte_corrige ?? data.niveau_alerte ?? '',
+            );
             setSyntheseSuccess("Niveau d'alerte corrigé.");
             setCorrectionProcessing(false);
         } catch {
@@ -205,7 +230,7 @@ export default function SyntheseEntry({ eleve }: Props) {
             setEnvoiProcessing(false);
         } catch {
             setEnvoiProcessing(false);
-            setSyntheseErreur('Une erreur est survenue lors de l\'envoi.');
+            setSyntheseErreur("Une erreur est survenue lors de l'envoi.");
         }
     }
 
@@ -227,25 +252,27 @@ export default function SyntheseEntry({ eleve }: Props) {
                 <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">
                     Synthèse IA
                 </h3>
-                <div className="flex items-center gap-2">
-                    <label
-                        htmlFor="synthese-trimestre"
-                        className="text-sm text-slate-500 dark:text-slate-400"
-                    >
-                        Trimestre
-                    </label>
-                    <Select
-                        id="synthese-trimestre"
-                        value={trimestreSynthese}
-                        onChange={(e) => handleTrimestre(e.target.value)}
-                    >
-                        {TRIMESTRES.map((trimestre) => (
-                            <option key={trimestre} value={trimestre}>
-                                {trimestre}
-                            </option>
-                        ))}
-                    </Select>
-                </div>
+                {trimestre === undefined && (
+                    <div className="flex items-center gap-2">
+                        <label
+                            htmlFor="synthese-trimestre"
+                            className="text-sm text-slate-500 dark:text-slate-400"
+                        >
+                            Trimestre
+                        </label>
+                        <Select
+                            id="synthese-trimestre"
+                            value={trimestreSynthese}
+                            onChange={(e) => handleTrimestre(e.target.value)}
+                        >
+                            {TRIMESTRES.map((trimestre) => (
+                                <option key={trimestre} value={trimestre}>
+                                    {trimestre}
+                                </option>
+                            ))}
+                        </Select>
+                    </div>
+                )}
             </div>
 
             {syntheseErreur && (
@@ -269,7 +296,8 @@ export default function SyntheseEntry({ eleve }: Props) {
             {syntheseEtat === 'introuvable' && (
                 <div className="space-y-4">
                     <p className="text-sm text-slate-500 dark:text-slate-400">
-                        Aucune synthèse générée pour le trimestre {trimestreSynthese}.
+                        Aucune synthèse générée pour le trimestre{' '}
+                        {trimestreSynthese}.
                     </p>
                     <div className="flex gap-3">
                         <Button
@@ -277,7 +305,9 @@ export default function SyntheseEntry({ eleve }: Props) {
                             onClick={genererSynthese}
                             disabled={syntheseGenerating}
                         >
-                            {syntheseGenerating ? 'Génération...' : 'Générer la synthèse'}
+                            {syntheseGenerating
+                                ? 'Génération...'
+                                : 'Générer la synthèse'}
                         </Button>
                         <button
                             type="button"
@@ -305,8 +335,8 @@ export default function SyntheseEntry({ eleve }: Props) {
                     {synthese.statut === 'en_attente' && (
                         <div className="space-y-4">
                             <p className="text-sm text-slate-500 dark:text-slate-400">
-                                Synthèse en attente de génération. Actualisez pour voir
-                                le résultat.
+                                Synthèse en attente de génération. Actualisez
+                                pour voir le résultat.
                             </p>
                             <button
                                 type="button"
@@ -321,14 +351,17 @@ export default function SyntheseEntry({ eleve }: Props) {
                     {synthese.statut === 'echoue' && (
                         <div className="space-y-4">
                             <p className="text-sm text-red-600 dark:text-red-400">
-                                La génération de la synthèse a échoué. Réessayez.
+                                La génération de la synthèse a échoué.
+                                Réessayez.
                             </p>
                             <Button
                                 type="button"
                                 onClick={genererSynthese}
                                 disabled={syntheseGenerating}
                             >
-                                {syntheseGenerating ? 'Génération...' : 'Réessayer'}
+                                {syntheseGenerating
+                                    ? 'Génération...'
+                                    : 'Réessayer'}
                             </Button>
                         </div>
                     )}
@@ -342,7 +375,10 @@ export default function SyntheseEntry({ eleve }: Props) {
                                 {alerteBadge(synthese.niveau_alerte)}
                                 {synthese.niveau_alerte_corrige && (
                                     <span className="text-xs text-slate-500 dark:text-slate-400">
-                                        Corrigé : {alerteBadge(synthese.niveau_alerte_corrige)}
+                                        Corrigé :{' '}
+                                        {alerteBadge(
+                                            synthese.niveau_alerte_corrige,
+                                        )}
                                     </span>
                                 )}
                             </div>
@@ -353,9 +389,11 @@ export default function SyntheseEntry({ eleve }: Props) {
                                 </h4>
                                 {synthese.facteurs_risque?.length ? (
                                     <ul className="list-disc space-y-1 pl-5 text-sm text-slate-900 dark:text-slate-100">
-                                        {synthese.facteurs_risque.map((facteur, index) => (
-                                            <li key={index}>{facteur}</li>
-                                        ))}
+                                        {synthese.facteurs_risque.map(
+                                            (facteur, index) => (
+                                                <li key={index}>{facteur}</li>
+                                            ),
+                                        )}
                                     </ul>
                                 ) : (
                                     <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -370,9 +408,13 @@ export default function SyntheseEntry({ eleve }: Props) {
                                 </h4>
                                 {synthese.recommandations?.length ? (
                                     <ul className="list-disc space-y-1 pl-5 text-sm text-slate-900 dark:text-slate-100">
-                                        {synthese.recommandations.map((recommandation, index) => (
-                                            <li key={index}>{recommandation}</li>
-                                        ))}
+                                        {synthese.recommandations.map(
+                                            (recommandation, index) => (
+                                                <li key={index}>
+                                                    {recommandation}
+                                                </li>
+                                            ),
+                                        )}
                                     </ul>
                                 ) : (
                                     <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -386,7 +428,7 @@ export default function SyntheseEntry({ eleve }: Props) {
                                     Message aux parents
                                 </h4>
                                 {synthese.message_parent ? (
-                                    <p className="whitespace-pre-wrap text-sm text-slate-900 dark:text-slate-100">
+                                    <p className="text-sm whitespace-pre-wrap text-slate-900 dark:text-slate-100">
                                         {synthese.message_parent}
                                     </p>
                                 ) : (
@@ -407,7 +449,9 @@ export default function SyntheseEntry({ eleve }: Props) {
                                     <Select
                                         id="synthese-niveau-corrige"
                                         value={niveauCorrige}
-                                        onChange={(e) => setNiveauCorrige(e.target.value)}
+                                        onChange={(e) =>
+                                            setNiveauCorrige(e.target.value)
+                                        }
                                     >
                                         <option value="">Aucun</option>
                                         {NIVEAUX_ALERTE.map((niveau) => (
@@ -431,7 +475,9 @@ export default function SyntheseEntry({ eleve }: Props) {
                             <Button
                                 type="button"
                                 onClick={envoyerSynthese}
-                                disabled={envoiProcessing || !synthese.message_parent}
+                                disabled={
+                                    envoiProcessing || !synthese.message_parent
+                                }
                             >
                                 {envoiProcessing
                                     ? 'Envoi...'

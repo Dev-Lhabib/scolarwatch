@@ -31,7 +31,7 @@ class ParentController extends Controller
     {
         return response()->json(
             $this->recordsForChildren(Note::query(), 'date', $request)
-                ->with('matiere')
+                ->with(['matiere', 'utilisateur'])
                 ->get()
         );
     }
@@ -42,7 +42,9 @@ class ParentController extends Controller
     public function absences(Request $request): JsonResponse
     {
         return response()->json(
-            $this->recordsForChildren(Absence::query(), 'date_absence', $request)->get()
+            $this->recordsForChildren(Absence::query(), 'date_absence', $request)
+                ->with('utilisateur')
+                ->get()
         );
     }
 
@@ -52,7 +54,9 @@ class ParentController extends Controller
     public function retards(Request $request): JsonResponse
     {
         return response()->json(
-            $this->recordsForChildren(Retard::query(), 'date_retard', $request)->get()
+            $this->recordsForChildren(Retard::query(), 'date_retard', $request)
+                ->with('utilisateur')
+                ->get()
         );
     }
 
@@ -62,7 +66,9 @@ class ParentController extends Controller
     public function remarques(Request $request): JsonResponse
     {
         return response()->json(
-            $this->recordsForChildren(Remarque::query(), 'date_remarque', $request)->get()
+            $this->recordsForChildren(Remarque::query(), 'date_remarque', $request)
+                ->with('utilisateur')
+                ->get()
         );
     }
 
