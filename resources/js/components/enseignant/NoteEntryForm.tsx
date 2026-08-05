@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import FieldError from '@/components/ui/FieldError';
 import Button from '@/components/ui/Button';
 import { apiFetch } from '@/lib/auth';
+import { fieldClassName, formError } from '@/lib/forms';
 
 export type Note = {
     id_note: number;
@@ -39,10 +41,12 @@ export default function NoteEntryForm({
             : new Date().toISOString().slice(0, 10),
     );
     const [processing, setProcessing] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [error, setError] = useState<string | null>(null);
 
     async function handleSubmit(event: FormEvent) {
         event.preventDefault();
+        setErrors({});
         setError(null);
         setProcessing(true);
 
@@ -68,12 +72,18 @@ export default function NoteEntryForm({
             const data = await response.json();
 
             if (!response.ok) {
-                const message = data.message
-                    ? data.message
-                    : data.errors
-                      ? Object.values(data.errors).flat().join(', ')
-                      : "Erreur lors de l'enregistrement.";
-                setError(message);
+                const fieldErrors = data.errors ?? {};
+                setErrors(fieldErrors);
+
+                if (Object.keys(fieldErrors).length > 0) {
+                    setError(
+                        formError(fieldErrors, ['valeur', 'date']) ?? null,
+                    );
+                } else {
+                    setError(
+                        data.message ?? "Erreur lors de l'enregistrement.",
+                    );
+                }
                 setProcessing(false);
 
                 return;
@@ -87,13 +97,11 @@ export default function NoteEntryForm({
     }
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            {error && (
-                <div className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
-                    {error}
-                </div>
-            )}
-
+        <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="flex flex-col gap-4"
+        >
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <label
@@ -107,12 +115,9 @@ export default function NoteEntryForm({
                         type="number"
                         value={valeur}
                         onChange={(e) => setValeur(e.target.value)}
-                        required
-                        min={0}
-                        max={20}
-                        step={0.25}
-                        className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        className={fieldClassName(Boolean(errors.valeur))}
                     />
+                    <FieldError message={errors.valeur?.[0]} />
                 </div>
                 <div>
                     <label
@@ -126,11 +131,13 @@ export default function NoteEntryForm({
                         type="date"
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
-                        required
-                        className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        className={fieldClassName(Boolean(errors.date))}
                     />
+                    <FieldError message={errors.date?.[0]} />
                 </div>
             </div>
+
+            {error && <FieldError message={error} />}
 
             <div className="flex gap-3">
                 <Button type="submit" disabled={processing}>

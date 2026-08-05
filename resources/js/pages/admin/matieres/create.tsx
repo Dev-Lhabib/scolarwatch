@@ -1,12 +1,15 @@
-import type { FormEvent} from 'react';
+import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
+import FieldError from '@/components/ui/FieldError';
 import Button from '@/components/ui/Button';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
+import { fieldClassName } from '@/lib/forms';
 
 export default function CreateMatiere() {
     const [nom, setNom] = useState('');
     const [code, setCode] = useState('');
+    const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const [processing, setProcessing] = useState(false);
@@ -21,6 +24,7 @@ export default function CreateMatiere() {
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
+        setErrors({});
         setError(null);
         setSuccess(null);
         setProcessing(true);
@@ -34,12 +38,10 @@ export default function CreateMatiere() {
             const data = await response.json();
 
             if (!response.ok) {
-                const message = data.message
-                    ? data.message
-                    : data.errors
-                      ? Object.values(data.errors).flat().join(', ')
-                      : 'Erreur lors de la création.';
-                setError(message);
+                setErrors(data.errors ?? {});
+                if (!data.errors) {
+                    setError(data.message ?? 'Erreur lors de la création.');
+                }
                 setProcessing(false);
 
                 return;
@@ -57,7 +59,7 @@ export default function CreateMatiere() {
 
     return (
         <AppLayout>
-            <div className="mx-auto max-w-lg rounded-lg bg-white p-8 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+            <div className="mx-auto max-w-lg rounded-lg border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-900">
                 <h1 className="mb-1 text-xl font-medium text-slate-900 dark:text-slate-100">
                     Créer une matière
                 </h1>
@@ -65,19 +67,17 @@ export default function CreateMatiere() {
                     Ajoutez une nouvelle matière à l'établissement.
                 </p>
 
-                {error && (
-                    <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
-                        {error}
-                    </div>
-                )}
-
                 {success && (
                     <div className="mb-4 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-400">
                         {success}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <form
+                    onSubmit={handleSubmit}
+                    noValidate
+                    className="flex flex-col gap-4"
+                >
                     <div>
                         <label
                             htmlFor="nom"
@@ -90,10 +90,10 @@ export default function CreateMatiere() {
                             type="text"
                             value={nom}
                             onChange={(e) => setNom(e.target.value)}
-                            required
                             maxLength={255}
-                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                            className={fieldClassName(Boolean(errors.nom))}
                         />
+                        <FieldError message={errors.nom?.[0]} />
                     </div>
 
                     <div>
@@ -108,16 +108,15 @@ export default function CreateMatiere() {
                             type="text"
                             value={code}
                             onChange={(e) => setCode(e.target.value)}
-                            required
                             maxLength={20}
-                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                            className={fieldClassName(Boolean(errors.code))}
                         />
+                        <FieldError message={errors.code?.[0]} />
                     </div>
 
-                    <Button
-                        type="submit"
-                        disabled={processing}
-                    >
+                    {error && <FieldError message={error} />}
+
+                    <Button type="submit" disabled={processing}>
                         {processing ? 'Création...' : 'Créer la matière'}
                     </Button>
                 </form>

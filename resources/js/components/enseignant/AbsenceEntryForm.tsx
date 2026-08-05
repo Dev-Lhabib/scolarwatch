@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import FieldError from '@/components/ui/FieldError';
 import Button from '@/components/ui/Button';
 import { apiFetch } from '@/lib/auth';
+import { fieldClassName, formError } from '@/lib/forms';
 
 export type Absence = {
     id_absence: number;
@@ -33,10 +35,12 @@ export default function AbsenceEntryForm({
     const [justifiee, setJustifiee] = useState(initial?.justifiee ?? false);
     const [motif, setMotif] = useState(initial?.motif ?? '');
     const [processing, setProcessing] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [error, setError] = useState<string | null>(null);
 
     async function handleSubmit(event: FormEvent) {
         event.preventDefault();
+        setErrors({});
         setError(null);
         setProcessing(true);
 
@@ -64,12 +68,19 @@ export default function AbsenceEntryForm({
             const data = await response.json();
 
             if (!response.ok) {
-                const message = data.message
-                    ? data.message
-                    : data.errors
-                      ? Object.values(data.errors).flat().join(', ')
-                      : "Erreur lors de l'enregistrement.";
-                setError(message);
+                const fieldErrors = data.errors ?? {};
+                setErrors(fieldErrors);
+
+                if (Object.keys(fieldErrors).length > 0) {
+                    setError(
+                        formError(fieldErrors, ['date_absence', 'motif']) ??
+                            null,
+                    );
+                } else {
+                    setError(
+                        data.message ?? "Erreur lors de l'enregistrement.",
+                    );
+                }
                 setProcessing(false);
 
                 return;
@@ -83,13 +94,11 @@ export default function AbsenceEntryForm({
     }
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            {error && (
-                <div className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
-                    {error}
-                </div>
-            )}
-
+        <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="flex flex-col gap-4"
+        >
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <label
@@ -103,9 +112,9 @@ export default function AbsenceEntryForm({
                         type="date"
                         value={dateAbsence}
                         onChange={(e) => setDateAbsence(e.target.value)}
-                        required
-                        className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        className={fieldClassName(Boolean(errors.date_absence))}
                     />
+                    <FieldError message={errors.date_absence?.[0]} />
                 </div>
                 <div className="flex items-end pb-2">
                     <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-900 dark:text-slate-100">
@@ -133,9 +142,12 @@ export default function AbsenceEntryForm({
                     value={motif}
                     onChange={(e) => setMotif(e.target.value)}
                     maxLength={255}
-                    className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                    className={fieldClassName(Boolean(errors.motif))}
                 />
+                <FieldError message={errors.motif?.[0]} />
             </div>
+
+            {error && <FieldError message={error} />}
 
             <div className="flex gap-3">
                 <Button type="submit" disabled={processing}>

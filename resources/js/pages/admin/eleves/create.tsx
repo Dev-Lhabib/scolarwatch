@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
+import FieldError from '@/components/ui/FieldError';
 import Button from '@/components/ui/Button';
 import Select from '@/components/ui/Select';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
+import { fieldClassName } from '@/lib/forms';
 
 type Classe = {
     id_classe: number;
@@ -27,6 +29,7 @@ export default function CreateEleve() {
     const [selectedTuteurs, setSelectedTuteurs] = useState<number[]>([]);
     const [classes, setClasses] = useState<Classe[]>([]);
     const [parents, setParents] = useState<Parent[]>([]);
+    const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const [processing, setProcessing] = useState(false);
@@ -47,9 +50,7 @@ export default function CreateEleve() {
 
                 const usersData = await usersRes.json();
                 setParents(
-                    usersData.filter(
-                        (item: Parent) => item.role === 'parent',
-                    ),
+                    usersData.filter((item: Parent) => item.role === 'parent'),
                 );
             })
             .catch(() => {});
@@ -65,6 +66,7 @@ export default function CreateEleve() {
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
+        setErrors({});
         setError(null);
         setSuccess(null);
         setProcessing(true);
@@ -91,18 +93,18 @@ export default function CreateEleve() {
             const data = await response.json();
 
             if (!response.ok) {
-                const message = data.message
-                    ? data.message
-                    : data.errors
-                      ? Object.values(data.errors).flat().join(', ')
-                      : 'Erreur lors de la création.';
-                setError(message);
+                setErrors(data.errors ?? {});
+                if (!data.errors) {
+                    setError(data.message ?? 'Erreur lors de la création.');
+                }
                 setProcessing(false);
 
                 return;
             }
 
-            setSuccess(`Élève « ${data.prenom} ${data.nom} » créé avec succès.`);
+            setSuccess(
+                `Élève « ${data.prenom} ${data.nom} » créé avec succès.`,
+            );
             setNom('');
             setPrenom('');
             setGenre('M');
@@ -119,7 +121,7 @@ export default function CreateEleve() {
 
     return (
         <AppLayout>
-            <div className="mx-auto max-w-lg rounded-lg bg-white p-8 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+            <div className="mx-auto max-w-lg rounded-lg border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-900">
                 <h1 className="mb-1 text-xl font-medium text-slate-900 dark:text-slate-100">
                     Créer un élève
                 </h1>
@@ -127,19 +129,17 @@ export default function CreateEleve() {
                     Ajoutez un nouvel élève à l'établissement.
                 </p>
 
-                {error && (
-                    <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
-                        {error}
-                    </div>
-                )}
-
                 {success && (
                     <div className="mb-4 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-400">
                         {success}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <form
+                    onSubmit={handleSubmit}
+                    noValidate
+                    className="flex flex-col gap-4"
+                >
                     <div>
                         <label
                             htmlFor="nom"
@@ -152,10 +152,9 @@ export default function CreateEleve() {
                             type="text"
                             value={nom}
                             onChange={(e) => setNom(e.target.value)}
-                            required
-                            maxLength={255}
-                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                            className={fieldClassName(Boolean(errors.nom))}
                         />
+                        <FieldError message={errors.nom?.[0]} />
                     </div>
 
                     <div>
@@ -170,10 +169,9 @@ export default function CreateEleve() {
                             type="text"
                             value={prenom}
                             onChange={(e) => setPrenom(e.target.value)}
-                            required
-                            maxLength={255}
-                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                            className={fieldClassName(Boolean(errors.prenom))}
                         />
+                        <FieldError message={errors.prenom?.[0]} />
                     </div>
 
                     <div>
@@ -187,10 +185,12 @@ export default function CreateEleve() {
                             id="genre"
                             value={genre}
                             onChange={(e) => setGenre(e.target.value)}
+                            hasError={Boolean(errors.genre)}
                         >
                             <option value="M">Masculin</option>
                             <option value="F">Féminin</option>
                         </Select>
+                        <FieldError message={errors.genre?.[0]} />
                     </div>
 
                     <div>
@@ -205,9 +205,11 @@ export default function CreateEleve() {
                             type="date"
                             value={dateNaissance}
                             onChange={(e) => setDateNaissance(e.target.value)}
-                            required
-                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                            className={fieldClassName(
+                                Boolean(errors.date_naissance),
+                            )}
                         />
+                        <FieldError message={errors.date_naissance?.[0]} />
                     </div>
 
                     <div>
@@ -222,9 +224,11 @@ export default function CreateEleve() {
                             type="text"
                             value={codeMassar}
                             onChange={(e) => setCodeMassar(e.target.value)}
-                            maxLength={20}
-                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                            className={fieldClassName(
+                                Boolean(errors.code_massar),
+                            )}
                         />
+                        <FieldError message={errors.code_massar?.[0]} />
                     </div>
 
                     <div>
@@ -238,9 +242,11 @@ export default function CreateEleve() {
                             id="id_classe"
                             value={idClasse}
                             onChange={(e) => setIdClasse(e.target.value)}
-                            required
+                            hasError={Boolean(errors.id_classe)}
                         >
-                            <option value="">— Sélectionner une classe —</option>
+                            <option value="">
+                                — Sélectionner une classe —
+                            </option>
                             {classes.map((classe) => (
                                 <option
                                     key={classe.id_classe}
@@ -250,6 +256,7 @@ export default function CreateEleve() {
                                 </option>
                             ))}
                         </Select>
+                        <FieldError message={errors.id_classe?.[0]} />
                     </div>
 
                     <div>
@@ -279,13 +286,13 @@ export default function CreateEleve() {
                                 </label>
                             ))}
                         </div>
+                        <FieldError message={errors.tuteur_ids?.[0]} />
                     </div>
 
-                    <Button
-                        type="submit"
-                        disabled={processing}
-                    >
-                        {processing ? 'Création...' : 'Créer l\'élève'}
+                    {error && <FieldError message={error} />}
+
+                    <Button type="submit" disabled={processing}>
+                        {processing ? 'Création...' : "Créer l'élève"}
                     </Button>
                 </form>
             </div>

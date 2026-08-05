@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import FieldError from '@/components/ui/FieldError';
 import Button from '@/components/ui/Button';
 import { apiFetch } from '@/lib/auth';
+import { fieldClassName, formError } from '@/lib/forms';
 
 export type Remarque = {
     id_remarque: number;
@@ -36,10 +38,12 @@ export default function RemarqueEntryForm({
             : new Date().toISOString().slice(0, 10),
     );
     const [processing, setProcessing] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [error, setError] = useState<string | null>(null);
 
     async function handleSubmit(event: FormEvent) {
         event.preventDefault();
+        setErrors({});
         setError(null);
         setProcessing(true);
 
@@ -68,12 +72,22 @@ export default function RemarqueEntryForm({
             const data = await response.json();
 
             if (!response.ok) {
-                const message = data.message
-                    ? data.message
-                    : data.errors
-                      ? Object.values(data.errors).flat().join(', ')
-                      : "Erreur lors de l'enregistrement.";
-                setError(message);
+                const fieldErrors = data.errors ?? {};
+                setErrors(fieldErrors);
+
+                if (Object.keys(fieldErrors).length > 0) {
+                    setError(
+                        formError(fieldErrors, [
+                            'contenu',
+                            'categorie',
+                            'date_remarque',
+                        ]) ?? null,
+                    );
+                } else {
+                    setError(
+                        data.message ?? "Erreur lors de l'enregistrement.",
+                    );
+                }
                 setProcessing(false);
 
                 return;
@@ -87,13 +101,11 @@ export default function RemarqueEntryForm({
     }
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            {error && (
-                <div className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
-                    {error}
-                </div>
-            )}
-
+        <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="flex flex-col gap-4"
+        >
             <div>
                 <label
                     htmlFor="remarque-contenu"
@@ -105,10 +117,10 @@ export default function RemarqueEntryForm({
                     id="remarque-contenu"
                     value={contenu}
                     onChange={(e) => setContenu(e.target.value)}
-                    required
                     rows={3}
-                    className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                    className={fieldClassName(Boolean(errors.contenu))}
                 />
+                <FieldError message={errors.contenu?.[0]} />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -126,8 +138,9 @@ export default function RemarqueEntryForm({
                         onChange={(e) => setCategorie(e.target.value)}
                         maxLength={100}
                         placeholder="Ex. Comportement, Rédaction..."
-                        className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        className={fieldClassName(Boolean(errors.categorie))}
                     />
+                    <FieldError message={errors.categorie?.[0]} />
                 </div>
                 <div>
                     <label
@@ -141,11 +154,15 @@ export default function RemarqueEntryForm({
                         type="date"
                         value={dateRemarque}
                         onChange={(e) => setDateRemarque(e.target.value)}
-                        required
-                        className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        className={fieldClassName(
+                            Boolean(errors.date_remarque),
+                        )}
                     />
+                    <FieldError message={errors.date_remarque?.[0]} />
                 </div>
             </div>
+
+            {error && <FieldError message={error} />}
 
             <div className="flex gap-3">
                 <Button type="submit" disabled={processing}>

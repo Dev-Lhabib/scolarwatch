@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import FieldError from '@/components/ui/FieldError';
 import Button from '@/components/ui/Button';
 import { apiFetch } from '@/lib/auth';
+import { fieldClassName, formError } from '@/lib/forms';
 
 export type Retard = {
     id_retard: number;
@@ -37,10 +39,12 @@ export default function RetardEntryForm({
     );
     const [motif, setMotif] = useState(initial?.motif ?? '');
     const [processing, setProcessing] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [error, setError] = useState<string | null>(null);
 
     async function handleSubmit(event: FormEvent) {
         event.preventDefault();
+        setErrors({});
         setError(null);
         setProcessing(true);
 
@@ -69,12 +73,22 @@ export default function RetardEntryForm({
             const data = await response.json();
 
             if (!response.ok) {
-                const message = data.message
-                    ? data.message
-                    : data.errors
-                      ? Object.values(data.errors).flat().join(', ')
-                      : "Erreur lors de l'enregistrement.";
-                setError(message);
+                const fieldErrors = data.errors ?? {};
+                setErrors(fieldErrors);
+
+                if (Object.keys(fieldErrors).length > 0) {
+                    setError(
+                        formError(fieldErrors, [
+                            'date_retard',
+                            'minutes_retard',
+                            'motif',
+                        ]) ?? null,
+                    );
+                } else {
+                    setError(
+                        data.message ?? "Erreur lors de l'enregistrement.",
+                    );
+                }
                 setProcessing(false);
 
                 return;
@@ -88,13 +102,11 @@ export default function RetardEntryForm({
     }
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            {error && (
-                <div className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
-                    {error}
-                </div>
-            )}
-
+        <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="flex flex-col gap-4"
+        >
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <label
@@ -108,9 +120,9 @@ export default function RetardEntryForm({
                         type="date"
                         value={dateRetard}
                         onChange={(e) => setDateRetard(e.target.value)}
-                        required
-                        className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        className={fieldClassName(Boolean(errors.date_retard))}
                     />
+                    <FieldError message={errors.date_retard?.[0]} />
                 </div>
                 <div>
                     <label
@@ -124,10 +136,11 @@ export default function RetardEntryForm({
                         type="number"
                         value={minutesRetard}
                         onChange={(e) => setMinutesRetard(e.target.value)}
-                        required
-                        min={1}
-                        className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        className={fieldClassName(
+                            Boolean(errors.minutes_retard),
+                        )}
                     />
+                    <FieldError message={errors.minutes_retard?.[0]} />
                 </div>
             </div>
 
@@ -154,9 +167,12 @@ export default function RetardEntryForm({
                     value={motif}
                     onChange={(e) => setMotif(e.target.value)}
                     maxLength={255}
-                    className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                    className={fieldClassName(Boolean(errors.motif))}
                 />
+                <FieldError message={errors.motif?.[0]} />
             </div>
+
+            {error && <FieldError message={error} />}
 
             <div className="flex gap-3">
                 <Button type="submit" disabled={processing}>
