@@ -16,7 +16,7 @@ class StoreRemarqueRequest extends FormRequest
         return [
             'contenu' => ['required', 'string'],
             'categorie' => ['nullable', 'string', 'max:100'],
-            'trimestre' => ['required', 'string', 'max:20'],
+            'trimestre' => ['required', 'string', 'in:T1,T2,T3', 'max:20'],
             'date_remarque' => ['required', 'date'],
             'id_eleve' => ['required', 'exists:eleves,id_eleve'],
         ];

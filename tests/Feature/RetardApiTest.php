@@ -188,3 +188,25 @@ it('forbids a parent from deleting a retard', function () {
 
     $response->assertForbidden();
 });
+
+it('blocks a duplicate retard for the same eleve and date', function () {
+    $this->actingAs($this->enseignant, 'sanctum')
+        ->postJson('/api/retards', [
+            'date_retard' => '2026-01-15',
+            'minutes_retard' => 10,
+            'id_eleve' => $this->eleve->id_eleve,
+        ])
+        ->assertCreated();
+
+    $response = $this->actingAs($this->enseignant, 'sanctum')
+        ->postJson('/api/retards', [
+            'date_retard' => '2026-01-15',
+            'minutes_retard' => 5,
+            'id_eleve' => $this->eleve->id_eleve,
+        ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors('date_retard');
+
+    $this->assertDatabaseCount('retards', 1);
+});

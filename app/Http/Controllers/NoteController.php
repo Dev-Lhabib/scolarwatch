@@ -9,12 +9,22 @@ class NoteController extends Controller
 {
     /**
      * Display a listing of the resource.
+     *
+     * Enseignants only see the notes they have recorded themselves. Admins and
+     * direction see every note. This keeps the dashboard "Notes" count, the API
+     * response and the saisie table in agreement.
      */
     public function index()
     {
         $this->authorize('viewAny', Note::class);
 
-        return response()->json(Note::all());
+        $query = Note::query();
+
+        if (auth()->user()->role === 'enseignant') {
+            $query->where('id_utilisateur', auth()->id());
+        }
+
+        return response()->json($query->get());
     }
 
     /**

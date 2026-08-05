@@ -11,7 +11,13 @@ class RemarqueController extends Controller
     {
         $this->authorize('viewAny', Remarque::class);
 
-        return response()->json(Remarque::all());
+        $query = Remarque::query();
+
+        if (auth()->user()->role === 'enseignant') {
+            $query->where('id_utilisateur', auth()->id());
+        }
+
+        return response()->json($query->get());
     }
 
     public function store(StoreRemarqueRequest $request)
