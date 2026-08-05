@@ -4,6 +4,7 @@ namespace App\Ai\Agents;
 
 use App\Ai\Schemas\SyntheseRisqueSchema;
 use App\Models\Eleve;
+use App\Models\User;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Ai\Attributes\Model;
 use Laravel\Ai\Attributes\Provider;
@@ -14,7 +15,7 @@ use Laravel\Ai\Promptable;
 use Stringable;
 
 #[Provider(Lab::Groq)]
-#[Model('llama-3.3-70b-versatile')]
+#[Model('openai/gpt-oss-120b')]
 class GhostwriterAgent implements Agent, HasStructuredOutput
 {
     use Promptable;
@@ -39,14 +40,16 @@ class GhostwriterAgent implements Agent, HasStructuredOutput
             signaux_textuels, pour que le professeur principal puisse vérifier ton raisonnement.
 
             Le message destiné au parent doit être écrit en français, avec un ton bienveillant
-            et factuel, sans jargon technique.
+            et factuel, sans jargon technique. Il doit se terminer par le bloc de signature
+            fourni dans les données (un « Cordialement, », une ligne vide, puis le prénom et le
+            nom du signataire suivis de son rôle).
             INSTRUCTIONS;
     }
 
     /**
      * Build the prompt for a given eleve's trimestre data.
      */
-    public function promptFor(Eleve $eleve, string $trimestre): string
+    public function promptFor(Eleve $eleve, string $trimestre, ?User $signer = null, string $signerRole = 'Enseignant'): string
     {
         $notes = $eleve->notes()
             ->where('trimestre', $trimestre)
@@ -71,6 +74,21 @@ class GhostwriterAgent implements Agent, HasStructuredOutput
             ->map(fn ($r) => "[{$r->date_remarque->format('d/m/Y')}] {$r->contenu}")
             ->implode("\n");
 
+        if ($signer !== null) {
+            $signature = <<<SIG
+                Signataire du message parent : {$signer->prenom} {$signer->nom} ({$signerRole})
+
+                Le champ message_parent doit se terminer exactement par :
+
+                Cordialement,
+
+                {$signer->prenom} {$signer->nom}
+                {$signerRole}
+                SIG;
+        } else {
+            $signature = 'Signataire du message parent : Le professeur principal';
+        }
+
         return <<<PROMPT
             Élève : {$eleve->prenom} {$eleve->nom}
             Trimestre : {$trimestre}
@@ -86,6 +104,8 @@ class GhostwriterAgent implements Agent, HasStructuredOutput
 
             Remarques des enseignants :
             {$remarques}
+
+            {$signature}
 
             Analyse ces données et produis la synthèse de risque de décrochage.
             PROMPT;

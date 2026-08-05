@@ -33,8 +33,11 @@ class GenererSyntheseIA implements ShouldQueue
         try {
             $eleve = $this->synthese->eleve;
 
+            $signer = $eleve?->classe?->professeurPrincipal ?? $this->synthese->demandeur;
+            $signerRole = $eleve?->classe?->professeurPrincipal ? 'Professeur principal' : 'Enseignant';
+
             $agent = new GhostwriterAgent;
-            $prompt = $agent->promptFor($eleve, $this->synthese->trimestre);
+            $prompt = $agent->promptFor($eleve, $this->synthese->trimestre, $signer, $signerRole);
 
             /** @var array $result */
             $result = $agent->prompt($prompt);
