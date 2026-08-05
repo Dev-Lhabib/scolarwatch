@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreClasseRequest;
+use App\Http\Requests\UpdateClasseRequest;
 use App\Models\Classe;
 use Illuminate\Http\Request;
 
@@ -43,7 +44,7 @@ class ClasseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreClasseRequest $request, Classe $classe)
+    public function update(UpdateClasseRequest $request, Classe $classe)
     {
         $this->authorize('update', $classe);
 

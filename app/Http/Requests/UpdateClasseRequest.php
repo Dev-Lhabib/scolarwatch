@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreClasseRequest extends FormRequest
+class UpdateClasseRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,6 +29,7 @@ class StoreClasseRequest extends FormRequest
                 'string',
                 'max:255',
                 Rule::unique('classes', 'nom')
+                    ->ignore($this->route('classe'))
                     ->where(fn ($query) => $query->where('annee_scolaire', $this->input('annee_scolaire'))),
             ],
             'niveau' => ['required', 'string', 'max:50'],

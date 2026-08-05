@@ -74,6 +74,98 @@ it('validates required fields when creating a classe', function () {
         ->assertJsonValidationErrors(['nom', 'niveau', 'annee_scolaire', 'capacite']);
 });
 
+it('rejects a duplicate classe with the same nom and annee_scolaire', function () {
+    Classe::factory()->create(['nom' => '1AC-B', 'annee_scolaire' => '2025-2026']);
+
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->postJson('/api/classes', [
+            'nom' => '1AC-B',
+            'niveau' => '1AC',
+            'annee_scolaire' => '2025-2026',
+            'capacite' => 30,
+        ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors(['nom']);
+});
+
+it('allows the same nom in a different annee_scolaire', function () {
+    Classe::factory()->create(['nom' => '1AC-B', 'annee_scolaire' => '2025-2026']);
+
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->postJson('/api/classes', [
+            'nom' => '1AC-B',
+            'niveau' => '1AC',
+            'annee_scolaire' => '2026-2027',
+            'capacite' => 30,
+        ]);
+
+    $response->assertCreated();
+});
+
+it('rejects an invalid annee_scolaire format', function (string $anneeScolaire) {
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->postJson('/api/classes', [
+            'nom' => 'Test',
+            'niveau' => '1AC',
+            'annee_scolaire' => $anneeScolaire,
+            'capacite' => 30,
+        ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors(['annee_scolaire']);
+})->with([
+    'ddddd' => ['ddddd'],
+    'abc' => ['abc'],
+    '2026' => ['2026'],
+    'hello' => ['hello'],
+    '25-26' => ['25-26'],
+    '2025/2026' => ['2025/2026'],
+    '2025_2026' => ['2025_2026'],
+]);
+
+it('accepts a valid annee_scolaire format', function () {
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->postJson('/api/classes', [
+            'nom' => '1AC-C',
+            'niveau' => '1AC',
+            'annee_scolaire' => '2026-2027',
+            'capacite' => 30,
+        ]);
+
+    $response->assertCreated();
+});
+
+it('allows updating a classe without changing its own nom and annee_scolaire', function () {
+    $classe = Classe::factory()->create(['nom' => '1AC-B', 'annee_scolaire' => '2025-2026']);
+
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->putJson("/api/classes/{$classe->id_classe}", [
+            'nom' => '1AC-B',
+            'niveau' => '1AC',
+            'annee_scolaire' => '2025-2026',
+            'capacite' => 32,
+        ]);
+
+    $response->assertOk();
+});
+
+it('rejects updating a classe to an existing nom and annee_scolaire combination', function () {
+    Classe::factory()->create(['nom' => '1AC-A', 'annee_scolaire' => '2025-2026']);
+    $autreClasse = Classe::factory()->create(['nom' => '1AC-B', 'annee_scolaire' => '2025-2026']);
+
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->putJson("/api/classes/{$autreClasse->id_classe}", [
+            'nom' => '1AC-A',
+            'niveau' => '1AC',
+            'annee_scolaire' => '2025-2026',
+            'capacite' => 32,
+        ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors(['nom']);
+});
+
 it('allows the professeur principal to view their own classe', function () {
     $classe = Classe::factory()->create(['id_utilisateur_principal' => $this->enseignant->id]);
 

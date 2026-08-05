@@ -74,11 +74,15 @@ export default function CreateClasse() {
             const data = await response.json();
 
             if (!response.ok) {
-                const message = data.message
-                    ? data.message
-                    : data.errors
-                      ? Object.values(data.errors).flat().join(', ')
-                      : 'Erreur lors de la création.';
+                const fieldErrors = data.errors
+                    ? Object.values(data.errors).flat().join('\n')
+                    : '';
+                const message =
+                    fieldErrors !== ''
+                        ? fieldErrors
+                        : data.message
+                          ? data.message
+                          : 'Erreur lors de la création.';
                 setError(message);
                 setProcessing(false);
 
@@ -109,7 +113,7 @@ export default function CreateClasse() {
                 </p>
 
                 {error && (
-                    <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
+                    <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 whitespace-pre-line dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                         {error}
                     </div>
                 )}
@@ -172,6 +176,8 @@ export default function CreateClasse() {
                             onChange={(e) => setAnneeScolaire(e.target.value)}
                             required
                             maxLength={20}
+                            pattern="\d{4}-\d{4}"
+                            title="Format attendu : AAAA-AAAA (ex. 2025-2026)"
                             placeholder="Ex. 2025-2026"
                             className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />

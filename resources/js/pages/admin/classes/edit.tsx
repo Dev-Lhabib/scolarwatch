@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
+import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Select from '@/components/ui/Select';
 import AppLayout from '@/layouts/AppLayout';
@@ -22,6 +23,13 @@ export default function EditClasse() {
     const [capacite, setCapacite] = useState('');
     const [idUtilisateurPrincipal, setIdUtilisateurPrincipal] = useState('');
     const [enseignants, setEnseignants] = useState<Enseignant[]>([]);
+    const [enseignantsAffectes, setEnseignantsAffectes] = useState<
+        Enseignant[]
+    >([]);
+    const [enseignantAajouter, setEnseignantAajouter] = useState('');
+    const [assignProcessing, setAssignProcessing] = useState(false);
+    const [assignSuccess, setAssignSuccess] = useState<string | null>(null);
+    const [assignError, setAssignError] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [processing, setProcessing] = useState(false);
 
@@ -80,6 +88,7 @@ export default function EditClasse() {
                         ? String(data.id_utilisateur_principal)
                         : '',
                 );
+                setEnseignantsAffectes(data.enseignants ?? []);
             })
             .catch(() => {
                 setNotFound(true);
@@ -120,11 +129,15 @@ export default function EditClasse() {
 
             if (!response.ok) {
                 const data = await response.json();
-                const message = data.message
-                    ? data.message
-                    : data.errors
-                      ? Object.values(data.errors).flat().join(', ')
-                      : 'Erreur lors de la mise à jour.';
+                const fieldErrors = data.errors
+                    ? Object.values(data.errors).flat().join('\n')
+                    : '';
+                const message =
+                    fieldErrors !== ''
+                        ? fieldErrors
+                        : data.message
+                          ? data.message
+                          : 'Erreur lors de la mise à jour.';
                 setError(message);
                 setProcessing(false);
 
@@ -135,6 +148,58 @@ export default function EditClasse() {
         } catch {
             setError('Une erreur est survenue. Veuillez réessayer.');
             setProcessing(false);
+        }
+    }
+
+    const enseignantsDisponibles = enseignants.filter(
+        (enseignant) =>
+            !enseignantsAffectes.some(
+                (affecte) => affecte.id === enseignant.id,
+            ),
+    );
+
+    async function handleAssignEnseignant() {
+        const classeId = classeIdRef.current;
+        const idUtilisateur = Number(enseignantAajouter);
+
+        if (classeId == null || !Number.isInteger(idUtilisateur)) {
+            return;
+        }
+
+        setAssignError(null);
+        setAssignSuccess(null);
+        setAssignProcessing(true);
+
+        try {
+            const response = await apiFetch(
+                `/api/classes/${classeId}/enseignants`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({ id_utilisateur: idUtilisateur }),
+                },
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                const message = data.message
+                    ? data.message
+                    : data.errors
+                      ? Object.values(data.errors).flat().join(', ')
+                      : "Erreur lors de l'affectation.";
+                setAssignError(message);
+                setAssignProcessing(false);
+
+                return;
+            }
+
+            setEnseignantsAffectes(data.enseignants ?? []);
+            setEnseignantAajouter('');
+            setAssignSuccess('Enseignant affecté à la classe.');
+            setAssignProcessing(false);
+        } catch {
+            setAssignError("Une erreur est survenue lors de l'affectation.");
+            setAssignProcessing(false);
         }
     }
 
@@ -179,7 +244,7 @@ export default function EditClasse() {
                 </p>
 
                 {error && (
-                    <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
+                    <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 whitespace-pre-line dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                         {error}
                     </div>
                 )}
@@ -237,6 +302,8 @@ export default function EditClasse() {
                             }
                             required
                             maxLength={20}
+                            pattern="\d{4}-\d{4}"
+                            title="Format attendu : AAAA-AAAA (ex. 2025-2026)"
                             className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
@@ -285,6 +352,98 @@ export default function EditClasse() {
                                 </option>
                             ))}
                         </Select>
+                    </div>
+
+                    <div className="rounded border border-slate-200 p-4 dark:border-slate-800">
+                        <h2 className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                            Enseignants affectés
+                        </h2>
+                        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                            Les enseignants affectés peuvent saisir les notes et
+                            entrées de cette classe.
+                        </p>
+
+                        {assignSuccess && (
+                            <div className="mt-3 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300">
+                                {assignSuccess}
+                            </div>
+                        )}
+
+                        {assignError && (
+                            <div className="mt-3 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
+                                {assignError}
+                            </div>
+                        )}
+
+                        {enseignantsAffectes.length === 0 ? (
+                            <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+                                Aucun enseignant affecté à cette classe.
+                            </p>
+                        ) : (
+                            <ul className="mt-3 divide-y divide-slate-200 rounded border border-slate-200 dark:divide-slate-800 dark:border-slate-800">
+                                {enseignantsAffectes.map((enseignant) => (
+                                    <li
+                                        key={enseignant.id}
+                                        className="flex items-center justify-between gap-3 px-4 py-2.5"
+                                    >
+                                        <span className="text-sm text-slate-900 dark:text-slate-100">
+                                            {enseignant.prenom}{' '}
+                                            {enseignant.nom}
+                                        </span>
+                                        <Badge tone="default">
+                                            Enseignant
+                                        </Badge>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+
+                        <div className="mt-4 flex items-end gap-3">
+                            <div className="flex-1">
+                                <label
+                                    htmlFor="enseignant-a-affecter"
+                                    className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
+                                >
+                                    Ajouter un enseignant
+                                </label>
+                                <Select
+                                    id="enseignant-a-affecter"
+                                    value={enseignantAajouter}
+                                    onChange={(event) =>
+                                        setEnseignantAajouter(
+                                            event.target.value,
+                                        )
+                                    }
+                                >
+                                    <option value="">
+                                        — Sélectionner un enseignant —
+                                    </option>
+                                    {enseignantsDisponibles.map(
+                                        (enseignant) => (
+                                            <option
+                                                key={enseignant.id}
+                                                value={enseignant.id}
+                                            >
+                                                {enseignant.prenom}{' '}
+                                                {enseignant.nom}
+                                            </option>
+                                        ),
+                                    )}
+                                </Select>
+                            </div>
+                            <Button
+                                type="button"
+                                onClick={handleAssignEnseignant}
+                                disabled={
+                                    assignProcessing ||
+                                    enseignantAajouter === ''
+                                }
+                            >
+                                {assignProcessing
+                                    ? 'Affectation...'
+                                    : 'Ajouter'}
+                            </Button>
+                        </div>
                     </div>
 
                     <div className="flex gap-3">
