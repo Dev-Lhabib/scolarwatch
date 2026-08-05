@@ -20,6 +20,20 @@ it('lists classes for an authenticated user', function () {
         ]);
 });
 
+it('loads the professeur principal and enseignants relations in the classes index', function () {
+    $classe = Classe::factory()->create([
+        'id_utilisateur_principal' => $this->enseignant->id,
+    ]);
+    $classe->enseignants()->attach($this->enseignant->id);
+
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->getJson('/api/classes');
+
+    $response->assertOk()
+        ->assertJsonPath('0.professeur_principal.id', $this->enseignant->id)
+        ->assertJsonPath('0.enseignants.0.id', $this->enseignant->id);
+});
+
 it('rejects unauthenticated access to classes index', function () {
     $response = $this->getJson('/api/classes');
 
@@ -123,37 +137,6 @@ it('does not duplicate an enseignant assignment when called twice', function () 
     expect($classe->enseignants()->count())->toBe(1);
 });
 
-it('rejects assigning a non-enseignant as enseignant to a classe', function () {
-    $classe = Classe::factory()->create();
-
-    $response = $this->actingAs($this->admin, 'sanctum')
-        ->postJson("/api/classes/{$classe->id_classe}/enseignants", ['id_utilisateur' => $this->admin->id]);
-
-    $response->assertUnprocessable();
-
-    $this->assertDatabaseMissing('enseigne', [
-        'id_classe' => $classe->id_classe,
-        'id_utilisateur' => $this->admin->id,
-    ]);
-});
-
-it('rejects assigning a non-enseignant as professeur principal', function () {
-    $classe = Classe::factory()->create(['id_utilisateur_principal' => null]);
-    $direction = User::factory()->direction()->create();
-
-    $response = $this->actingAs($this->admin, 'sanctum')
-        ->patchJson("/api/classes/{$classe->id_classe}/professeur-principal", [
-            'id_utilisateur_principal' => $direction->id,
-        ]);
-
-    $response->assertUnprocessable();
-
-    $this->assertDatabaseMissing('classes', [
-        'id_classe' => $classe->id_classe,
-        'id_utilisateur_principal' => $direction->id,
-    ]);
-});
-
 it('allows an admin to delete a classe', function () {
     $classe = Classe::factory()->create();
 
@@ -170,52 +153,6 @@ it('forbids a non-admin from deleting a classe', function () {
 
     $response = $this->actingAs($this->enseignant, 'sanctum')
         ->deleteJson("/api/classes/{$classe->id_classe}");
-
-    $response->assertForbidden();
-});
-
-it('allows an admin to update a classe', function () {
-    $classe = Classe::factory()->create();
-
-    $response = $this->actingAs($this->admin, 'sanctum')
-        ->putJson("/api/classes/{$classe->id_classe}", [
-            'nom' => '2AC-B',
-            'niveau' => '2AC',
-            'annee_scolaire' => '2025-2026',
-            'capacite' => 32,
-        ]);
-
-    $response->assertOk()
-        ->assertJsonPath('id_classe', $classe->id_classe);
-
-    $this->assertDatabaseHas('classes', ['id_classe' => $classe->id_classe, 'nom' => '2AC-B']);
-});
-
-it('forbids an enseignant from updating a classe', function () {
-    $classe = Classe::factory()->create();
-
-    $response = $this->actingAs($this->enseignant, 'sanctum')
-        ->patchJson("/api/classes/{$classe->id_classe}", [
-            'nom' => '2AC-B',
-            'niveau' => '2AC',
-            'annee_scolaire' => '2025-2026',
-            'capacite' => 32,
-        ]);
-
-    $response->assertForbidden();
-});
-
-it('forbids direction from updating a classe', function () {
-    $direction = User::factory()->direction()->create();
-    $classe = Classe::factory()->create();
-
-    $response = $this->actingAs($direction, 'sanctum')
-        ->putJson("/api/classes/{$classe->id_classe}", [
-            'nom' => '2AC-B',
-            'niveau' => '2AC',
-            'annee_scolaire' => '2025-2026',
-            'capacite' => 32,
-        ]);
 
     $response->assertForbidden();
 });

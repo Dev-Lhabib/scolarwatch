@@ -1,33 +1,21 @@
-import { useEffect, useMemo, useState } from 'react';
-import type { FormEvent } from 'react';
+import { useEffect, useState } from 'react';
 import Button from '@/components/ui/Button';
-import Select from '@/components/ui/Select';
+import Modal from '@/components/ui/Modal';
+import RemarqueEntryForm from '@/components/enseignant/RemarqueEntryForm';
+import type { Remarque } from '@/components/enseignant/RemarqueEntryForm';
 import { apiFetch } from '@/lib/auth';
 
-type Eleve = {
-    id_eleve: number;
-    nom: string;
-    prenom: string;
-};
-
-type Remarque = {
-    id_remarque: number;
-    contenu: string;
-    trimestre: string;
-    date_remarque: string;
-    id_eleve: number;
-    id_utilisateur: number;
-};
-
 type Props = {
-    eleves: Eleve[];
+    eleve: { id_eleve: number; nom: string; prenom: string };
+    trimestre: string;
     authUserId: number;
     onChanged: () => void;
     refreshKey: number;
 };
 
 export default function RemarqueEntry({
-    eleves,
+    eleve,
+    trimestre,
     authUserId,
     onChanged,
     refreshKey,
@@ -36,20 +24,9 @@ export default function RemarqueEntry({
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
-    const [processing, setProcessing] = useState(false);
     const [deletingId, setDeletingId] = useState<number | null>(null);
-    const [editingId, setEditingId] = useState<number | null>(null);
-    const [idEleve, setIdEleve] = useState('');
-    const [contenu, setContenu] = useState('');
-    const [trimestre, setTrimestre] = useState('T1');
-    const [dateRemarque, setDateRemarque] = useState(
-        new Date().toISOString().slice(0, 10),
-    );
-
-    const eleveIds = useMemo(
-        () => new Set(eleves.map((eleve) => eleve.id_eleve)),
-        [eleves],
-    );
+    const [modalOpen, setModalOpen] = useState(false);
+    const [editing, setEditing] = useState<Remarque | null>(null);
 
     useEffect(() => {
         apiFetch('/api/remarques')
@@ -67,112 +44,65 @@ export default function RemarqueEntry({
                 }
 
                 setRemarques(
-                    (data as Remarque[]).filter(
-                        (remarque) =>
-                            remarque.id_utilisateur === authUserId &&
-                            eleveIds.has(remarque.id_eleve),
-                    ),
+                    (data as Remarque[])
+                        .filter(
+                            (remarque) =>
+                                remarque.id_utilisateur === authUserId &&
+                                remarque.id_eleve === eleve.id_eleve &&
+                                remarque.trimestre === trimestre,
+                        )
+                        .sort((a, b) =>
+                            String(a.date_remarque).localeCompare(
+                                String(b.date_remarque),
+                            ),
+                        ),
                 );
             })
-            .catch(() => {
-                setError('Impossible de charger les remarques.');
-            })
+            .catch(() => setError('Impossible de charger les remarques.'))
             .finally(() => setLoading(false));
-    }, [authUserId, eleveIds, refreshKey]);
+    }, [authUserId, eleve.id_eleve, trimestre, refreshKey]);
 
-    function eleveName(id: number): string {
-        const eleve = eleves.find((item) => item.id_eleve === id);
-
-        return eleve ? `${eleve.prenom} ${eleve.nom}` : '';
-    }
-
-    function resetForm() {
-        setIdEleve('');
-        setContenu('');
-        setTrimestre('T1');
-        setDateRemarque(new Date().toISOString().slice(0, 10));
-    }
-
-    function startEdit(remarque: Remarque) {
+    function openNew() {
         setError(null);
         setSuccess(null);
-        setEditingId(remarque.id_remarque);
-        setIdEleve(String(remarque.id_eleve));
-        setContenu(remarque.contenu);
-        setTrimestre(remarque.trimestre);
-        setDateRemarque(String(remarque.date_remarque).slice(0, 10));
+        setEditing(null);
+        setModalOpen(true);
     }
 
-    async function handleSubmit(event: FormEvent) {
-        event.preventDefault();
+    function openEdit(remarque: Remarque) {
         setError(null);
         setSuccess(null);
-        setProcessing(true);
+        setEditing(remarque);
+        setModalOpen(true);
+    }
 
-        const payload: Record<string, string | number> = {
-            contenu,
-            trimestre,
-            date_remarque: dateRemarque,
-            id_eleve: Number(idEleve),
-        };
+    function handleSaved(saved: Remarque) {
+        setRemarques((current) => {
+            const next =
+                editing != null
+                    ? current.map((remarque) =>
+                          remarque.id_remarque === editing.id_remarque
+                              ? saved
+                              : remarque,
+                      )
+                    : [...current, saved];
 
-        try {
-            const response = await apiFetch(
-                editingId != null
-                    ? `/api/remarques/${editingId}`
-                    : '/api/remarques',
-                {
-                    method: editingId != null ? 'PUT' : 'POST',
-                    body: JSON.stringify(payload),
-                },
+            return next.sort((a, b) =>
+                String(a.date_remarque).localeCompare(String(b.date_remarque)),
             );
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                const message = data.message
-                    ? data.message
-                    : data.errors
-                      ? Object.values(data.errors).flat().join(', ')
-                      : 'Erreur lors de l\'enregistrement.';
-                setError(message);
-                setProcessing(false);
-
-                return;
-            }
-
-            if (editingId != null) {
-                setRemarques((current) =>
-                    current.map((remarque) =>
-                        remarque.id_remarque === editingId
-                            ? { ...remarque, ...payload }
-                            : remarque,
-                    ),
-                );
-                setSuccess('Remarque modifiée avec succès.');
-            } else {
-                setRemarques((current) => [data, ...current]);
-                setSuccess(
-                    `Remarque enregistrée pour ${eleveName(payload.id_eleve as number)}.`,
-                );
-            }
-
-            resetForm();
-            setEditingId(null);
-            setProcessing(false);
-            onChanged();
-        } catch {
-            setError('Une erreur est survenue. Veuillez réessayer.');
-            setProcessing(false);
-        }
+        });
+        setSuccess(
+            editing != null
+                ? 'Remarque modifiée avec succès.'
+                : 'Remarque enregistrée.',
+        );
+        setModalOpen(false);
+        setEditing(null);
+        onChanged();
     }
 
     async function handleDelete(remarque: Remarque) {
-        if (
-            !window.confirm(
-                `Supprimer la remarque de ${eleveName(remarque.id_eleve)} ?`,
-            )
-        ) {
+        if (!window.confirm('Supprimer cette remarque ?')) {
             return;
         }
 
@@ -182,14 +112,14 @@ export default function RemarqueEntry({
         try {
             const response = await apiFetch(
                 `/api/remarques/${remarque.id_remarque}`,
-                { method: 'DELETE' },
+                {
+                    method: 'DELETE',
+                },
             );
 
             if (!response.ok) {
                 const data = await response.json();
-                setError(
-                    data.message ?? 'Erreur lors de la suppression.',
-                );
+                setError(data.message ?? 'Erreur lors de la suppression.');
 
                 return;
             }
@@ -209,132 +139,24 @@ export default function RemarqueEntry({
     }
 
     return (
-        <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
-            <h2 className="mb-4 text-base font-medium text-slate-900 dark:text-slate-100">
-                Saisie des remarques
-            </h2>
-
+        <div className="space-y-6">
             {error && (
-                <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
+                <div className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                     {error}
                 </div>
             )}
 
             {success && (
-                <div className="mb-4 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-400">
+                <div className="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300">
                     {success}
                 </div>
             )}
 
-            <form
-                onSubmit={handleSubmit}
-                className="mb-6 flex flex-col gap-4"
-            >
-                <div>
-                    <label
-                        htmlFor="remarque-eleve"
-                        className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
-                    >
-                        Élève
-                    </label>
-                    <Select
-                        id="remarque-eleve"
-                        value={idEleve}
-                        onChange={(e) => setIdEleve(e.target.value)}
-                        required
-                    >
-                        <option value="">
-                            Sélectionnez un élève
-                        </option>
-                        {eleves.map((eleve) => (
-                            <option
-                                key={eleve.id_eleve}
-                                value={eleve.id_eleve}
-                            >
-                                {eleve.prenom} {eleve.nom}
-                            </option>
-                        ))}
-                    </Select>
-                </div>
-
-                <div>
-                    <label
-                        htmlFor="remarque-contenu"
-                        className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
-                    >
-                        Contenu
-                    </label>
-                    <textarea
-                        id="remarque-contenu"
-                        value={contenu}
-                        onChange={(e) => setContenu(e.target.value)}
-                        required
-                        rows={3}
-                        className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-                    />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label
-                            htmlFor="remarque-trimestre"
-                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
-                        >
-                            Trimestre
-                        </label>
-                        <Select
-                            id="remarque-trimestre"
-                            value={trimestre}
-                            onChange={(e) => setTrimestre(e.target.value)}
-                            required
-                        >
-                            <option value="T1">T1</option>
-                            <option value="T2">T2</option>
-                        </Select>
-                    </div>
-                    <div>
-                        <label
-                            htmlFor="remarque-date"
-                            className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
-                        >
-                            Date
-                        </label>
-                        <input
-                            id="remarque-date"
-                            type="date"
-                            value={dateRemarque}
-                            onChange={(e) => setDateRemarque(e.target.value)}
-                            required
-                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-                        />
-                    </div>
-                </div>
-
-                <div className="flex gap-3">
-                    <Button
-                        type="submit"
-                        disabled={processing}
-                    >
-                        {processing
-                            ? 'Enregistrement...'
-                            : editingId != null
-                              ? 'Enregistrer la remarque'
-                              : 'Ajouter la remarque'}
-                    </Button>
-                    {editingId != null && (
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setEditingId(null);
-                                resetForm();
-                            }}
-                            className="rounded-sm border border-slate-300 px-5 py-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:border-slate-700 dark:text-slate-400 dark:hover:text-slate-100"
-                        >
-                            Annuler
-                        </button>
-                    )}
-                </div>
-            </form>
+            <div>
+                <Button type="button" size="sm" onClick={openNew}>
+                    + Ajouter une remarque
+                </Button>
+            </div>
 
             {loading ? (
                 <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -345,13 +167,10 @@ export default function RemarqueEntry({
                     Aucune remarque enregistrée.
                 </p>
             ) : (
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-800">
                     <table className="w-full text-sm text-slate-900 dark:text-slate-100">
                         <thead>
-                            <tr className="border-b border-slate-200 dark:border-slate-800">
-                                <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">
-                                    Élève
-                                </th>
+                            <tr className="border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-800">
                                 <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">
                                     Date
                                 </th>
@@ -373,9 +192,6 @@ export default function RemarqueEntry({
                                     className="border-b border-slate-200 dark:border-slate-800"
                                 >
                                     <td className="px-3 py-2">
-                                        {eleveName(remarque.id_eleve)}
-                                    </td>
-                                    <td className="px-3 py-2">
                                         {String(remarque.date_remarque).slice(
                                             0,
                                             10,
@@ -390,9 +206,7 @@ export default function RemarqueEntry({
                                     <td className="px-3 py-2 text-right">
                                         <button
                                             type="button"
-                                            onClick={() =>
-                                                startEdit(remarque)
-                                            }
+                                            onClick={() => openEdit(remarque)}
                                             className="mr-4 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
                                         >
                                             Modifier
@@ -408,8 +222,7 @@ export default function RemarqueEntry({
                                             }
                                             className="text-sm font-medium text-slate-500 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:text-red-400"
                                         >
-                                            {deletingId ===
-                                            remarque.id_remarque
+                                            {deletingId === remarque.id_remarque
                                                 ? 'Suppression...'
                                                 : 'Supprimer'}
                                         </button>
@@ -420,6 +233,24 @@ export default function RemarqueEntry({
                     </table>
                 </div>
             )}
+
+            <Modal
+                open={modalOpen}
+                title={`${
+                    editing != null
+                        ? 'Modifier la remarque'
+                        : 'Nouvelle remarque'
+                } — ${eleve.prenom} ${eleve.nom}`}
+                onClose={() => setModalOpen(false)}
+            >
+                <RemarqueEntryForm
+                    eleve={eleve}
+                    trimestre={trimestre}
+                    initial={editing}
+                    onSaved={handleSaved}
+                    onCancel={() => setModalOpen(false)}
+                />
+            </Modal>
         </div>
     );
 }

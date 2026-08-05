@@ -1,35 +1,24 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { FormEvent } from 'react';
 import Button from '@/components/ui/Button';
-import Select from '@/components/ui/Select';
+import Modal from '@/components/ui/Modal';
+import NoteEntryForm from '@/components/enseignant/NoteEntryForm';
+import type { Note } from '@/components/enseignant/NoteEntryForm';
 import { apiFetch } from '@/lib/auth';
 
-type Eleve = {
-    id_eleve: number;
-    nom: string;
-    prenom: string;
-};
-
-type Note = {
-    id_note: number;
-    valeur: number;
-    trimestre: string;
-    date: string;
-    id_eleve: number;
-    id_matiere: number;
-    id_utilisateur: number;
-};
-
 type Props = {
-    eleves: Eleve[];
+    eleve: { id_eleve: number; nom: string; prenom: string };
+    trimestre: string;
     matiere: { id_matiere: number; nom: string } | null;
     authUserId: number;
     onChanged: () => void;
     refreshKey: number;
 };
 
+const MAX_NOTES = 4;
+
 export default function NoteEntry({
-    eleves,
+    eleve,
+    trimestre,
     matiere,
     authUserId,
     onChanged,
@@ -39,20 +28,13 @@ export default function NoteEntry({
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
-    const [processing, setProcessing] = useState(false);
     const [deletingId, setDeletingId] = useState<number | null>(null);
-    const [editingId, setEditingId] = useState<number | null>(null);
-    const [idEleve, setIdEleve] = useState('');
-    const [valeur, setValeur] = useState('');
-    const [trimestre, setTrimestre] = useState('T1');
-    const [date, setDate] = useState(
-        new Date().toISOString().slice(0, 10),
+    const [modalOpen, setModalOpen] = useState(false);
+    const [editing, setEditing] = useState<Note | null>(null);
+    const [calculatedAverage, setCalculatedAverage] = useState<number | null>(
+        null,
     );
-
-    const eleveIds = useMemo(
-        () => new Set(eleves.map((eleve) => eleve.id_eleve)),
-        [eleves],
-    );
+    const [averageDirty, setAverageDirty] = useState(false);
 
     useEffect(() => {
         apiFetch('/api/notes')
@@ -62,8 +44,7 @@ export default function NoteEntry({
 
                 if (!response.ok) {
                     setError(
-                        data.message ??
-                            'Erreur lors du chargement des notes.',
+                        data.message ?? 'Erreur lors du chargement des notes.',
                     );
 
                     return;
@@ -74,111 +55,80 @@ export default function NoteEntry({
                         (note) =>
                             note.id_utilisateur === authUserId &&
                             note.id_matiere === matiere?.id_matiere &&
-                            eleveIds.has(note.id_eleve),
+                            note.id_eleve === eleve.id_eleve &&
+                            note.trimestre === trimestre,
                     ),
                 );
             })
-            .catch(() => {
-                setError('Impossible de charger les notes.');
-            })
+            .catch(() => setError('Impossible de charger les notes.'))
             .finally(() => setLoading(false));
-    }, [authUserId, eleveIds, matiere?.id_matiere, refreshKey]);
+    }, [
+        authUserId,
+        eleve.id_eleve,
+        matiere?.id_matiere,
+        trimestre,
+        refreshKey,
+    ]);
 
-    function eleveName(id: number): string {
-        const eleve = eleves.find((item) => item.id_eleve === id);
+    const progress = `${notes.length}/${MAX_NOTES}`;
 
-        return eleve ? `${eleve.prenom} ${eleve.nom}` : '';
-    }
-
-    function resetForm() {
-        setIdEleve('');
-        setValeur('');
-        setTrimestre('T1');
-        setDate(new Date().toISOString().slice(0, 10));
-    }
-
-    function startEdit(note: Note) {
-        setError(null);
-        setSuccess(null);
-        setEditingId(note.id_note);
-        setIdEleve(String(note.id_eleve));
-        setValeur(String(note.valeur));
-        setTrimestre(note.trimestre);
-        setDate(String(note.date).slice(0, 10));
-    }
-
-    async function handleSubmit(event: FormEvent) {
-        event.preventDefault();
-        setError(null);
-        setSuccess(null);
-
-        if (!matiere) {
-            return;
+    const liveAverage = useMemo(() => {
+        if (notes.length === 0) {
+            return null;
         }
 
-        setProcessing(true);
+        const total = notes.reduce((sum, note) => sum + Number(note.valeur), 0);
 
-        const payload = {
-            valeur: Number(valeur),
-            trimestre,
-            date,
-            id_eleve: Number(idEleve),
-            id_matiere: matiere.id_matiere,
-        };
+        return total / notes.length;
+    }, [notes]);
 
-        try {
-            const response = await apiFetch(
-                editingId != null
-                    ? `/api/notes/${editingId}`
-                    : '/api/notes',
-                {
-                    method: editingId != null ? 'PUT' : 'POST',
-                    body: JSON.stringify(payload),
-                },
-            );
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                const message = data.message
-                    ? data.message
-                    : data.errors
-                      ? Object.values(data.errors).flat().join(', ')
-                      : 'Erreur lors de l\'enregistrement.';
-                setError(message);
-                setProcessing(false);
-
-                return;
-            }
-
-            if (editingId != null) {
-                setNotes((current) =>
-                    current.map((note) =>
-                        note.id_note === editingId
-                            ? { ...note, ...payload }
-                            : note,
-                    ),
-                );
-                setSuccess('Note modifiée avec succès.');
-            } else {
-                setNotes((current) => [data, ...current]);
-                setSuccess(
-                    `Note enregistrée pour ${eleveName(payload.id_eleve)}.`,
-                );
-            }
-
-            resetForm();
-            setEditingId(null);
-            setProcessing(false);
-            onChanged();
-        } catch {
-            setError('Une erreur est survenue. Veuillez réessayer.');
-            setProcessing(false);
+    const formattedAverage = useMemo(() => {
+        if (liveAverage === null) {
+            return null;
         }
+
+        return liveAverage.toFixed(2).replace('.', ',');
+    }, [liveAverage]);
+
+    function openNew() {
+        setError(null);
+        setSuccess(null);
+        setEditing(null);
+        setModalOpen(true);
+    }
+
+    function openEdit(note: Note) {
+        setError(null);
+        setSuccess(null);
+        setEditing(note);
+        setModalOpen(true);
+    }
+
+    function handleSaved(saved: Note) {
+        setNotes((current) =>
+            editing != null
+                ? current.map((note) =>
+                      note.id_note === editing.id_note ? saved : note,
+                  )
+                : [saved, ...current],
+        );
+        setSuccess(
+            editing != null
+                ? 'Note modifiée avec succès.'
+                : 'Note enregistrée.',
+        );
+        setModalOpen(false);
+        setEditing(null);
+
+        if (calculatedAverage !== null) {
+            setAverageDirty(true);
+        }
+
+        onChanged();
     }
 
     async function handleDelete(note: Note) {
-        if (!window.confirm(`Supprimer la note de ${eleveName(note.id_eleve)} ?`)) {
+        if (!window.confirm('Supprimer cette note ?')) {
             return;
         }
 
@@ -192,9 +142,7 @@ export default function NoteEntry({
 
             if (!response.ok) {
                 const data = await response.json();
-                setError(
-                    data.message ?? 'Erreur lors de la suppression.',
-                );
+                setError(data.message ?? 'Erreur lors de la suppression.');
 
                 return;
             }
@@ -204,6 +152,10 @@ export default function NoteEntry({
             );
             setSuccess('Note supprimée.');
             onChanged();
+
+            if (calculatedAverage !== null) {
+                setAverageDirty(true);
+            }
         } catch {
             setError('Une erreur est survenue lors de la suppression.');
         } finally {
@@ -211,220 +163,218 @@ export default function NoteEntry({
         }
     }
 
-    return (
-        <div className="rounded-lg bg-white p-6 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
-            <h2 className="mb-4 text-base font-medium text-slate-900 dark:text-slate-100">
-                Saisie des notes
-                {matiere ? ` — ${matiere.nom}` : ''}
-            </h2>
+    function handleCalculate() {
+        if (liveAverage === null) {
+            return;
+        }
 
+        setCalculatedAverage(liveAverage);
+        setAverageDirty(false);
+    }
+
+    if (loading) {
+        return (
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+                Chargement...
+            </p>
+        );
+    }
+
+    if (!matiere) {
+        return (
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+                Aucune matière n'est assignée à votre compte. Vous ne pouvez pas
+                saisir de notes.
+            </p>
+        );
+    }
+
+    return (
+        <div className="space-y-6">
             {error && (
-                <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
+                <div className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                     {error}
                 </div>
             )}
 
             {success && (
-                <div className="mb-4 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-400">
+                <div className="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300">
                     {success}
                 </div>
             )}
 
-            {!matiere ? (
+            <div className="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
                 <p className="text-sm text-slate-500 dark:text-slate-400">
-                    Aucune matière n'est assignée à votre compte.
+                    {matiere.nom} — {trimestre}
                 </p>
-            ) : (
-                <form
-                    onSubmit={handleSubmit}
-                    className="mb-6 flex flex-col gap-4"
-                >
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label
-                                htmlFor="note-eleve"
-                                className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
-                            >
-                                Élève
-                            </label>
-                            <Select
-                                id="note-eleve"
-                                value={idEleve}
-                                onChange={(e) => setIdEleve(e.target.value)}
-                                required
-                            >
-                                <option value="">
-                                    Sélectionnez un élève
-                                </option>
-                                {eleves.map((eleve) => (
-                                    <option
-                                        key={eleve.id_eleve}
-                                        value={eleve.id_eleve}
+
+                <div className="mt-4 grid grid-cols-2 gap-6">
+                    <div>
+                        <span className="text-xs tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                            Évaluation
+                        </span>
+                        <p className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">
+                            {progress}
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                            sur {MAX_NOTES} évaluations
+                        </p>
+                    </div>
+
+                    <div>
+                        <span className="text-xs tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                            Moyenne
+                        </span>
+                        {calculatedAverage === null ? (
+                            <>
+                                <p className="mt-1 text-2xl font-semibold text-slate-400 dark:text-slate-500">
+                                    —
+                                </p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">
+                                    Non calculée
+                                </p>
+                                <div className="mt-2">
+                                    <Button
+                                        type="button"
+                                        tone="secondary"
+                                        size="sm"
+                                        onClick={handleCalculate}
+                                        disabled={notes.length === 0}
                                     >
-                                        {eleve.prenom} {eleve.nom}
-                                    </option>
-                                ))}
-                            </Select>
-                        </div>
-                        <div>
-                            <label
-                                htmlFor="note-valeur"
-                                className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
-                            >
-                                Note (/20)
-                            </label>
-                            <input
-                                id="note-valeur"
-                                type="number"
-                                value={valeur}
-                                onChange={(e) => setValeur(e.target.value)}
-                                required
-                                min={0}
-                                max={20}
-                                step={0.25}
-                                className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label
-                                htmlFor="note-trimestre"
-                                className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
-                            >
-                                Trimestre
-                            </label>
-                            <Select
-                                id="note-trimestre"
-                                value={trimestre}
-                                onChange={(e) => setTrimestre(e.target.value)}
-                                required
-                            >
-                                <option value="T1">T1</option>
-                                <option value="T2">T2</option>
-                            </Select>
-                        </div>
-                        <div>
-                            <label
-                                htmlFor="note-date"
-                                className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
-                            >
-                                Date
-                            </label>
-                            <input
-                                id="note-date"
-                                type="date"
-                                value={date}
-                                onChange={(e) => setDate(e.target.value)}
-                                required
-                                className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="flex gap-3">
-                        <Button
-                            type="submit"
-                            disabled={processing}
-                        >
-                            {processing
-                                ? 'Enregistrement...'
-                                : editingId != null
-                                  ? 'Enregistrer la note'
-                                  : 'Ajouter la note'}
-                        </Button>
-                        {editingId != null && (
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setEditingId(null);
-                                    resetForm();
-                                }}
-                                className="rounded-sm border border-slate-300 px-5 py-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:border-slate-700 dark:text-slate-400 dark:hover:text-slate-100"
-                            >
-                                Annuler
-                            </button>
+                                        Calculer la moyenne
+                                    </Button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <p
+                                    className={`mt-1 text-2xl font-semibold ${
+                                        averageDirty
+                                            ? 'text-amber-600 dark:text-amber-400'
+                                            : 'text-indigo-600 dark:text-indigo-400'
+                                    }`}
+                                >
+                                    {formattedAverage} / 20
+                                </p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">
+                                    {averageDirty ? 'À recalculer' : 'Calculée'}
+                                    {` — ${notes.length} évaluation${notes.length > 1 ? 's' : ''}`}
+                                </p>
+                                {averageDirty && (
+                                    <div className="mt-2">
+                                        <Button
+                                            type="button"
+                                            tone="secondary"
+                                            size="sm"
+                                            onClick={handleCalculate}
+                                        >
+                                            Recalculer la moyenne
+                                        </Button>
+                                    </div>
+                                )}
+                            </>
                         )}
                     </div>
-                </form>
-            )}
-
-            {loading ? (
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                    Chargement...
-                </p>
-            ) : notes.length === 0 ? (
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                    Aucune note enregistrée.
-                </p>
-            ) : (
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-slate-900 dark:text-slate-100">
-                        <thead>
-                            <tr className="border-b border-slate-200 dark:border-slate-800">
-                                <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">
-                                    Élève
-                                </th>
-                                <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">
-                                    Note
-                                </th>
-                                <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">
-                                    Trimestre
-                                </th>
-                                <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">
-                                    Date
-                                </th>
-                                <th className="px-3 py-2 text-right font-medium text-slate-500 dark:text-slate-400">
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {notes.map((note) => (
-                                <tr
-                                    key={note.id_note}
-                                    className="border-b border-slate-200 dark:border-slate-800"
-                                >
-                                    <td className="px-3 py-2">
-                                        {eleveName(note.id_eleve)}
-                                    </td>
-                                    <td className="px-3 py-2">
-                                        {Number(note.valeur)}/20
-                                    </td>
-                                    <td className="px-3 py-2">
-                                        {note.trimestre}
-                                    </td>
-                                    <td className="px-3 py-2">
-                                        {String(note.date).slice(0, 10)}
-                                    </td>
-                                    <td className="px-3 py-2 text-right">
-                                        <button
-                                            type="button"
-                                            onClick={() => startEdit(note)}
-                                            className="mr-4 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
-                                        >
-                                            Modifier
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => handleDelete(note)}
-                                            disabled={
-                                                deletingId === note.id_note
-                                            }
-                                            className="text-sm font-medium text-slate-500 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:text-red-400"
-                                        >
-                                            {deletingId === note.id_note
-                                                ? 'Suppression...'
-                                                : 'Supprimer'}
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
                 </div>
-            )}
+
+                <div className="mt-4">
+                    <Button
+                        type="button"
+                        size="sm"
+                        onClick={openNew}
+                        disabled={notes.length >= MAX_NOTES}
+                    >
+                        + Ajouter une évaluation
+                    </Button>
+                </div>
+            </div>
+
+            <div>
+                <h3 className="mb-3 text-sm font-medium text-slate-900 dark:text-slate-100">
+                    Historique des évaluations
+                </h3>
+
+                {notes.length === 0 ? (
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                        Aucune évaluation enregistrée.
+                    </p>
+                ) : (
+                    <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-800">
+                        <table className="w-full text-sm text-slate-900 dark:text-slate-100">
+                            <thead>
+                                <tr className="border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-800">
+                                    <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">
+                                        Date
+                                    </th>
+                                    <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">
+                                        Note
+                                    </th>
+                                    <th className="px-3 py-2 text-right font-medium text-slate-500 dark:text-slate-400">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {notes.map((note) => (
+                                    <tr
+                                        key={note.id_note}
+                                        className="border-b border-slate-200 dark:border-slate-800"
+                                    >
+                                        <td className="px-3 py-2">
+                                            {String(note.date).slice(0, 10)}
+                                        </td>
+                                        <td className="px-3 py-2 font-medium">
+                                            {Number(note.valeur)} / 20
+                                        </td>
+                                        <td className="px-3 py-2 text-right">
+                                            <button
+                                                type="button"
+                                                onClick={() => openEdit(note)}
+                                                className="mr-4 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+                                            >
+                                                Modifier
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    handleDelete(note)
+                                                }
+                                                disabled={
+                                                    deletingId === note.id_note
+                                                }
+                                                className="text-sm font-medium text-slate-500 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:text-red-400"
+                                            >
+                                                {deletingId === note.id_note
+                                                    ? 'Suppression...'
+                                                    : 'Supprimer'}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
+
+            <Modal
+                open={modalOpen}
+                title={`${
+                    editing != null ? 'Modifier la note' : 'Nouvelle note'
+                } — ${eleve.prenom} ${eleve.nom}`}
+                onClose={() => setModalOpen(false)}
+            >
+                {matiere && (
+                    <NoteEntryForm
+                        eleve={eleve}
+                        trimestre={trimestre}
+                        matiere={matiere}
+                        initial={editing}
+                        onSaved={handleSaved}
+                        onCancel={() => setModalOpen(false)}
+                    />
+                )}
+            </Modal>
         </div>
     );
 }
