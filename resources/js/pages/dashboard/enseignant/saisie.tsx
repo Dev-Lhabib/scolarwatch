@@ -1,11 +1,9 @@
-import { useEffect, useState } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import AbsenceEntry from '@/components/enseignant/AbsenceEntry';
 import NoteEntry from '@/components/enseignant/NoteEntry';
 import RemarqueEntry from '@/components/enseignant/RemarqueEntry';
 import RetardEntry from '@/components/enseignant/RetardEntry';
-import StudentInfoCard from '@/components/enseignant/StudentInfoCard';
-import StudentSelector from '@/components/enseignant/StudentSelector';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 
@@ -101,19 +99,12 @@ export default function EnseignantSaisie() {
                 (enseignant) => enseignant.id === authUserId,
             ),
     );
-    const selectedClasse =
-        mesClasses.find((classe) => classe.id_classe === selectedClasseId) ??
-        null;
     const elevesDansClasse = allEleves.filter(
         (eleve) => eleve.id_classe === selectedClasseId,
     );
-    const selectedEleve =
-        allEleves.find((eleve) => eleve.id_eleve === selectedEleveId) ?? null;
     const maMatiere =
         matieres.find((matiere) => matiere.id_matiere === user?.id_matiere) ??
         null;
-    const activeTabLabel =
-        TABS.find((tab) => tab.key === activeTab)?.label ?? '';
 
     function handleChange() {
         setRefreshKey((key) => key + 1);
@@ -158,22 +149,14 @@ export default function EnseignantSaisie() {
         );
     }
 
+    const selectedEleveIdValue =
+        selectedEleveId === '' ? null : selectedEleveId;
+
     return (
         <AppLayout>
             <h1 className="mb-6 text-xl font-medium text-slate-900 dark:text-slate-100">
                 Saisie
             </h1>
-
-            {selectedEleve && (
-                <div className="mb-6">
-                    <StudentInfoCard
-                        eleve={selectedEleve}
-                        classe={selectedClasse}
-                        trimestre={selectedTrimestre}
-                        mode={activeTabLabel}
-                    />
-                </div>
-            )}
 
             <div className="mb-6 flex flex-wrap gap-2 border-b border-slate-200 dark:border-slate-800">
                 {TABS.map((tab) => (
@@ -200,7 +183,7 @@ export default function EnseignantSaisie() {
                 <div className="space-y-6">
                     <div className="rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
                         <h2 className="px-4 py-3 text-sm font-medium text-slate-900 dark:text-slate-100">
-                            1. Classe
+                            Classes
                         </h2>
 
                         {mesClasses.map((classe) => {
@@ -252,7 +235,7 @@ export default function EnseignantSaisie() {
                                     {isOpen && (
                                         <div className="border-t border-slate-200 p-4 dark:border-slate-800">
                                             <h3 className="mb-2 text-sm font-medium text-slate-900 dark:text-slate-100">
-                                                2. Trimestre
+                                                Trimestre
                                             </h3>
                                             <div className="mb-6 flex gap-3">
                                                 {TRIMESTRES.map((t) => (
@@ -277,70 +260,81 @@ export default function EnseignantSaisie() {
                                             </div>
 
                                             <h3 className="mb-2 text-sm font-medium text-slate-900 dark:text-slate-100">
-                                                3. Sélectionner un élève
+                                                Élèves
                                             </h3>
-                                            <StudentSelector
-                                                students={elevesDansClasse}
-                                                selectedId={
-                                                    selectedEleveId === ''
-                                                        ? null
-                                                        : selectedEleveId
-                                                }
-                                                onSelect={(eleve) =>
-                                                    handleSelectEleve(
-                                                        eleve.id_eleve,
-                                                    )
-                                                }
-                                            />
+
+                                            {activeTab === 'notes' && (
+                                                <NoteEntry
+                                                    eleves={elevesDansClasse}
+                                                    trimestre={
+                                                        selectedTrimestre
+                                                    }
+                                                    matiere={maMatiere}
+                                                    authUserId={authUserId}
+                                                    selectedEleveId={
+                                                        selectedEleveIdValue
+                                                    }
+                                                    onSelectEleve={
+                                                        handleSelectEleve
+                                                    }
+                                                    refreshKey={refreshKey}
+                                                    onChanged={handleChange}
+                                                />
+                                            )}
+
+                                            {activeTab === 'absences' && (
+                                                <AbsenceEntry
+                                                    eleves={elevesDansClasse}
+                                                    authUserId={authUserId}
+                                                    selectedEleveId={
+                                                        selectedEleveIdValue
+                                                    }
+                                                    onSelectEleve={
+                                                        handleSelectEleve
+                                                    }
+                                                    refreshKey={refreshKey}
+                                                    onChanged={handleChange}
+                                                />
+                                            )}
+
+                                            {activeTab === 'retards' && (
+                                                <RetardEntry
+                                                    eleves={elevesDansClasse}
+                                                    authUserId={authUserId}
+                                                    selectedEleveId={
+                                                        selectedEleveIdValue
+                                                    }
+                                                    onSelectEleve={
+                                                        handleSelectEleve
+                                                    }
+                                                    refreshKey={refreshKey}
+                                                    onChanged={handleChange}
+                                                />
+                                            )}
+
+                                            {activeTab === 'remarques' && (
+                                                <RemarqueEntry
+                                                    eleves={elevesDansClasse}
+                                                    trimestre={
+                                                        selectedTrimestre
+                                                    }
+                                                    authUserId={authUserId}
+                                                    selectedEleveId={
+                                                        selectedEleveIdValue
+                                                    }
+                                                    onSelectEleve={
+                                                        handleSelectEleve
+                                                    }
+                                                    refreshKey={refreshKey}
+                                                    onChanged={handleChange}
+                                                />
+                                            )}
                                         </div>
                                     )}
                                 </div>
                             );
                         })}
                     </div>
-
-                    {selectedEleve && (
-                        <div>
-                            {activeTab === 'notes' && (
-                                <NoteEntry
-                                    eleve={selectedEleve}
-                                    trimestre={selectedTrimestre}
-                                    matiere={maMatiere}
-                                    authUserId={authUserId}
-                                    onChanged={handleChange}
-                                    refreshKey={refreshKey}
-                                />
-                            )}
-
-                            {activeTab === 'absences' && (
-                                <AbsenceEntry
-                                    eleve={selectedEleve}
-                                    authUserId={authUserId}
-                                    onChanged={handleChange}
-                                    refreshKey={refreshKey}
-                                />
-                            )}
-
-                            {activeTab === 'retards' && (
-                                <RetardEntry
-                                    eleve={selectedEleve}
-                                    authUserId={authUserId}
-                                    onChanged={handleChange}
-                                    refreshKey={refreshKey}
-                                />
-                            )}
-
-                            {activeTab === 'remarques' && (
-                                <RemarqueEntry
-                                    eleve={selectedEleve}
-                                    trimestre={selectedTrimestre}
-                                    authUserId={authUserId}
-                                    onChanged={handleChange}
-                                    refreshKey={refreshKey}
-                                />
-                            )}
-                        </div>
-                    )}
                 </div>
             )}
         </AppLayout>
