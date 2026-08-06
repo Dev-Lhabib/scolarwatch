@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
-import FieldError from '@/components/ui/FieldError';
 import Button from '@/components/ui/Button';
+import FieldError from '@/components/ui/FieldError';
 import Select from '@/components/ui/Select';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
@@ -94,9 +94,11 @@ export default function CreateEleve() {
 
             if (!response.ok) {
                 setErrors(data.errors ?? {});
+
                 if (!data.errors) {
                     setError(data.message ?? 'Erreur lors de la création.');
                 }
+
                 setProcessing(false);
 
                 return;
@@ -291,9 +293,18 @@ export default function CreateEleve() {
 
                     {error && <FieldError message={error} />}
 
-                    <Button type="submit" disabled={processing}>
-                        {processing ? 'Création...' : "Créer l'élève"}
-                    </Button>
+                    <div className="flex gap-3">
+                        <Button type="submit" disabled={processing}>
+                            {processing ? 'Création...' : "Créer l'élève"}
+                        </Button>
+                        <Button
+                            type="button"
+                            tone="secondary"
+                            href="/dashboard/admin/eleves"
+                        >
+                            Annuler
+                        </Button>
+                    </div>
                 </form>
             </div>
         </AppLayout>

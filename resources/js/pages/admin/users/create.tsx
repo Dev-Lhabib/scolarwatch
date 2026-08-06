@@ -1,10 +1,11 @@
-import { FormEvent, useEffect, useState } from 'react';
-import FieldError from '@/components/ui/FieldError';
+import type { FormEvent} from 'react';
+import { useEffect, useState } from 'react';
 import Button from '@/components/ui/Button';
+import FieldError from '@/components/ui/FieldError';
 import Select from '@/components/ui/Select';
+import AppLayout from '@/layouts/AppLayout';
 import { getAuthUser, apiFetch } from '@/lib/auth';
 import { fieldClassName } from '@/lib/forms';
-import AppLayout from '@/layouts/AppLayout';
 
 const ROLES = [
     { value: 'admin', label: 'Admin' },
@@ -30,6 +31,7 @@ export default function CreateUser() {
 
     useEffect(() => {
         const user = getAuthUser();
+
         if (!user || user.role !== 'admin') {
             window.location.href = '/login';
         }
@@ -47,6 +49,7 @@ export default function CreateUser() {
                     'Les mots de passe ne correspondent pas.',
                 ],
             });
+
             return;
         }
 
@@ -71,10 +74,13 @@ export default function CreateUser() {
 
             if (!response.ok) {
                 setErrors(data.errors ?? {});
+
                 if (!data.errors) {
                     setError(data.message ?? 'Erreur lors de la création.');
                 }
+
                 setProcessing(false);
+
                 return;
             }
 
@@ -293,9 +299,18 @@ export default function CreateUser() {
 
                     {error && <FieldError message={error} />}
 
-                    <Button type="submit" disabled={processing}>
-                        {processing ? 'Création...' : "Créer l'utilisateur"}
-                    </Button>
+                    <div className="flex gap-3">
+                        <Button type="submit" disabled={processing}>
+                            {processing ? 'Création...' : "Créer l'utilisateur"}
+                        </Button>
+                        <Button
+                            type="button"
+                            tone="secondary"
+                            href="/admin/users"
+                        >
+                            Annuler
+                        </Button>
+                    </div>
                 </form>
             </div>
         </AppLayout>

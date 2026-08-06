@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 
@@ -31,6 +32,7 @@ export default function AdminUsersIndex() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
     const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
@@ -67,14 +69,6 @@ export default function AdminUsersIndex() {
     }, [refreshKey]);
 
     async function handleDelete(user: User) {
-        if (
-            !window.confirm(
-                `Supprimer l'utilisateur « ${user.prenom} ${user.nom} » ?`,
-            )
-        ) {
-            return;
-        }
-
         setDeletingId(user.id);
         setError(null);
 
@@ -98,6 +92,7 @@ export default function AdminUsersIndex() {
             setError('Une erreur est survenue lors de la suppression.');
         } finally {
             setDeletingId(null);
+            setDeleteTarget(null);
         }
     }
 
@@ -193,11 +188,17 @@ export default function AdminUsersIndex() {
                                 <td className="px-4 py-3">
                                     {ROLE_LABELS[user.role]}
                                 </td>
-                <td className="px-4 py-3">
-                    <Badge tone={user.is_active ? 'success' : 'danger'}>
-                        {user.is_active ? 'Actif' : 'Inactif'}
-                    </Badge>
-                </td>
+                                <td className="px-4 py-3">
+                                    <Badge
+                                        tone={
+                                            user.is_active
+                                                ? 'success'
+                                                : 'danger'
+                                        }
+                                    >
+                                        {user.is_active ? 'Actif' : 'Inactif'}
+                                    </Badge>
+                                </td>
                                 <td className="px-4 py-3 text-right">
                                     <a
                                         href={`/admin/users/${user.id}`}
@@ -207,14 +208,14 @@ export default function AdminUsersIndex() {
                                     </a>
                                     <button
                                         type="button"
-                                        onClick={() => handleDelete(user)}
+                                        onClick={() => setDeleteTarget(user)}
                                         disabled={
                                             user.is_bootstrap_admin ||
                                             deletingId === user.id
                                         }
                                         title={
                                             user.is_bootstrap_admin
-                                                ? "Le compte administrateur principal ne peut pas être supprimé."
+                                                ? 'Le compte administrateur principal ne peut pas être supprimé.'
                                                 : undefined
                                         }
                                         className="text-sm font-medium text-slate-500 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:text-red-400"
@@ -249,6 +250,26 @@ export default function AdminUsersIndex() {
                     </tbody>
                 </table>
             </Card>
+
+            <ConfirmDialog
+                open={deleteTarget != null}
+                title="Supprimer l'utilisateur"
+                description={
+                    deleteTarget != null
+                        ? `Êtes-vous sûr de vouloir supprimer l'utilisateur « ${deleteTarget.prenom} ${deleteTarget.nom} » ? Cette action est irréversible.`
+                        : undefined
+                }
+                confirmLabel="Supprimer"
+                confirmVariant="danger"
+                loading={deletingId != null}
+                loadingLabel="Suppression..."
+                onConfirm={() => {
+                    if (deleteTarget != null) {
+                        handleDelete(deleteTarget);
+                    }
+                }}
+                onCancel={() => setDeleteTarget(null)}
+            />
         </AppLayout>
     );
 }

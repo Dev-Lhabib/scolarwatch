@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import Badge from '@/components/ui/Badge';
-import FieldError from '@/components/ui/FieldError';
 import Button from '@/components/ui/Button';
+import FieldError from '@/components/ui/FieldError';
 import Select from '@/components/ui/Select';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
@@ -137,9 +137,11 @@ export default function EditClasse() {
             if (!response.ok) {
                 const data = await response.json();
                 setErrors(data.errors ?? {});
+
                 if (!data.errors) {
                     setError(data.message ?? 'Erreur lors de la mise à jour.');
                 }
+
                 setProcessing(false);
 
                 return;
@@ -185,11 +187,13 @@ export default function EditClasse() {
 
             if (!response.ok) {
                 setAssignErrors(data.errors ?? {});
+
                 if (!data.errors) {
                     setAssignError(
                         data.message ?? "Erreur lors de l'affectation.",
                     );
                 }
+
                 setAssignProcessing(false);
 
                 return;
@@ -452,12 +456,13 @@ export default function EditClasse() {
                                 ? 'Enregistrement...'
                                 : 'Enregistrer les modifications'}
                         </Button>
-                        <a
+                        <Button
+                            type="button"
+                            tone="secondary"
                             href="/dashboard/admin/classes"
-                            className="rounded-sm border border-slate-300 px-5 py-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:border-slate-700 dark:text-slate-400 dark:hover:text-slate-100"
                         >
                             Annuler
-                        </a>
+                        </Button>
                     </div>
                 </form>
             </div>

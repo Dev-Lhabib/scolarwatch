@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { ChangeEvent, ComponentType, ReactNode } from 'react';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import Modal from '@/components/ui/Modal';
 import Skeleton from '@/components/ui/Skeleton';
 import { apiFetch } from '@/lib/auth';
@@ -129,6 +130,7 @@ export default function SaisieWorkbench<T, F extends object>({
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<string | number | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<T | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [editing, setEditing] = useState<T | null>(null);
     const [search, setSearch] = useState('');
@@ -223,10 +225,6 @@ export default function SaisieWorkbench<T, F extends object>({
     async function handleDelete(record: T) {
         const id = config.rowKey(record);
 
-        if (!window.confirm(config.confirmDelete())) {
-            return;
-        }
-
         setDeletingId(id);
         setError(null);
 
@@ -251,6 +249,7 @@ export default function SaisieWorkbench<T, F extends object>({
             setError('Une erreur est survenue lors de la suppression.');
         } finally {
             setDeletingId(null);
+            setDeleteTarget(null);
         }
     }
 
@@ -271,7 +270,7 @@ export default function SaisieWorkbench<T, F extends object>({
                     </button>
                     <button
                         type="button"
-                        onClick={() => handleDelete(record)}
+                        onClick={() => setDeleteTarget(record)}
                         disabled={deletingId === id}
                         className="text-sm font-medium text-slate-500 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:text-red-400"
                     >
@@ -503,6 +502,26 @@ export default function SaisieWorkbench<T, F extends object>({
                     />
                 )}
             </Modal>
+
+            <ConfirmDialog
+                open={deleteTarget != null}
+                title="Supprimer"
+                description={
+                    deleteTarget != null
+                        ? `${config.confirmDelete()} Cette action est irréversible.`
+                        : undefined
+                }
+                confirmLabel="Supprimer"
+                confirmVariant="danger"
+                loading={deletingId != null}
+                loadingLabel="Suppression..."
+                onConfirm={() => {
+                    if (deleteTarget != null) {
+                        handleDelete(deleteTarget);
+                    }
+                }}
+                onCancel={() => setDeleteTarget(null)}
+            />
         </div>
     );
 }

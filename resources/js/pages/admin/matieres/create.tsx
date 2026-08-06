@@ -1,7 +1,7 @@
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
-import FieldError from '@/components/ui/FieldError';
 import Button from '@/components/ui/Button';
+import FieldError from '@/components/ui/FieldError';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 import { fieldClassName } from '@/lib/forms';
@@ -39,9 +39,11 @@ export default function CreateMatiere() {
 
             if (!response.ok) {
                 setErrors(data.errors ?? {});
+
                 if (!data.errors) {
                     setError(data.message ?? 'Erreur lors de la création.');
                 }
+
                 setProcessing(false);
 
                 return;
@@ -116,9 +118,18 @@ export default function CreateMatiere() {
 
                     {error && <FieldError message={error} />}
 
-                    <Button type="submit" disabled={processing}>
-                        {processing ? 'Création...' : 'Créer la matière'}
-                    </Button>
+                    <div className="flex gap-3">
+                        <Button type="submit" disabled={processing}>
+                            {processing ? 'Création...' : 'Créer la matière'}
+                        </Button>
+                        <Button
+                            type="button"
+                            tone="secondary"
+                            href="/dashboard/admin/matieres"
+                        >
+                            Annuler
+                        </Button>
+                    </div>
                 </form>
             </div>
         </AppLayout>

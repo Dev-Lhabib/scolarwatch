@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 
@@ -26,6 +27,7 @@ export default function AdminElevesIndex() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<Eleve | null>(null);
     const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
@@ -64,14 +66,6 @@ export default function AdminElevesIndex() {
     }, [refreshKey]);
 
     async function handleDelete(eleve: Eleve) {
-        if (
-            !window.confirm(
-                `Supprimer l'élève « ${eleve.prenom} ${eleve.nom} » ?`,
-            )
-        ) {
-            return;
-        }
-
         setDeletingId(eleve.id_eleve);
         setError(null);
 
@@ -83,8 +77,7 @@ export default function AdminElevesIndex() {
             if (!response.ok) {
                 const data = await response.json();
                 setError(
-                    data.message ??
-                        'Erreur lors de la suppression de l\'élève.',
+                    data.message ?? "Erreur lors de la suppression de l'élève.",
                 );
 
                 return;
@@ -95,6 +88,7 @@ export default function AdminElevesIndex() {
             setError('Une erreur est survenue lors de la suppression.');
         } finally {
             setDeletingId(null);
+            setDeleteTarget(null);
         }
     }
 
@@ -133,7 +127,9 @@ export default function AdminElevesIndex() {
                         enregistré{eleves.length > 1 ? 's' : ''}.
                     </p>
                 </div>
-                <Button href="/dashboard/admin/eleves/create">Nouvel élève</Button>
+                <Button href="/dashboard/admin/eleves/create">
+                    Nouvel élève
+                </Button>
             </div>
 
             {error && (
@@ -211,7 +207,7 @@ export default function AdminElevesIndex() {
                                     </a>
                                     <button
                                         type="button"
-                                        onClick={() => handleDelete(eleve)}
+                                        onClick={() => setDeleteTarget(eleve)}
                                         disabled={deletingId === eleve.id_eleve}
                                         className="text-sm font-medium text-slate-500 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:text-red-400"
                                     >
@@ -245,6 +241,26 @@ export default function AdminElevesIndex() {
                     </tbody>
                 </table>
             </Card>
+
+            <ConfirmDialog
+                open={deleteTarget != null}
+                title="Supprimer l'élève"
+                description={
+                    deleteTarget != null
+                        ? `Êtes-vous sûr de vouloir supprimer l'élève « ${deleteTarget.prenom} ${deleteTarget.nom} » ? Cette action est irréversible.`
+                        : undefined
+                }
+                confirmLabel="Supprimer"
+                confirmVariant="danger"
+                loading={deletingId != null}
+                loadingLabel="Suppression..."
+                onConfirm={() => {
+                    if (deleteTarget != null) {
+                        handleDelete(deleteTarget);
+                    }
+                }}
+                onCancel={() => setDeleteTarget(null)}
+            />
         </AppLayout>
     );
 }
