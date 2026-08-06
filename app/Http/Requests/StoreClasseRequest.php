@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreClasseRequest extends FormRequest
 {
@@ -23,9 +24,20 @@ class StoreClasseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nom' => ['required', 'string', 'max:255'],
+            'nom' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('classes', 'nom')
+                    ->where(fn ($query) => $query->where('annee_scolaire', $this->input('annee_scolaire'))),
+            ],
             'niveau' => ['required', 'string', 'max:50'],
-            'annee_scolaire' => ['required', 'string', 'max:20'],
+            'annee_scolaire' => [
+                'required',
+                'string',
+                'max:20',
+                'regex:/\A\d{4}-\d{4}\z/',
+            ],
             'capacite' => ['required', 'integer', 'min:1'],
             'id_utilisateur_principal' => ['nullable', 'exists:users,id'],
         ];

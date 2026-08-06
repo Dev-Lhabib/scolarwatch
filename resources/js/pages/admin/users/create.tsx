@@ -1,8 +1,11 @@
-import { FormEvent, useEffect, useState } from 'react';
+import type { FormEvent} from 'react';
+import { useEffect, useState } from 'react';
 import Button from '@/components/ui/Button';
+import FieldError from '@/components/ui/FieldError';
 import Select from '@/components/ui/Select';
-import { getAuthUser, apiFetch } from '@/lib/auth';
 import AppLayout from '@/layouts/AppLayout';
+import { getAuthUser, apiFetch } from '@/lib/auth';
+import { fieldClassName } from '@/lib/forms';
 
 const ROLES = [
     { value: 'admin', label: 'Admin' },
@@ -21,12 +24,14 @@ export default function CreateUser() {
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
     const [role, setRole] = useState('parent');
+    const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const [processing, setProcessing] = useState(false);
 
     useEffect(() => {
         const user = getAuthUser();
+
         if (!user || user.role !== 'admin') {
             window.location.href = '/login';
         }
@@ -34,11 +39,17 @@ export default function CreateUser() {
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
+        setErrors({});
         setError(null);
         setSuccess(null);
 
         if (password !== passwordConfirmation) {
-            setError('Les mots de passe ne correspondent pas.');
+            setErrors({
+                password_confirmation: [
+                    'Les mots de passe ne correspondent pas.',
+                ],
+            });
+
             return;
         }
 
@@ -62,17 +73,20 @@ export default function CreateUser() {
             const data = await response.json();
 
             if (!response.ok) {
-                const message = data.message
-                    ? data.message
-                    : data.errors
-                      ? Object.values(data.errors).flat().join(', ')
-                      : 'Erreur lors de la création.';
-                setError(message);
+                setErrors(data.errors ?? {});
+
+                if (!data.errors) {
+                    setError(data.message ?? 'Erreur lors de la création.');
+                }
+
                 setProcessing(false);
+
                 return;
             }
 
-            setSuccess(`Utilisateur ${data.prenom} ${data.nom} créé avec succès.`);
+            setSuccess(
+                `Utilisateur ${data.prenom} ${data.nom} créé avec succès.`,
+            );
             setNom('');
             setPrenom('');
             setUsername('');
@@ -91,7 +105,7 @@ export default function CreateUser() {
 
     return (
         <AppLayout>
-            <div className="mx-auto max-w-lg rounded-lg bg-white p-8 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+            <div className="mx-auto max-w-lg rounded-lg border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-900">
                 <h1 className="mb-1 text-xl font-medium text-slate-900 dark:text-slate-100">
                     Créer un utilisateur
                 </h1>
@@ -99,19 +113,17 @@ export default function CreateUser() {
                     Créez un nouveau compte pour un membre de l'établissement.
                 </p>
 
-                {error && (
-                    <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
-                        {error}
-                    </div>
-                )}
-
                 {success && (
                     <div className="mb-4 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-400">
                         {success}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <form
+                    onSubmit={handleSubmit}
+                    noValidate
+                    className="flex flex-col gap-4"
+                >
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label
@@ -125,9 +137,9 @@ export default function CreateUser() {
                                 type="text"
                                 value={nom}
                                 onChange={(e) => setNom(e.target.value)}
-                                required
-                                className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                                className={fieldClassName(Boolean(errors.nom))}
                             />
+                            <FieldError message={errors.nom?.[0]} />
                         </div>
                         <div>
                             <label
@@ -141,9 +153,11 @@ export default function CreateUser() {
                                 type="text"
                                 value={prenom}
                                 onChange={(e) => setPrenom(e.target.value)}
-                                required
-                                className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                                className={fieldClassName(
+                                    Boolean(errors.prenom),
+                                )}
                             />
+                            <FieldError message={errors.prenom?.[0]} />
                         </div>
                     </div>
 
@@ -159,9 +173,9 @@ export default function CreateUser() {
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            required
-                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                            className={fieldClassName(Boolean(errors.username))}
                         />
+                        <FieldError message={errors.username?.[0]} />
                     </div>
 
                     <div>
@@ -176,9 +190,9 @@ export default function CreateUser() {
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            required
-                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                            className={fieldClassName(Boolean(errors.email))}
                         />
+                        <FieldError message={errors.email?.[0]} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -194,8 +208,11 @@ export default function CreateUser() {
                                 type="tel"
                                 value={telephone}
                                 onChange={(e) => setTelephone(e.target.value)}
-                                className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                                className={fieldClassName(
+                                    Boolean(errors.telephone),
+                                )}
                             />
+                            <FieldError message={errors.telephone?.[0]} />
                         </div>
                         <div>
                             <label
@@ -208,7 +225,7 @@ export default function CreateUser() {
                                 id="role"
                                 value={role}
                                 onChange={(e) => setRole(e.target.value)}
-                                required
+                                hasError={Boolean(errors.role)}
                             >
                                 {ROLES.map((r) => (
                                     <option key={r.value} value={r.value}>
@@ -216,6 +233,7 @@ export default function CreateUser() {
                                     </option>
                                 ))}
                             </Select>
+                            <FieldError message={errors.role?.[0]} />
                         </div>
                     </div>
 
@@ -231,8 +249,9 @@ export default function CreateUser() {
                             value={adresse}
                             onChange={(e) => setAdresse(e.target.value)}
                             rows={2}
-                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                            className={fieldClassName(Boolean(errors.adresse))}
                         />
+                        <FieldError message={errors.adresse?.[0]} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -248,10 +267,11 @@ export default function CreateUser() {
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                required
-                                minLength={8}
-                                className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                                className={fieldClassName(
+                                    Boolean(errors.password),
+                                )}
                             />
+                            <FieldError message={errors.password?.[0]} />
                         </div>
                         <div>
                             <label
@@ -264,20 +284,33 @@ export default function CreateUser() {
                                 id="password_confirmation"
                                 type="password"
                                 value={passwordConfirmation}
-                                onChange={(e) => setPasswordConfirmation(e.target.value)}
-                                required
-                                minLength={8}
-                                className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                                onChange={(e) =>
+                                    setPasswordConfirmation(e.target.value)
+                                }
+                                className={fieldClassName(
+                                    Boolean(errors.password_confirmation),
+                                )}
+                            />
+                            <FieldError
+                                message={errors.password_confirmation?.[0]}
                             />
                         </div>
                     </div>
 
-                    <Button
-                        type="submit"
-                        disabled={processing}
-                    >
-                        {processing ? 'Création...' : "Créer l'utilisateur"}
-                    </Button>
+                    {error && <FieldError message={error} />}
+
+                    <div className="flex gap-3">
+                        <Button type="submit" disabled={processing}>
+                            {processing ? 'Création...' : "Créer l'utilisateur"}
+                        </Button>
+                        <Button
+                            type="button"
+                            tone="secondary"
+                            href="/admin/users"
+                        >
+                            Annuler
+                        </Button>
+                    </div>
                 </form>
             </div>
         </AppLayout>

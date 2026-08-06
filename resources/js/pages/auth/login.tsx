@@ -1,15 +1,19 @@
 import { Head } from '@inertiajs/react';
 import { FormEvent, useState } from 'react';
+import FieldError from '@/components/ui/FieldError';
 import Button from '@/components/ui/Button';
+import { fieldClassName } from '@/lib/forms';
 
 export default function Login() {
     const [identifiant, setIdentifiant] = useState('');
     const [password, setPassword] = useState('');
+    const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [error, setError] = useState<string | null>(null);
     const [processing, setProcessing] = useState(false);
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
+        setErrors({});
         setError(null);
         setProcessing(true);
 
@@ -26,7 +30,10 @@ export default function Login() {
             const data = await response.json();
 
             if (!response.ok) {
-                setError(data.message ?? 'Identifiants incorrects.');
+                setErrors(data.errors ?? {});
+                if (!data.errors) {
+                    setError(data.message ?? 'Identifiants incorrects.');
+                }
                 setProcessing(false);
                 return;
             }
@@ -52,7 +59,7 @@ export default function Login() {
         <>
             <Head title="Connexion" />
             <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6 dark:bg-slate-950">
-                <div className="w-full max-w-sm rounded-lg bg-white p-8 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                <div className="w-full max-w-sm rounded-lg border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-900">
                     <h1 className="mb-1 text-xl font-medium text-slate-900 dark:text-slate-100">
                         ScolarWatch
                     </h1>
@@ -60,13 +67,11 @@ export default function Login() {
                         Connectez-vous avec votre email ou nom d'utilisateur.
                     </p>
 
-                    {error && (
-                        <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
-                            {error}
-                        </div>
-                    )}
-
-                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                    <form
+                        onSubmit={handleSubmit}
+                        noValidate
+                        className="flex flex-col gap-4"
+                    >
                         <div>
                             <label
                                 htmlFor="identifiant"
@@ -79,10 +84,12 @@ export default function Login() {
                                 type="text"
                                 value={identifiant}
                                 onChange={(e) => setIdentifiant(e.target.value)}
-                                required
                                 autoFocus
-                                className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                                className={fieldClassName(
+                                    Boolean(errors.identifiant),
+                                )}
                             />
+                            <FieldError message={errors.identifiant?.[0]} />
                         </div>
 
                         <div>
@@ -97,15 +104,16 @@ export default function Login() {
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                required
-                                className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                                className={fieldClassName(
+                                    Boolean(errors.password),
+                                )}
                             />
+                            <FieldError message={errors.password?.[0]} />
                         </div>
 
-                        <Button
-                            type="submit"
-                            disabled={processing}
-                        >
+                        {error && <FieldError message={error} />}
+
+                        <Button type="submit" disabled={processing}>
                             {processing ? 'Connexion...' : 'Se connecter'}
                         </Button>
                     </form>

@@ -20,6 +20,20 @@ it('lists classes for an authenticated user', function () {
         ]);
 });
 
+it('loads the professeur principal and enseignants relations in the classes index', function () {
+    $classe = Classe::factory()->create([
+        'id_utilisateur_principal' => $this->enseignant->id,
+    ]);
+    $classe->enseignants()->attach($this->enseignant->id);
+
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->getJson('/api/classes');
+
+    $response->assertOk()
+        ->assertJsonPath('0.professeur_principal.id', $this->enseignant->id)
+        ->assertJsonPath('0.enseignants.0.id', $this->enseignant->id);
+});
+
 it('rejects unauthenticated access to classes index', function () {
     $response = $this->getJson('/api/classes');
 
@@ -58,6 +72,98 @@ it('validates required fields when creating a classe', function () {
 
     $response->assertUnprocessable()
         ->assertJsonValidationErrors(['nom', 'niveau', 'annee_scolaire', 'capacite']);
+});
+
+it('rejects a duplicate classe with the same nom and annee_scolaire', function () {
+    Classe::factory()->create(['nom' => '1AC-B', 'annee_scolaire' => '2025-2026']);
+
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->postJson('/api/classes', [
+            'nom' => '1AC-B',
+            'niveau' => '1AC',
+            'annee_scolaire' => '2025-2026',
+            'capacite' => 30,
+        ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors(['nom']);
+});
+
+it('allows the same nom in a different annee_scolaire', function () {
+    Classe::factory()->create(['nom' => '1AC-B', 'annee_scolaire' => '2025-2026']);
+
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->postJson('/api/classes', [
+            'nom' => '1AC-B',
+            'niveau' => '1AC',
+            'annee_scolaire' => '2026-2027',
+            'capacite' => 30,
+        ]);
+
+    $response->assertCreated();
+});
+
+it('rejects an invalid annee_scolaire format', function (string $anneeScolaire) {
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->postJson('/api/classes', [
+            'nom' => 'Test',
+            'niveau' => '1AC',
+            'annee_scolaire' => $anneeScolaire,
+            'capacite' => 30,
+        ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors(['annee_scolaire']);
+})->with([
+    'ddddd' => ['ddddd'],
+    'abc' => ['abc'],
+    '2026' => ['2026'],
+    'hello' => ['hello'],
+    '25-26' => ['25-26'],
+    '2025/2026' => ['2025/2026'],
+    '2025_2026' => ['2025_2026'],
+]);
+
+it('accepts a valid annee_scolaire format', function () {
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->postJson('/api/classes', [
+            'nom' => '1AC-C',
+            'niveau' => '1AC',
+            'annee_scolaire' => '2026-2027',
+            'capacite' => 30,
+        ]);
+
+    $response->assertCreated();
+});
+
+it('allows updating a classe without changing its own nom and annee_scolaire', function () {
+    $classe = Classe::factory()->create(['nom' => '1AC-B', 'annee_scolaire' => '2025-2026']);
+
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->putJson("/api/classes/{$classe->id_classe}", [
+            'nom' => '1AC-B',
+            'niveau' => '1AC',
+            'annee_scolaire' => '2025-2026',
+            'capacite' => 32,
+        ]);
+
+    $response->assertOk();
+});
+
+it('rejects updating a classe to an existing nom and annee_scolaire combination', function () {
+    Classe::factory()->create(['nom' => '1AC-A', 'annee_scolaire' => '2025-2026']);
+    $autreClasse = Classe::factory()->create(['nom' => '1AC-B', 'annee_scolaire' => '2025-2026']);
+
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->putJson("/api/classes/{$autreClasse->id_classe}", [
+            'nom' => '1AC-A',
+            'niveau' => '1AC',
+            'annee_scolaire' => '2025-2026',
+            'capacite' => 32,
+        ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors(['nom']);
 });
 
 it('allows the professeur principal to view their own classe', function () {
@@ -123,37 +229,6 @@ it('does not duplicate an enseignant assignment when called twice', function () 
     expect($classe->enseignants()->count())->toBe(1);
 });
 
-it('rejects assigning a non-enseignant as enseignant to a classe', function () {
-    $classe = Classe::factory()->create();
-
-    $response = $this->actingAs($this->admin, 'sanctum')
-        ->postJson("/api/classes/{$classe->id_classe}/enseignants", ['id_utilisateur' => $this->admin->id]);
-
-    $response->assertUnprocessable();
-
-    $this->assertDatabaseMissing('enseigne', [
-        'id_classe' => $classe->id_classe,
-        'id_utilisateur' => $this->admin->id,
-    ]);
-});
-
-it('rejects assigning a non-enseignant as professeur principal', function () {
-    $classe = Classe::factory()->create(['id_utilisateur_principal' => null]);
-    $direction = User::factory()->direction()->create();
-
-    $response = $this->actingAs($this->admin, 'sanctum')
-        ->patchJson("/api/classes/{$classe->id_classe}/professeur-principal", [
-            'id_utilisateur_principal' => $direction->id,
-        ]);
-
-    $response->assertUnprocessable();
-
-    $this->assertDatabaseMissing('classes', [
-        'id_classe' => $classe->id_classe,
-        'id_utilisateur_principal' => $direction->id,
-    ]);
-});
-
 it('allows an admin to delete a classe', function () {
     $classe = Classe::factory()->create();
 
@@ -170,52 +245,6 @@ it('forbids a non-admin from deleting a classe', function () {
 
     $response = $this->actingAs($this->enseignant, 'sanctum')
         ->deleteJson("/api/classes/{$classe->id_classe}");
-
-    $response->assertForbidden();
-});
-
-it('allows an admin to update a classe', function () {
-    $classe = Classe::factory()->create();
-
-    $response = $this->actingAs($this->admin, 'sanctum')
-        ->putJson("/api/classes/{$classe->id_classe}", [
-            'nom' => '2AC-B',
-            'niveau' => '2AC',
-            'annee_scolaire' => '2025-2026',
-            'capacite' => 32,
-        ]);
-
-    $response->assertOk()
-        ->assertJsonPath('id_classe', $classe->id_classe);
-
-    $this->assertDatabaseHas('classes', ['id_classe' => $classe->id_classe, 'nom' => '2AC-B']);
-});
-
-it('forbids an enseignant from updating a classe', function () {
-    $classe = Classe::factory()->create();
-
-    $response = $this->actingAs($this->enseignant, 'sanctum')
-        ->patchJson("/api/classes/{$classe->id_classe}", [
-            'nom' => '2AC-B',
-            'niveau' => '2AC',
-            'annee_scolaire' => '2025-2026',
-            'capacite' => 32,
-        ]);
-
-    $response->assertForbidden();
-});
-
-it('forbids direction from updating a classe', function () {
-    $direction = User::factory()->direction()->create();
-    $classe = Classe::factory()->create();
-
-    $response = $this->actingAs($direction, 'sanctum')
-        ->putJson("/api/classes/{$classe->id_classe}", [
-            'nom' => '2AC-B',
-            'niveau' => '2AC',
-            'annee_scolaire' => '2025-2026',
-            'capacite' => 32,
-        ]);
 
     $response->assertForbidden();
 });

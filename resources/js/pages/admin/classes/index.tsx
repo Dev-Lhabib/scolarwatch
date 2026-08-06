@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 
@@ -23,6 +24,7 @@ export default function AdminClassesIndex() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<Classe | null>(null);
     const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
@@ -59,10 +61,6 @@ export default function AdminClassesIndex() {
     }, [refreshKey]);
 
     async function handleDelete(classe: Classe) {
-        if (!window.confirm(`Supprimer la classe « ${classe.nom} » ?`)) {
-            return;
-        }
-
         setDeletingId(classe.id_classe);
         setError(null);
 
@@ -87,6 +85,7 @@ export default function AdminClassesIndex() {
             setError('Une erreur est survenue lors de la suppression.');
         } finally {
             setDeletingId(null);
+            setDeleteTarget(null);
         }
     }
 
@@ -117,7 +116,9 @@ export default function AdminClassesIndex() {
                         enregistrée{classes.length > 1 ? 's' : ''}.
                     </p>
                 </div>
-                <Button href="/dashboard/admin/classes/create">Nouvelle classe</Button>
+                <Button href="/dashboard/admin/classes/create">
+                    Nouvelle classe
+                </Button>
             </div>
 
             {error && (
@@ -186,8 +187,10 @@ export default function AdminClassesIndex() {
                                     </a>
                                     <button
                                         type="button"
-                                        onClick={() => handleDelete(classe)}
-                                        disabled={deletingId === classe.id_classe}
+                                        onClick={() => setDeleteTarget(classe)}
+                                        disabled={
+                                            deletingId === classe.id_classe
+                                        }
                                         className="text-sm font-medium text-slate-500 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:text-red-400"
                                     >
                                         {deletingId === classe.id_classe
@@ -220,6 +223,26 @@ export default function AdminClassesIndex() {
                     </tbody>
                 </table>
             </Card>
+
+            <ConfirmDialog
+                open={deleteTarget != null}
+                title="Supprimer la classe"
+                description={
+                    deleteTarget != null
+                        ? `Êtes-vous sûr de vouloir supprimer la classe « ${deleteTarget.nom} » ? Cette action est irréversible.`
+                        : undefined
+                }
+                confirmLabel="Supprimer"
+                confirmVariant="danger"
+                loading={deletingId != null}
+                loadingLabel="Suppression..."
+                onConfirm={() => {
+                    if (deleteTarget != null) {
+                        handleDelete(deleteTarget);
+                    }
+                }}
+                onCancel={() => setDeleteTarget(null)}
+            />
         </AppLayout>
     );
 }

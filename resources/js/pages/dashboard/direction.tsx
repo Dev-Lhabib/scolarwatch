@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
+import Accordion from '@/components/ui/Accordion';
+import Badge from '@/components/ui/Badge';
 import Card from '@/components/ui/Card';
 import StatCard from '@/components/ui/StatCard';
-import { apiFetch, getAuthUser } from '@/lib/auth';
 import AppLayout from '@/layouts/AppLayout';
+import { apiFetch, getAuthUser } from '@/lib/auth';
 
 type Classe = {
     id_classe: number;
@@ -34,14 +36,15 @@ type EleveStat = {
     classeNom: string;
     absences: number;
     retards: number;
-    total: number;
 };
 
 type ClasseStat = {
+    id_classe: number;
     nom: string;
+    niveau: string;
+    eleves: Eleve[];
     absences: number;
     retards: number;
-    total: number;
 };
 
 export default function DirectionDashboard() {
@@ -49,29 +52,37 @@ export default function DirectionDashboard() {
     const [eleves, setEleves] = useState<Eleve[]>([]);
     const [absences, setAbsences] = useState<Absence[]>([]);
     const [retards, setRetards] = useState<Retard[]>([]);
+    const [openClasseId, setOpenClasseId] = useState<number | null>(null);
 
     useEffect(() => {
         const user = getAuthUser();
+
         if (!user || user.role !== 'direction') {
             window.location.href = '/login';
+
             return;
         }
 
         async function load() {
             try {
-                const [classesRes, elevesRes, absencesRes, retardsRes] = await Promise.all([
-                    apiFetch('/api/classes'),
-                    apiFetch('/api/eleves'),
-                    apiFetch('/api/absences'),
-                    apiFetch('/api/retards'),
-                ]);
+                const [classesRes, elevesRes, absencesRes, retardsRes] =
+                    await Promise.all([
+                        apiFetch('/api/classes'),
+                        apiFetch('/api/eleves'),
+                        apiFetch('/api/absences'),
+                        apiFetch('/api/retards'),
+                    ]);
 
                 const classesJson = await classesRes.json();
                 const elevesJson = await elevesRes.json();
                 const absencesJson = await absencesRes.json();
                 const retardsJson = await retardsRes.json();
 
-                setClasses(Array.isArray(classesJson) ? classesJson : []);
+                const allClasses: Classe[] = Array.isArray(classesJson)
+                    ? classesJson
+                    : [];
+                setClasses(allClasses);
+                setOpenClasseId(allClasses[0]?.id_classe ?? null);
                 setEleves(Array.isArray(elevesJson) ? elevesJson : []);
                 setAbsences(Array.isArray(absencesJson) ? absencesJson : []);
                 setRetards(Array.isArray(retardsJson) ? retardsJson : []);
@@ -87,38 +98,95 @@ export default function DirectionDashboard() {
         classes.map((c) => [c.id_classe, c.nom]),
     );
 
-    const eleveStats: EleveStat[] = useMemo(() => {
-        return eleves.map((e) => {
-            const abs = absences.filter((a) => a.id_eleve === e.id_eleve).length;
-            const ret = retards.filter((r) => r.id_eleve === e.id_eleve).length;
-            return {
-                id_eleve: e.id_eleve,
-                nom: e.nom,
-                prenom: e.prenom,
-                classeNom: classeMap[e.id_classe] ?? `Classe #${e.id_classe}`,
-                absences: abs,
-                retards: ret,
-                total: abs + ret,
-            };
-        }).sort((a, b) => b.total - a.total).slice(0, 20);
-    }, [eleves, absences, retards, classeMap]);
+    const statsParEleve = useMemo(() => {
+        const stats = new Map<number, { absences: number; retards: number }>();
 
-    const classeStats: ClasseStat[] = useMemo(() => {
-        return classes.map((c) => {
-            const ids = new Set(eleves.filter((e) => e.id_classe === c.id_classe).map((e) => e.id_eleve));
-            const abs = absences.filter((a) => ids.has(a.id_eleve)).length;
-            const ret = retards.filter((r) => ids.has(r.id_eleve)).length;
+        for (const eleve of eleves) {
+            stats.set(eleve.id_eleve, { absences: 0, retards: 0 });
+        }
+
+        for (const absence of absences) {
+            const stat = stats.get(absence.id_eleve);
+
+            if (stat) {
+                stat.absences += 1;
+            }
+        }
+
+        for (const retard of retards) {
+            const stat = stats.get(retard.id_eleve);
+
+            if (stat) {
+                stat.retards += 1;
+            }
+        }
+
+        return stats;
+    }, [eleves, absences, retards]);
+
+    const eleveStats: EleveStat[] = useMemo(() => {
+        return eleves
+            .map((eleve) => {
+                const stat = statsParEleve.get(eleve.id_eleve) ?? {
+                    absences: 0,
+                    retards: 0,
+                };
+
+                return {
+                    id_eleve: eleve.id_eleve,
+                    nom: eleve.nom,
+                    prenom: eleve.prenom,
+                    classeNom:
+                        classeMap[eleve.id_classe] ??
+                        `Classe #${eleve.id_classe}`,
+                    absences: stat.absences,
+                    retards: stat.retards,
+                };
+            })
+            .filter((stat) => stat.absences > 0 || stat.retards > 0)
+            .sort((a, b) => b.absences - a.absences || b.retards - a.retards)
+            .slice(0, 20);
+    }, [eleves, classeMap, statsParEleve]);
+
+    const classesWithStats: ClasseStat[] = useMemo(() => {
+        return classes.map((classe) => {
+            const elevesDeClasse = eleves.filter(
+                (eleve) => eleve.id_classe === classe.id_classe,
+            );
+            let absencesTotal = 0;
+            let retardsTotal = 0;
+
+            for (const eleve of elevesDeClasse) {
+                const stat = statsParEleve.get(eleve.id_eleve);
+                absencesTotal += stat?.absences ?? 0;
+                retardsTotal += stat?.retards ?? 0;
+            }
+
             return {
-                nom: c.nom,
-                absences: abs,
-                retards: ret,
-                total: abs + ret,
+                id_classe: classe.id_classe,
+                nom: classe.nom,
+                niveau: classe.niveau,
+                eleves: elevesDeClasse,
+                absences: absencesTotal,
+                retards: retardsTotal,
             };
-        }).sort((a, b) => b.total - a.total);
-    }, [classes, eleves, absences, retards]);
+        });
+    }, [classes, eleves, statsParEleve]);
 
     const totalAbsences = absences.length;
     const totalRetards = retards.length;
+
+    function eleveCountLabel(count: number): string {
+        return `${count} élève${count > 1 ? 's' : ''}`;
+    }
+
+    function absenceCountLabel(count: number): string {
+        return `${count} absence${count > 1 ? 's' : ''}`;
+    }
+
+    function retardCountLabel(count: number): string {
+        return `${count} retard${count > 1 ? 's' : ''}`;
+    }
 
     return (
         <AppLayout>
@@ -127,81 +195,172 @@ export default function DirectionDashboard() {
             </h1>
 
             <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-4">
-                <StatCard label="Total classes" value={String(classes.length)} />
+                <StatCard
+                    label="Total classes"
+                    value={String(classes.length)}
+                />
                 <StatCard label="Total élèves" value={String(eleves.length)} />
                 <StatCard label="Absences" value={String(totalAbsences)} />
                 <StatCard label="Retards" value={String(totalRetards)} />
             </div>
 
-            <div className="mb-8 space-y-8">
-                <Card>
-                    <h2 className="mb-4 text-base font-medium text-slate-900 dark:text-slate-100">
-                        Élèves les plus concernés
-                    </h2>
+            <Card className="mb-8">
+                <h2 className="mb-4 text-base font-medium text-slate-900 dark:text-slate-100">
+                    Élèves les plus concernés
+                </h2>
+                {eleveStats.length === 0 ? (
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                        Aucun élève concerné pour le moment.
+                    </p>
+                ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm text-slate-900 dark:text-slate-100">
                             <thead>
                                 <tr className="border-b border-slate-200 dark:border-slate-800">
-                                    <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">Élève</th>
-                                    <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">Classe</th>
-                                    <th className="px-3 py-2 text-center font-medium text-slate-500 dark:text-slate-400">Absences</th>
-                                    <th className="px-3 py-2 text-center font-medium text-slate-500 dark:text-slate-400">Retards</th>
+                                    <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">
+                                        Élève
+                                    </th>
+                                    <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">
+                                        Classe
+                                    </th>
+                                    <th className="px-3 py-2 text-center font-medium text-slate-500 dark:text-slate-400">
+                                        Absences
+                                    </th>
+                                    <th className="px-3 py-2 text-center font-medium text-slate-500 dark:text-slate-400">
+                                        Retards
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {eleveStats.map((s) => (
-                                    <tr key={s.id_eleve} className="border-b border-slate-200 dark:border-slate-800">
-                                        <td className="px-3 py-2">{s.prenom} {s.nom}</td>
-                                        <td className="px-3 py-2">{s.classeNom}</td>
-                                        <td className="px-3 py-2 text-center">{s.absences}</td>
-                                        <td className="px-3 py-2 text-center">{s.retards}</td>
-                                    </tr>
-                                ))}
-                                {eleveStats.length === 0 && (
-                                    <tr>
-                                        <td colSpan={4} className="px-3 py-4 text-center text-slate-500 dark:text-slate-400">
-                                            Aucune donnée.
+                                {eleveStats.map((stat) => (
+                                    <tr
+                                        key={stat.id_eleve}
+                                        className="border-b border-slate-200 dark:border-slate-800"
+                                    >
+                                        <td className="px-3 py-2">
+                                            {stat.prenom} {stat.nom}
+                                        </td>
+                                        <td className="px-3 py-2">
+                                            {stat.classeNom}
+                                        </td>
+                                        <td className="px-3 py-2 text-center">
+                                            {stat.absences}
+                                        </td>
+                                        <td className="px-3 py-2 text-center">
+                                            {stat.retards}
                                         </td>
                                     </tr>
-                                )}
+                                ))}
                             </tbody>
                         </table>
                     </div>
-                </Card>
+                )}
+            </Card>
 
-                <Card>
-                    <h2 className="mb-4 text-base font-medium text-slate-900 dark:text-slate-100">
-                        Classes les plus touchées
-                    </h2>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-slate-900 dark:text-slate-100">
-                            <thead>
-                                <tr className="border-b border-slate-200 dark:border-slate-800">
-                                    <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">Classe</th>
-                                    <th className="px-3 py-2 text-center font-medium text-slate-500 dark:text-slate-400">Absences</th>
-                                    <th className="px-3 py-2 text-center font-medium text-slate-500 dark:text-slate-400">Retards</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {classeStats.map((s) => (
-                                    <tr key={s.nom} className="border-b border-slate-200 dark:border-slate-800">
-                                        <td className="px-3 py-2">{s.nom}</td>
-                                        <td className="px-3 py-2 text-center">{s.absences}</td>
-                                        <td className="px-3 py-2 text-center">{s.retards}</td>
-                                    </tr>
-                                ))}
-                                {classeStats.length === 0 && (
-                                    <tr>
-                                        <td colSpan={3} className="px-3 py-4 text-center text-slate-500 dark:text-slate-400">
-                                            Aucune donnée.
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+            <section className="mb-8">
+                <h2 className="mb-4 text-base font-medium text-slate-900 dark:text-slate-100">
+                    Classes
+                </h2>
+                {classesWithStats.length === 0 ? (
+                    <div className="rounded-lg border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
+                        Aucune classe disponible.
                     </div>
-                </Card>
-            </div>
+                ) : (
+                    <div className="space-y-4">
+                        {classesWithStats.map((classe) => (
+                            <Accordion
+                                key={classe.id_classe}
+                                id={classe.id_classe}
+                                open={openClasseId === classe.id_classe}
+                                onToggle={() =>
+                                    setOpenClasseId(
+                                        openClasseId === classe.id_classe
+                                            ? null
+                                            : classe.id_classe,
+                                    )
+                                }
+                                title={classe.nom}
+                                subtitle={
+                                    <>
+                                        <Badge tone="info">
+                                            Niveau : {classe.niveau}
+                                        </Badge>
+                                        <Badge>
+                                            {eleveCountLabel(
+                                                classe.eleves.length,
+                                            )}
+                                        </Badge>
+                                        <Badge>
+                                            {absenceCountLabel(classe.absences)}
+                                        </Badge>
+                                        <Badge>
+                                            {retardCountLabel(classe.retards)}
+                                        </Badge>
+                                    </>
+                                }
+                            >
+                                {classe.eleves.length === 0 ? (
+                                    <p className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">
+                                        Aucun élève dans cette classe.
+                                    </p>
+                                ) : (
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm text-slate-900 dark:text-slate-100">
+                                            <thead>
+                                                <tr className="border-b border-slate-200 dark:border-slate-800">
+                                                    <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">
+                                                        Nom
+                                                    </th>
+                                                    <th className="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">
+                                                        Prénom
+                                                    </th>
+                                                    <th className="px-3 py-2 text-center font-medium text-slate-500 dark:text-slate-400">
+                                                        Absences
+                                                    </th>
+                                                    <th className="px-3 py-2 text-center font-medium text-slate-500 dark:text-slate-400">
+                                                        Retards
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {classe.eleves.map((eleve) => {
+                                                    const stat =
+                                                        statsParEleve.get(
+                                                            eleve.id_eleve,
+                                                        ) ?? {
+                                                            absences: 0,
+                                                            retards: 0,
+                                                        };
+
+                                                    return (
+                                                        <tr
+                                                            key={eleve.id_eleve}
+                                                            className="border-b border-slate-200 dark:border-slate-800"
+                                                        >
+                                                            <td className="px-3 py-2">
+                                                                {eleve.nom}
+                                                            </td>
+                                                            <td className="px-3 py-2">
+                                                                {eleve.prenom}
+                                                            </td>
+                                                            <td className="px-3 py-2 text-center">
+                                                                {stat.absences}
+                                                            </td>
+                                                            <td className="px-3 py-2 text-center">
+                                                                {stat.retards}
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </Accordion>
+                        ))}
+                    </div>
+                )}
+            </section>
         </AppLayout>
     );
 }

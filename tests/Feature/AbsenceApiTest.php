@@ -185,3 +185,25 @@ it('forbids a parent from deleting an absence', function () {
 
     $response->assertForbidden();
 });
+
+it('blocks a duplicate absence for the same eleve and date', function () {
+    $this->actingAs($this->enseignant, 'sanctum')
+        ->postJson('/api/absences', [
+            'date_absence' => '2026-01-15',
+            'justifiee' => false,
+            'id_eleve' => $this->eleve->id_eleve,
+        ])
+        ->assertCreated();
+
+    $response = $this->actingAs($this->enseignant, 'sanctum')
+        ->postJson('/api/absences', [
+            'date_absence' => '2026-01-15',
+            'justifiee' => false,
+            'id_eleve' => $this->eleve->id_eleve,
+        ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors('date_absence');
+
+    $this->assertDatabaseCount('absences', 1);
+});

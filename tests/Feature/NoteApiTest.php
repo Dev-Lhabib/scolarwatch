@@ -274,3 +274,80 @@ it('forbids a parent from deleting a note', function () {
 
     $response->assertForbidden();
 });
+
+it('blocks a duplicate note for the same eleve, matiere, trimestre and date', function () {
+    $this->actingAs($this->enseignant, 'sanctum')
+        ->postJson('/api/notes', [
+            'valeur' => 15,
+            'trimestre' => 'T1',
+            'date' => '2026-01-15',
+            'id_eleve' => $this->eleve->id_eleve,
+            'id_matiere' => $this->matiere->id_matiere,
+        ])
+        ->assertCreated();
+
+    $response = $this->actingAs($this->enseignant, 'sanctum')
+        ->postJson('/api/notes', [
+            'valeur' => 16,
+            'trimestre' => 'T1',
+            'date' => '2026-01-15',
+            'id_eleve' => $this->eleve->id_eleve,
+            'id_matiere' => $this->matiere->id_matiere,
+        ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors('id_eleve');
+
+    $this->assertDatabaseCount('notes', 1);
+});
+
+it('blocks a fifth note for the same eleve, matiere and trimestre', function () {
+    foreach (range(1, 4) as $day) {
+        $this->actingAs($this->enseignant, 'sanctum')
+            ->postJson('/api/notes', [
+                'valeur' => 10 + $day,
+                'trimestre' => 'T1',
+                'date' => "2026-01-1{$day}",
+                'id_eleve' => $this->eleve->id_eleve,
+                'id_matiere' => $this->matiere->id_matiere,
+            ])
+            ->assertCreated();
+    }
+
+    $response = $this->actingAs($this->enseignant, 'sanctum')
+        ->postJson('/api/notes', [
+            'valeur' => 15,
+            'trimestre' => 'T1',
+            'date' => '2026-01-30',
+            'id_eleve' => $this->eleve->id_eleve,
+            'id_matiere' => $this->matiere->id_matiere,
+        ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors('valeur');
+
+    $this->assertDatabaseCount('notes', 4);
+});
+
+it('allows an enseignant to see only the notes they recorded on the index', function () {
+    $noteThem = Note::factory()->create([
+        'id_eleve' => $this->eleve->id_eleve,
+        'id_matiere' => $this->matiere->id_matiere,
+        'id_utilisateur' => $this->enseignant->id,
+    ]);
+
+    $autreEnseignant = User::factory()->enseignant()->create(['id_matiere' => $this->matiere->id_matiere]);
+    $noteAutre = Note::factory()->create([
+        'id_eleve' => $this->eleve->id_eleve,
+        'id_matiere' => $this->matiere->id_matiere,
+        'id_utilisateur' => $autreEnseignant->id,
+    ]);
+
+    $response = $this->actingAs($this->enseignant, 'sanctum')
+        ->getJson('/api/notes');
+
+    $response->assertOk()
+        ->assertJsonCount(1)
+        ->assertJsonMissing(['id_note' => $noteAutre->id_note])
+        ->assertJsonFragment(['id_note' => $noteThem->id_note]);
+});

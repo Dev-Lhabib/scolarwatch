@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreClasseRequest;
+use App\Http\Requests\UpdateClasseRequest;
 use App\Models\Classe;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class ClasseController extends Controller
 {
@@ -44,7 +44,7 @@ class ClasseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreClasseRequest $request, Classe $classe)
+    public function update(UpdateClasseRequest $request, Classe $classe)
     {
         $this->authorize('update', $classe);
 
@@ -73,10 +73,7 @@ class ClasseController extends Controller
         $this->authorize('update', $classe);
 
         $validated = $request->validate([
-            'id_utilisateur_principal' => [
-                'required',
-                Rule::exists('users', 'id')->where('role', 'enseignant'),
-            ],
+            'id_utilisateur_principal' => ['required', 'exists:users,id'],
         ]);
 
         $classe->update(['id_utilisateur_principal' => $validated['id_utilisateur_principal']]);
@@ -92,10 +89,7 @@ class ClasseController extends Controller
         $this->authorize('update', $classe);
 
         $validated = $request->validate([
-            'id_utilisateur' => [
-                'required',
-                Rule::exists('users', 'id')->where('role', 'enseignant'),
-            ],
+            'id_utilisateur' => ['required', 'exists:users,id'],
         ]);
 
         $classe->enseignants()->syncWithoutDetaching([$validated['id_utilisateur']]);

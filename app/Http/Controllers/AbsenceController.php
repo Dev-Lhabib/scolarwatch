@@ -11,7 +11,13 @@ class AbsenceController extends Controller
     {
         $this->authorize('viewAny', Absence::class);
 
-        return response()->json(Absence::all());
+        $query = Absence::query();
+
+        if (auth()->user()->role === 'enseignant') {
+            $query->where('id_utilisateur', auth()->id());
+        }
+
+        return response()->json($query->get());
     }
 
     public function store(StoreAbsenceRequest $request)

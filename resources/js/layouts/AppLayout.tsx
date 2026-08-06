@@ -1,13 +1,16 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import {
+    AlarmClock,
     BarChart3,
     Bell,
     BookOpen,
+    CalendarX2,
     ClipboardList,
     GraduationCap,
     LayoutDashboard,
     LogOut,
     Menu,
+    MessageSquareQuote,
     Sparkles,
     UserCheck,
     Users,
@@ -36,21 +39,76 @@ const NAV_LINKS: Record<AuthUser['role'], NavLink[]> = {
     admin: [
         { label: 'Dashboard', href: '/dashboard/admin', icon: LayoutDashboard },
         { label: 'Utilisateurs', href: '/admin/users', icon: Users },
-        { label: 'Classes', href: '/dashboard/admin/classes', icon: GraduationCap },
-        { label: 'Matières', href: '/dashboard/admin/matieres', icon: BookOpen },
+        {
+            label: 'Classes',
+            href: '/dashboard/admin/classes',
+            icon: GraduationCap,
+        },
+        {
+            label: 'Matières',
+            href: '/dashboard/admin/matieres',
+            icon: BookOpen,
+        },
         { label: 'Élèves', href: '/dashboard/admin/eleves', icon: UserCheck },
     ],
     enseignant: [
-        { label: 'Dashboard', href: '/dashboard/enseignant', icon: LayoutDashboard },
-        { label: 'Mes Classes', href: '/dashboard/enseignant/classes', icon: GraduationCap },
-        { label: 'Saisie', href: '/dashboard/enseignant/saisie', icon: ClipboardList },
-        { label: 'Synthèses IA', href: '/dashboard/enseignant/syntheses', icon: Sparkles },
+        {
+            label: 'Dashboard',
+            href: '/dashboard/enseignant',
+            icon: LayoutDashboard,
+        },
+        {
+            label: 'Mes Classes',
+            href: '/dashboard/enseignant/classes',
+            icon: GraduationCap,
+        },
+        {
+            label: 'Saisie',
+            href: '/dashboard/enseignant/saisie',
+            icon: ClipboardList,
+        },
+        {
+            label: 'Synthèses IA',
+            href: '/dashboard/enseignant/syntheses',
+            icon: Sparkles,
+        },
     ],
     direction: [
-        { label: 'Tableau de bord', href: '/dashboard/direction', icon: LayoutDashboard },
-        { label: 'Statistiques', href: '/dashboard/direction/statistiques', icon: BarChart3 },
+        {
+            label: 'Tableau de bord',
+            href: '/dashboard/direction',
+            icon: LayoutDashboard,
+        },
+        {
+            label: 'Statistiques',
+            href: '/dashboard/direction/statistiques',
+            icon: BarChart3,
+        },
+        {
+            label: 'Synthèses IA',
+            href: '/dashboard/direction/syntheses',
+            icon: Sparkles,
+        },
     ],
-    parent: [{ label: 'Mes Communications', href: '/dashboard/parent', icon: Bell }],
+    parent: [
+        { label: 'Communications', href: '/dashboard/parent', icon: Bell },
+        { label: 'Notes', href: '/dashboard/parent/notes', icon: BookOpen },
+        {
+            label: 'Absences',
+            href: '/dashboard/parent/absences',
+            icon: CalendarX2,
+        },
+        {
+            label: 'Retards',
+            href: '/dashboard/parent/retards',
+            icon: AlarmClock,
+        },
+        {
+            label: 'Remarques',
+            href: '/dashboard/parent/remarques',
+            icon: MessageSquareQuote,
+        },
+    ],
 };
 
 const DASHBOARD_HREFS = new Set([
@@ -178,7 +236,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                         </span>
                         <span className="w-6" />
                     </header>
-                    <main className="flex-1 p-6 md:ml-64 md:p-8">{children}</main>
+                    <main className="flex-1 p-6 md:ml-64 md:p-8">
+                        {children}
+                    </main>
                 </div>
             </div>
         </>

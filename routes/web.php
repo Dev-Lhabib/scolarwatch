@@ -11,7 +11,12 @@ Route::inertia('/dashboard/enseignant/saisie', 'dashboard/enseignant/saisie')->n
 Route::inertia('/dashboard/enseignant/syntheses', 'dashboard/enseignant/syntheses')->name('dashboard.enseignant.syntheses');
 Route::inertia('/dashboard/direction', 'dashboard/direction')->name('dashboard.direction');
 Route::inertia('/dashboard/parent', 'dashboard/parent')->name('dashboard.parent');
+Route::inertia('/dashboard/parent/notes', 'dashboard/parent/notes')->name('dashboard.parent.notes');
+Route::inertia('/dashboard/parent/absences', 'dashboard/parent/absences')->name('dashboard.parent.absences');
+Route::inertia('/dashboard/parent/retards', 'dashboard/parent/retards')->name('dashboard.parent.retards');
+Route::inertia('/dashboard/parent/remarques', 'dashboard/parent/remarques')->name('dashboard.parent.remarques');
 Route::inertia('/dashboard/direction/statistiques', 'dashboard/statistiques')->name('dashboard.direction.statistiques');
+Route::inertia('/dashboard/direction/syntheses', 'dashboard/direction/syntheses')->name('dashboard.direction.syntheses');
 Route::inertia('/dashboard/admin/classes', 'admin/classes/index')->name('admin.classes');
 Route::inertia('/dashboard/admin/classes/create', 'admin/classes/create')->name('admin.classes.create');
 Route::inertia('/dashboard/admin/classes/{classe}', 'admin/classes/edit')->name('admin.classes.edit');

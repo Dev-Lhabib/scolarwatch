@@ -11,7 +11,13 @@ class RetardController extends Controller
     {
         $this->authorize('viewAny', Retard::class);
 
-        return response()->json(Retard::all());
+        $query = Retard::query();
+
+        if (auth()->user()->role === 'enseignant') {
+            $query->where('id_utilisateur', auth()->id());
+        }
+
+        return response()->json($query->get());
     }
 
     public function store(StoreRetardRequest $request)

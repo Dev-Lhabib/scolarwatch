@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
+import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import FieldError from '@/components/ui/FieldError';
 import Select from '@/components/ui/Select';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
+import { fieldClassName } from '@/lib/forms';
 
 type Enseignant = {
     id: number;
@@ -22,6 +25,17 @@ export default function EditClasse() {
     const [capacite, setCapacite] = useState('');
     const [idUtilisateurPrincipal, setIdUtilisateurPrincipal] = useState('');
     const [enseignants, setEnseignants] = useState<Enseignant[]>([]);
+    const [enseignantsAffectes, setEnseignantsAffectes] = useState<
+        Enseignant[]
+    >([]);
+    const [enseignantAajouter, setEnseignantAajouter] = useState('');
+    const [assignProcessing, setAssignProcessing] = useState(false);
+    const [assignSuccess, setAssignSuccess] = useState<string | null>(null);
+    const [assignErrors, setAssignErrors] = useState<Record<string, string[]>>(
+        {},
+    );
+    const [assignError, setAssignError] = useState<string | null>(null);
+    const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [error, setError] = useState<string | null>(null);
     const [processing, setProcessing] = useState(false);
 
@@ -80,6 +94,7 @@ export default function EditClasse() {
                         ? String(data.id_utilisateur_principal)
                         : '',
                 );
+                setEnseignantsAffectes(data.enseignants ?? []);
             })
             .catch(() => {
                 setNotFound(true);
@@ -89,6 +104,7 @@ export default function EditClasse() {
 
     async function handleSubmit(event: FormEvent) {
         event.preventDefault();
+        setErrors({});
         setError(null);
 
         const classeId = classeIdRef.current;
@@ -120,12 +136,12 @@ export default function EditClasse() {
 
             if (!response.ok) {
                 const data = await response.json();
-                const message = data.message
-                    ? data.message
-                    : data.errors
-                      ? Object.values(data.errors).flat().join(', ')
-                      : 'Erreur lors de la mise à jour.';
-                setError(message);
+                setErrors(data.errors ?? {});
+
+                if (!data.errors) {
+                    setError(data.message ?? 'Erreur lors de la mise à jour.');
+                }
+
                 setProcessing(false);
 
                 return;
@@ -138,10 +154,65 @@ export default function EditClasse() {
         }
     }
 
+    const enseignantsDisponibles = enseignants.filter(
+        (enseignant) =>
+            !enseignantsAffectes.some(
+                (affecte) => affecte.id === enseignant.id,
+            ),
+    );
+
+    async function handleAssignEnseignant() {
+        const classeId = classeIdRef.current;
+        const idUtilisateur = Number(enseignantAajouter);
+
+        if (classeId == null || !Number.isInteger(idUtilisateur)) {
+            return;
+        }
+
+        setAssignErrors({});
+        setAssignError(null);
+        setAssignSuccess(null);
+        setAssignProcessing(true);
+
+        try {
+            const response = await apiFetch(
+                `/api/classes/${classeId}/enseignants`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({ id_utilisateur: idUtilisateur }),
+                },
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setAssignErrors(data.errors ?? {});
+
+                if (!data.errors) {
+                    setAssignError(
+                        data.message ?? "Erreur lors de l'affectation.",
+                    );
+                }
+
+                setAssignProcessing(false);
+
+                return;
+            }
+
+            setEnseignantsAffectes(data.enseignants ?? []);
+            setEnseignantAajouter('');
+            setAssignSuccess('Enseignant affecté à la classe.');
+            setAssignProcessing(false);
+        } catch {
+            setAssignError("Une erreur est survenue lors de l'affectation.");
+            setAssignProcessing(false);
+        }
+    }
+
     if (loading) {
         return (
             <AppLayout>
-                <div className="mx-auto max-w-lg rounded-lg bg-white p-8 text-sm text-slate-500 border border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800">
+                <div className="mx-auto max-w-lg rounded-lg border border-slate-200 bg-white p-8 text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
                     Chargement...
                 </div>
             </AppLayout>
@@ -151,16 +222,14 @@ export default function EditClasse() {
     if (notFound) {
         return (
             <AppLayout>
-                <div className="mx-auto max-w-lg rounded-lg bg-white p-8 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                <div className="mx-auto max-w-lg rounded-lg border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-900">
                     <h1 className="mb-1 text-xl font-medium text-slate-900 dark:text-slate-100">
                         Classe introuvable
                     </h1>
                     <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
                         Cette classe n'existe pas ou n'est plus disponible.
                     </p>
-                    <Button
-                        href="/dashboard/admin/classes"
-                    >
+                    <Button href="/dashboard/admin/classes">
                         Retour à la liste
                     </Button>
                 </div>
@@ -170,7 +239,7 @@ export default function EditClasse() {
 
     return (
         <AppLayout>
-            <div className="mx-auto max-w-lg rounded-lg bg-white p-8 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+            <div className="mx-auto max-w-lg rounded-lg border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-900">
                 <h1 className="mb-1 text-xl font-medium text-slate-900 dark:text-slate-100">
                     Modifier la classe
                 </h1>
@@ -178,13 +247,11 @@ export default function EditClasse() {
                     Mettez à jour les informations de la classe {nom || ''}.
                 </p>
 
-                {error && (
-                    <div className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
-                        {error}
-                    </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <form
+                    onSubmit={handleSubmit}
+                    noValidate
+                    className="flex flex-col gap-4"
+                >
                     <div>
                         <label
                             htmlFor="nom"
@@ -197,10 +264,9 @@ export default function EditClasse() {
                             type="text"
                             value={nom}
                             onChange={(event) => setNom(event.target.value)}
-                            required
-                            maxLength={255}
-                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                            className={fieldClassName(Boolean(errors.nom))}
                         />
+                        <FieldError message={errors.nom?.[0]} />
                     </div>
 
                     <div>
@@ -215,10 +281,9 @@ export default function EditClasse() {
                             type="text"
                             value={niveau}
                             onChange={(event) => setNiveau(event.target.value)}
-                            required
-                            maxLength={50}
-                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                            className={fieldClassName(Boolean(errors.niveau))}
                         />
+                        <FieldError message={errors.niveau?.[0]} />
                     </div>
 
                     <div>
@@ -235,10 +300,11 @@ export default function EditClasse() {
                             onChange={(event) =>
                                 setAnneeScolaire(event.target.value)
                             }
-                            required
-                            maxLength={20}
-                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                            className={fieldClassName(
+                                Boolean(errors.annee_scolaire),
+                            )}
                         />
+                        <FieldError message={errors.annee_scolaire?.[0]} />
                     </div>
 
                     <div>
@@ -255,10 +321,9 @@ export default function EditClasse() {
                             onChange={(event) =>
                                 setCapacite(event.target.value)
                             }
-                            required
-                            min={1}
-                            className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                            className={fieldClassName(Boolean(errors.capacite))}
                         />
+                        <FieldError message={errors.capacite?.[0]} />
                     </div>
 
                     <div>
@@ -274,6 +339,7 @@ export default function EditClasse() {
                             onChange={(event) =>
                                 setIdUtilisateurPrincipal(event.target.value)
                             }
+                            hasError={Boolean(errors.id_utilisateur_principal)}
                         >
                             <option value="">— Aucun —</option>
                             {enseignants.map((enseignant) => (
@@ -285,23 +351,118 @@ export default function EditClasse() {
                                 </option>
                             ))}
                         </Select>
+                        <FieldError
+                            message={errors.id_utilisateur_principal?.[0]}
+                        />
+                    </div>
+
+                    {error && <FieldError message={error} />}
+
+                    <div className="rounded border border-slate-200 p-4 dark:border-slate-800">
+                        <h2 className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                            Enseignants affectés
+                        </h2>
+                        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                            Les enseignants affectés peuvent saisir les notes et
+                            entrées de cette classe.
+                        </p>
+
+                        {assignSuccess && (
+                            <div className="mt-3 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300">
+                                {assignSuccess}
+                            </div>
+                        )}
+
+                        {enseignantsAffectes.length === 0 ? (
+                            <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+                                Aucun enseignant affecté à cette classe.
+                            </p>
+                        ) : (
+                            <ul className="mt-3 divide-y divide-slate-200 rounded border border-slate-200 dark:divide-slate-800 dark:border-slate-800">
+                                {enseignantsAffectes.map((enseignant) => (
+                                    <li
+                                        key={enseignant.id}
+                                        className="flex items-center justify-between gap-3 px-4 py-2.5"
+                                    >
+                                        <span className="text-sm text-slate-900 dark:text-slate-100">
+                                            {enseignant.prenom} {enseignant.nom}
+                                        </span>
+                                        <Badge tone="default">Enseignant</Badge>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+
+                        <div className="mt-4 flex items-end gap-3">
+                            <div className="flex-1">
+                                <label
+                                    htmlFor="enseignant-a-affecter"
+                                    className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100"
+                                >
+                                    Ajouter un enseignant
+                                </label>
+                                <Select
+                                    id="enseignant-a-affecter"
+                                    value={enseignantAajouter}
+                                    onChange={(event) =>
+                                        setEnseignantAajouter(
+                                            event.target.value,
+                                        )
+                                    }
+                                    hasError={Boolean(
+                                        assignErrors.id_utilisateur,
+                                    )}
+                                >
+                                    <option value="">
+                                        — Sélectionner un enseignant —
+                                    </option>
+                                    {enseignantsDisponibles.map(
+                                        (enseignant) => (
+                                            <option
+                                                key={enseignant.id}
+                                                value={enseignant.id}
+                                            >
+                                                {enseignant.prenom}{' '}
+                                                {enseignant.nom}
+                                            </option>
+                                        ),
+                                    )}
+                                </Select>
+                                {assignError && (
+                                    <FieldError message={assignError} />
+                                )}
+                                <FieldError
+                                    message={assignErrors.id_utilisateur?.[0]}
+                                />
+                            </div>
+                            <Button
+                                type="button"
+                                onClick={handleAssignEnseignant}
+                                disabled={
+                                    assignProcessing ||
+                                    enseignantAajouter === ''
+                                }
+                            >
+                                {assignProcessing
+                                    ? 'Affectation...'
+                                    : 'Ajouter'}
+                            </Button>
+                        </div>
                     </div>
 
                     <div className="flex gap-3">
-                        <Button
-                            type="submit"
-                            disabled={processing}
-                        >
+                        <Button type="submit" disabled={processing}>
                             {processing
                                 ? 'Enregistrement...'
                                 : 'Enregistrer les modifications'}
                         </Button>
-                        <a
+                        <Button
+                            type="button"
+                            tone="secondary"
                             href="/dashboard/admin/classes"
-                            className="rounded-sm border border-slate-300 px-5 py-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:border-slate-700 dark:text-slate-400 dark:hover:text-slate-100"
                         >
                             Annuler
-                        </a>
+                        </Button>
                     </div>
                 </form>
             </div>

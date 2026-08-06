@@ -61,6 +61,67 @@ it('marks the synthese as echoue when the AI call fails', function () {
     expect($synthese->niveau_alerte)->toBeNull();
 });
 
+it('signs the parent message with the professeur principal of the classe', function () {
+    $principal = User::factory()->enseignant()->create(['prenom' => 'Amina', 'nom' => 'Benali']);
+
+    $eleve = Eleve::factory()->create();
+    $eleve->classe->update(['id_utilisateur_principal' => $principal->id]);
+
+    $synthese = SyntheseIA::create([
+        'trimestre' => 'T1',
+        'statut' => 'en_attente',
+        'id_eleve' => $eleve->id_eleve,
+        'id_utilisateur_demandeur' => User::factory()->direction()->create()->id,
+    ]);
+
+    GhostwriterAgent::fake([
+        [
+            'niveau_alerte' => 'moyen',
+            'facteurs_risque' => ['Absences répétées'],
+            'signaux_textuels' => [],
+            'recommandations' => [],
+            'message_parent' => '...',
+        ],
+    ]);
+
+    (new GenererSyntheseIA($synthese))->handle();
+
+    GhostwriterAgent::assertPrompted(
+        fn ($prompt) => str_contains($prompt->prompt, 'Amina Benali (Professeur principal)')
+            && str_contains($prompt->prompt, "Cordialement,\n\nAmina Benali\nProfesseur principal")
+    );
+});
+
+it('falls back to the demandeur as signer when the classe has no professeur principal', function () {
+    $demandeur = User::factory()->direction()->create(['prenom' => 'Karim', 'nom' => 'Idrissi']);
+
+    $eleve = Eleve::factory()->create();
+
+    $synthese = SyntheseIA::create([
+        'trimestre' => 'T1',
+        'statut' => 'en_attente',
+        'id_eleve' => $eleve->id_eleve,
+        'id_utilisateur_demandeur' => $demandeur->id,
+    ]);
+
+    GhostwriterAgent::fake([
+        [
+            'niveau_alerte' => 'faible',
+            'facteurs_risque' => [],
+            'signaux_textuels' => [],
+            'recommandations' => [],
+            'message_parent' => '...',
+        ],
+    ]);
+
+    (new GenererSyntheseIA($synthese))->handle();
+
+    GhostwriterAgent::assertPrompted(
+        fn ($prompt) => str_contains($prompt->prompt, 'Karim Idrissi (Enseignant)')
+            && str_contains($prompt->prompt, "Cordialement,\n\nKarim Idrissi\nEnseignant")
+    );
+});
+
 it('dispatches the job to the queue', function () {
     Queue::fake();
 

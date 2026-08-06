@@ -49,4 +49,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::patch('/notifications/{notification}/lue', [NotificationController::class, 'marquerCommeLue']);
     Route::get('/parent/children', [ParentController::class, 'children']);
+    Route::get('/parent/notes', [ParentController::class, 'notes']);
+    Route::get('/parent/absences', [ParentController::class, 'absences']);
+    Route::get('/parent/retards', [ParentController::class, 'retards']);
+    Route::get('/parent/remarques', [ParentController::class, 'remarques']);
 });
