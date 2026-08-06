@@ -7,7 +7,7 @@ it('seeds the T1 performance history for the first student', function () {
 
     $eleve = Eleve::query()->first();
 
-    expect($eleve->notes()->where('trimestre', 'T1')->count())->toBe(8);
+    expect($eleve->notes()->where('trimestre', 'T1')->count())->toBe(4);
     $valeurs = $eleve->notes()
         ->where('trimestre', 'T1')
         ->pluck('valeur')
@@ -15,7 +15,12 @@ it('seeds the T1 performance history for the first student', function () {
         ->sort()
         ->values()
         ->all();
-    expect($valeurs)->toBe([8.0, 9.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]);
+    expect($valeurs)->toBe([9.0, 12.0, 14.0, 15.0]);
+
+    $notes = $eleve->notes()->where('trimestre', 'T1')->get();
+    expect($notes->every(
+        fn ($note) => $note->utilisateur->id_matiere === $note->id_matiere,
+    ))->toBeTrue();
 
     expect($eleve->absences()->count())->toBe(3);
     expect($eleve->absences()->where('justifiee', true)->count())->toBeGreaterThan(0);

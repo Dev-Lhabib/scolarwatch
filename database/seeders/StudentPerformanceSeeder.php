@@ -92,7 +92,11 @@ class StudentPerformanceSeeder extends Seeder
             $enseignant = User::query()
                 ->where('role', 'enseignant')
                 ->where('id_matiere', $matiere->id_matiere)
-                ->first() ?? $principal;
+                ->first();
+
+            if ($enseignant === null) {
+                continue;
+            }
 
             Note::create([
                 'valeur' => $note['valeur'],

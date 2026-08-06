@@ -35,10 +35,14 @@ type Note = {
     id_note: number;
     valeur: string;
     id_eleve: number;
+    id_matiere: number;
 };
 
 export default function EnseignantDashboard() {
     const user = getAuthUser();
+    const userId = user?.id ?? null;
+    const userMatiereId = user?.id_matiere ?? null;
+    const isEnseignant = user?.role === 'enseignant';
 
     const [loading, setLoading] = useState(true);
     const [classes, setClasses] = useState<Classe[]>([]);
@@ -49,29 +53,35 @@ export default function EnseignantDashboard() {
     const [remarques, setRemarques] = useState<Remarque[]>([]);
 
     useEffect(() => {
-        if (!user || user.role !== 'enseignant') {
+        if (!isEnseignant) {
             window.location.href = '/login';
 
             return;
         }
 
-        async function load() {
-            const authUserId = user?.id;
+        if (userId == null) {
+            return;
+        }
 
-            if (authUserId == null) {
-                return;
-            }
+        async function load() {
+            const authUserId = userId;
 
             try {
-                const [classesRes, elevesRes, absencesRes, retardsRes, notesRes, remarquesRes] =
-                    await Promise.all([
-                        apiFetch('/api/classes'),
-                        apiFetch('/api/eleves'),
-                        apiFetch('/api/absences'),
-                        apiFetch('/api/retards'),
-                        apiFetch('/api/notes'),
-                        apiFetch('/api/remarques'),
-                    ]);
+                const [
+                    classesRes,
+                    elevesRes,
+                    absencesRes,
+                    retardsRes,
+                    notesRes,
+                    remarquesRes,
+                ] = await Promise.all([
+                    apiFetch('/api/classes'),
+                    apiFetch('/api/eleves'),
+                    apiFetch('/api/absences'),
+                    apiFetch('/api/retards'),
+                    apiFetch('/api/notes'),
+                    apiFetch('/api/remarques'),
+                ]);
 
                 const allClasses: Classe[] = await classesRes.json();
                 const allEleves: Eleve[] = await elevesRes.json();
@@ -83,18 +93,44 @@ export default function EnseignantDashboard() {
                 const mesClasses = allClasses.filter(
                     (classe) =>
                         classe.professeur_principal?.id === authUserId ||
-                        classe.enseignants?.some((enseignant) => enseignant.id === authUserId),
+                        classe.enseignants?.some(
+                            (enseignant) => enseignant.id === authUserId,
+                        ),
                 );
-                const idsClasses = new Set(mesClasses.map((classe) => classe.id_classe));
-                const mesEleves = allEleves.filter((eleve) => idsClasses.has(eleve.id_classe));
-                const idsEleves = new Set(mesEleves.map((eleve) => eleve.id_eleve));
+                const idsClasses = new Set(
+                    mesClasses.map((classe) => classe.id_classe),
+                );
+                const mesEleves = allEleves.filter((eleve) =>
+                    idsClasses.has(eleve.id_classe),
+                );
+                const idsEleves = new Set(
+                    mesEleves.map((eleve) => eleve.id_eleve),
+                );
 
                 setClasses(mesClasses);
                 setEleves(mesEleves);
-                setAbsences(absencesJson.filter((absence) => idsEleves.has(absence.id_eleve)));
-                setRetards(retardsJson.filter((retard) => idsEleves.has(retard.id_eleve)));
-                setNotes(notesJson.filter((note) => idsEleves.has(note.id_eleve)));
-                setRemarques(remarquesJson.filter((remarque) => idsEleves.has(remarque.id_eleve)));
+                setAbsences(
+                    absencesJson.filter((absence) =>
+                        idsEleves.has(absence.id_eleve),
+                    ),
+                );
+                setRetards(
+                    retardsJson.filter((retard) =>
+                        idsEleves.has(retard.id_eleve),
+                    ),
+                );
+                setNotes(
+                    notesJson.filter(
+                        (note) =>
+                            idsEleves.has(note.id_eleve) &&
+                            note.id_matiere === userMatiereId,
+                    ),
+                );
+                setRemarques(
+                    remarquesJson.filter((remarque) =>
+                        idsEleves.has(remarque.id_eleve),
+                    ),
+                );
             } catch {
                 window.location.href = '/login';
             } finally {
@@ -103,9 +139,12 @@ export default function EnseignantDashboard() {
         }
 
         load();
-    }, [user]);
+    }, [isEnseignant, userId, userMatiereId]);
 
-    const totalMinutesRetards = retards.reduce((sum, retard) => sum + retard.minutes_retard, 0);
+    const totalMinutesRetards = retards.reduce(
+        (sum, retard) => sum + retard.minutes_retard,
+        0,
+    );
     const moyenneGenerale =
         notes.length > 0
             ? `${(notes.reduce((sum, note) => sum + Number(note.valeur), 0) / notes.length).toFixed(2).replace('.', ',')}/20`
@@ -141,7 +180,7 @@ export default function EnseignantDashboard() {
                     />
                     <StatCard
                         href="/dashboard/enseignant/classes"
-                        label="Prof principal"
+                        label="Classes principales"
                         value={String(nbClassesPrincipales)}
                         hint="Voir les élèves"
                     />
@@ -153,25 +192,25 @@ export default function EnseignantDashboard() {
                     />
                     <StatCard
                         href="/dashboard/enseignant/saisie"
-                        label="Absences"
+                        label="Absences saisies"
                         value={String(absences.length)}
                         hint="Saisir les absences"
                     />
                     <StatCard
                         href="/dashboard/enseignant/saisie"
-                        label="Retards"
+                        label="Retards saisis"
                         value={`${String(retards.length)} · ${String(totalMinutesRetards)} min`}
                         hint="Saisir les retards"
                     />
                     <StatCard
                         href="/dashboard/enseignant/saisie"
-                        label="Notes"
+                        label="Évaluations saisies"
                         value={String(notes.length)}
                         hint="Saisir les notes"
                     />
                     <StatCard
                         href="/dashboard/enseignant/saisie"
-                        label="Remarques"
+                        label="Remarques saisies"
                         value={String(remarques.length)}
                         hint="Saisir les remarques"
                     />
@@ -179,7 +218,7 @@ export default function EnseignantDashboard() {
                         href="/dashboard/enseignant/classes"
                         label="Moyenne générale"
                         value={moyenneGenerale}
-                        hint="Moyenne de vos notes (toutes trimestres et classes confondues)"
+                        hint="Moyenne des notes saisies dans votre matière (toutes classes et trimestres confondues)"
                     />
                 </div>
             )}
