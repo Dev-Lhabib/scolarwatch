@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
+import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
 import Select from '@/components/ui/Select';
+import StatCard from '@/components/ui/StatCard';
 import { apiFetch } from '@/lib/auth';
 
 type Eleve = {
@@ -36,10 +39,13 @@ const NIVEAU_ALERTE_LABELS: Record<string, string> = {
     eleve: 'Élevé',
 };
 
-const NIVEAU_ALERTE_BADGE: Record<string, string> = {
-    faible: 'rounded bg-emerald-100 px-1.5 py-0.5 text-xs text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300',
-    moyen: 'rounded bg-yellow-500/10 px-1.5 py-0.5 text-xs text-yellow-700 dark:text-yellow-400',
-    eleve: 'rounded bg-red-100 px-1.5 py-0.5 text-xs text-red-800 dark:bg-red-900/40 dark:text-red-300',
+const NIVEAU_ALERTE_TONE: Record<
+    'faible' | 'moyen' | 'eleve',
+    'success' | 'warning' | 'danger'
+> = {
+    faible: 'success',
+    moyen: 'warning',
+    eleve: 'danger',
 };
 
 type Props = {
@@ -63,11 +69,12 @@ export default function SyntheseEntry({ eleve, trimestre }: Props) {
     const [envoiProcessing, setEnvoiProcessing] = useState(false);
     const [loadVersion, setLoadVersion] = useState(0);
 
-    useEffect(() => {
-        if (trimestre !== undefined) {
-            setTrimestreSynthese(trimestre);
-        }
-    }, [trimestre]);
+    const [trimestrePrecedent, setTrimestrePrecedent] = useState(trimestre);
+
+    if (trimestre !== undefined && trimestrePrecedent !== trimestre) {
+        setTrimestrePrecedent(trimestre);
+        setTrimestreSynthese(trimestre);
+    }
 
     useEffect(() => {
         apiFetch(
@@ -234,17 +241,8 @@ export default function SyntheseEntry({ eleve, trimestre }: Props) {
         }
     }
 
-    function alerteBadge(niveau: string | null | undefined) {
-        if (!niveau) {
-            return null;
-        }
-
-        return (
-            <span className={NIVEAU_ALERTE_BADGE[niveau] ?? ''}>
-                {NIVEAU_ALERTE_LABELS[niveau] ?? niveau}
-            </span>
-        );
-    }
+    const niveauAffiche =
+        synthese?.niveau_alerte_corrige ?? synthese?.niveau_alerte;
 
     return (
         <div>
@@ -367,34 +365,90 @@ export default function SyntheseEntry({ eleve, trimestre }: Props) {
                     )}
 
                     {synthese.statut === 'traite' && (
-                        <div className="space-y-4">
-                            <div className="flex flex-wrap items-center gap-3">
-                                <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                                    Niveau d'alerte
-                                </span>
-                                {alerteBadge(synthese.niveau_alerte)}
-                                {synthese.niveau_alerte_corrige && (
-                                    <span className="text-xs text-slate-500 dark:text-slate-400">
-                                        Corrigé :{' '}
-                                        {alerteBadge(
-                                            synthese.niveau_alerte_corrige,
-                                        )}
-                                    </span>
-                                )}
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                                <StatCard
+                                    label="Facteurs de risque"
+                                    value={String(
+                                        synthese.facteurs_risque?.length ?? 0,
+                                    )}
+                                    className="!p-4"
+                                />
+                                <StatCard
+                                    label="Recommandations"
+                                    value={String(
+                                        synthese.recommandations?.length ?? 0,
+                                    )}
+                                    className="!p-4"
+                                />
+                                <StatCard
+                                    label="Trimestre"
+                                    value={trimestreSynthese}
+                                    className="!p-4"
+                                />
                             </div>
+
+                            <Card className="!p-4">
+                                <div className="flex flex-wrap items-center justify-between gap-3">
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                                            Niveau d'alerte
+                                        </span>
+                                        {niveauAffiche && (
+                                            <Badge
+                                                tone={
+                                                    NIVEAU_ALERTE_TONE[
+                                                        niveauAffiche
+                                                    ]
+                                                }
+                                                className="px-2.5 py-1 text-sm"
+                                            >
+                                                {
+                                                    NIVEAU_ALERTE_LABELS[
+                                                        niveauAffiche
+                                                    ]
+                                                }
+                                            </Badge>
+                                        )}
+                                    </div>
+                                    {synthese.niveau_alerte_corrige &&
+                                        synthese.niveau_alerte &&
+                                        synthese.niveau_alerte_corrige !==
+                                            synthese.niveau_alerte && (
+                                            <span className="text-xs text-slate-500 dark:text-slate-400">
+                                                Corrigé depuis :{' '}
+                                                <span className="font-medium text-slate-700 dark:text-slate-300">
+                                                    {
+                                                        NIVEAU_ALERTE_LABELS[
+                                                            synthese
+                                                                .niveau_alerte
+                                                        ]
+                                                    }
+                                                </span>
+                                            </span>
+                                        )}
+                                </div>
+                            </Card>
 
                             <div>
                                 <h4 className="mb-2 text-sm font-medium text-slate-500 dark:text-slate-400">
                                     Facteurs de risque
                                 </h4>
                                 {synthese.facteurs_risque?.length ? (
-                                    <ul className="list-disc space-y-1 pl-5 text-sm text-slate-900 dark:text-slate-100">
+                                    <div className="space-y-2">
                                         {synthese.facteurs_risque.map(
                                             (facteur, index) => (
-                                                <li key={index}>{facteur}</li>
+                                                <Card
+                                                    key={index}
+                                                    className="!p-3 !shadow-none"
+                                                >
+                                                    <p className="text-sm text-slate-900 dark:text-slate-100">
+                                                        {facteur}
+                                                    </p>
+                                                </Card>
                                             ),
                                         )}
-                                    </ul>
+                                    </div>
                                 ) : (
                                     <p className="text-sm text-slate-500 dark:text-slate-400">
                                         Aucun facteur identifié.
@@ -407,15 +461,20 @@ export default function SyntheseEntry({ eleve, trimestre }: Props) {
                                     Recommandations
                                 </h4>
                                 {synthese.recommandations?.length ? (
-                                    <ul className="list-disc space-y-1 pl-5 text-sm text-slate-900 dark:text-slate-100">
+                                    <div className="space-y-2">
                                         {synthese.recommandations.map(
                                             (recommandation, index) => (
-                                                <li key={index}>
-                                                    {recommandation}
-                                                </li>
+                                                <Card
+                                                    key={index}
+                                                    className="!p-3 !shadow-none"
+                                                >
+                                                    <p className="text-sm text-slate-900 dark:text-slate-100">
+                                                        {recommandation}
+                                                    </p>
+                                                </Card>
                                             ),
                                         )}
-                                    </ul>
+                                    </div>
                                 ) : (
                                     <p className="text-sm text-slate-500 dark:text-slate-400">
                                         Aucune recommandation.
@@ -428,9 +487,11 @@ export default function SyntheseEntry({ eleve, trimestre }: Props) {
                                     Message aux parents
                                 </h4>
                                 {synthese.message_parent ? (
-                                    <p className="text-sm whitespace-pre-wrap text-slate-900 dark:text-slate-100">
-                                        {synthese.message_parent}
-                                    </p>
+                                    <Card className="!p-4 !shadow-none">
+                                        <p className="text-sm leading-relaxed whitespace-pre-wrap text-slate-900 dark:text-slate-100">
+                                            {synthese.message_parent}
+                                        </p>
+                                    </Card>
                                 ) : (
                                     <p className="text-sm text-slate-500 dark:text-slate-400">
                                         Aucun message disponible.
