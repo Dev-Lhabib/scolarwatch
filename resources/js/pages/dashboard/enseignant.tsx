@@ -1,4 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
 import { StatCardSkeleton } from '@/components/ui/Skeleton';
 import StatCard from '@/components/ui/StatCard';
 import AppLayout from '@/layouts/AppLayout';
@@ -6,6 +9,8 @@ import { apiFetch, getAuthUser } from '@/lib/auth';
 
 type Classe = {
     id_classe: number;
+    nom: string;
+    niveau: string;
     professeur_principal?: { id: number } | null;
     enseignants?: Array<{ id: number }>;
 };
@@ -153,6 +158,20 @@ export default function EnseignantDashboard() {
         (classe) => classe.professeur_principal?.id === user?.id,
     ).length;
 
+    const elevesParClasse = useMemo(() => {
+        const counts = new Map<number, number>();
+
+        for (const eleve of eleves) {
+            counts.set(eleve.id_classe, (counts.get(eleve.id_classe) ?? 0) + 1);
+        }
+
+        return counts;
+    }, [eleves]);
+
+    function eleveCountLabel(count: number): string {
+        return `${count} élève${count > 1 ? 's' : ''}`;
+    }
+
     return (
         <AppLayout>
             <h1 className="mb-6 text-xl font-medium text-slate-900 dark:text-slate-100">
@@ -171,55 +190,121 @@ export default function EnseignantDashboard() {
                     <StatCardSkeleton />
                 </div>
             ) : (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <StatCard
-                        href="/dashboard/enseignant/classes"
-                        label="Classes assignées"
-                        value={String(classes.length)}
-                        hint="Gérer mes classes"
-                    />
-                    <StatCard
-                        href="/dashboard/enseignant/classes"
-                        label="Classes principales"
-                        value={String(nbClassesPrincipales)}
-                        hint="Voir les élèves"
-                    />
-                    <StatCard
-                        href="/dashboard/enseignant/classes"
-                        label="Élèves"
-                        value={String(eleves.length)}
-                        hint="Consulter les fiches"
-                    />
-                    <StatCard
-                        href="/dashboard/enseignant/saisie"
-                        label="Absences saisies"
-                        value={String(absences.length)}
-                        hint="Saisir les absences"
-                    />
-                    <StatCard
-                        href="/dashboard/enseignant/saisie"
-                        label="Retards saisis"
-                        value={`${String(retards.length)} · ${String(totalMinutesRetards)} min`}
-                        hint="Saisir les retards"
-                    />
-                    <StatCard
-                        href="/dashboard/enseignant/saisie"
-                        label="Évaluations saisies"
-                        value={String(notes.length)}
-                        hint="Saisir les notes"
-                    />
-                    <StatCard
-                        href="/dashboard/enseignant/saisie"
-                        label="Remarques saisies"
-                        value={String(remarques.length)}
-                        hint="Saisir les remarques"
-                    />
-                    <StatCard
-                        href="/dashboard/enseignant/classes"
-                        label="Moyenne générale"
-                        value={moyenneGenerale}
-                        hint="Moyenne des notes saisies dans votre matière (toutes classes et trimestres confondues)"
-                    />
+                <div className="space-y-8">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        <StatCard
+                            href="/dashboard/enseignant/classes"
+                            label="Classes assignées"
+                            value={String(classes.length)}
+                            hint="Gérer mes classes"
+                        />
+                        <StatCard
+                            href="/dashboard/enseignant/classes"
+                            label="Classes principales"
+                            value={String(nbClassesPrincipales)}
+                            hint="Voir les élèves"
+                        />
+                        <StatCard
+                            href="/dashboard/enseignant/classes"
+                            label="Élèves"
+                            value={String(eleves.length)}
+                            hint="Consulter les fiches"
+                        />
+                        <StatCard
+                            href="/dashboard/enseignant/saisie"
+                            label="Absences saisies"
+                            value={String(absences.length)}
+                            hint="Saisir les absences"
+                        />
+                        <StatCard
+                            href="/dashboard/enseignant/saisie"
+                            label="Retards saisis"
+                            value={`${String(retards.length)} · ${String(totalMinutesRetards)} min`}
+                            hint="Saisir les retards"
+                        />
+                        <StatCard
+                            href="/dashboard/enseignant/saisie"
+                            label="Évaluations saisies"
+                            value={String(notes.length)}
+                            hint="Saisir les notes"
+                        />
+                        <StatCard
+                            href="/dashboard/enseignant/saisie"
+                            label="Remarques saisies"
+                            value={String(remarques.length)}
+                            hint="Saisir les remarques"
+                        />
+                        <StatCard
+                            href="/dashboard/enseignant/classes"
+                            label="Moyenne générale"
+                            value={moyenneGenerale}
+                            hint="Moyenne des notes saisies dans votre matière (toutes classes et trimestres confondues)"
+                        />
+                    </div>
+
+                    <Card>
+                        <h2 className="mb-4 text-base font-medium text-slate-900 dark:text-slate-100">
+                            Mes classes
+                        </h2>
+                        {classes.length === 0 ? (
+                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                                Aucune classe assignée.
+                            </p>
+                        ) : (
+                            <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+                                {classes.map((classe) => {
+                                    const isPrincipal =
+                                        classe.professeur_principal?.id ===
+                                        user?.id;
+
+                                    return (
+                                        <li
+                                            key={classe.id_classe}
+                                            className="flex flex-wrap items-center justify-between gap-2 py-2.5"
+                                        >
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                                                    {classe.nom}
+                                                </span>
+                                                <Badge tone="info">
+                                                    Niveau : {classe.niveau}
+                                                </Badge>
+                                                {isPrincipal && (
+                                                    <Badge tone="success">
+                                                        Professeur principal
+                                                    </Badge>
+                                                )}
+                                            </div>
+                                            <span className="text-sm text-slate-500 dark:text-slate-400">
+                                                {eleveCountLabel(
+                                                    elevesParClasse.get(
+                                                        classe.id_classe,
+                                                    ) ?? 0,
+                                                )}
+                                            </span>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        )}
+                    </Card>
+
+                    <Card>
+                        <h2 className="mb-4 text-base font-medium text-slate-900 dark:text-slate-100">
+                            Actions rapides
+                        </h2>
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                            <Button href="/dashboard/enseignant/classes">
+                                Mes classes
+                            </Button>
+                            <Button href="/dashboard/enseignant/saisie">
+                                Saisie
+                            </Button>
+                            <Button href="/dashboard/enseignant/syntheses">
+                                Synthèses IA
+                            </Button>
+                        </div>
+                    </Card>
                 </div>
             )}
         </AppLayout>
