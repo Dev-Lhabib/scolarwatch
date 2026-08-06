@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import SyntheseEntry from '@/components/enseignant/SyntheseEntry';
+import SyntheseModal from '@/components/enseignant/SyntheseModal';
 import Accordion from '@/components/ui/Accordion';
 import Badge from '@/components/ui/Badge';
 import AppLayout from '@/layouts/AppLayout';
@@ -196,32 +196,10 @@ export default function EnseignantSyntheses() {
             )}
 
             {selectedEleve && (
-                <div
-                    className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 px-4 py-8"
-                    onClick={() => setSelectedEleve(null)}
-                >
-                    <div
-                        className="flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg bg-white shadow-xl dark:bg-slate-900"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-slate-200 px-6 py-4 dark:border-slate-800">
-                            <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">
-                                {selectedEleve.prenom} {selectedEleve.nom}
-                            </h2>
-                            <button
-                                type="button"
-                                onClick={() => setSelectedEleve(null)}
-                                className="shrink-0 rounded border border-slate-300 px-3 py-1 text-xs font-medium text-slate-500 hover:border-slate-900 hover:text-slate-900 dark:border-slate-700 dark:text-slate-400 dark:hover:border-slate-100 dark:hover:text-slate-100"
-                            >
-                                Fermer
-                            </button>
-                        </div>
-
-                        <div className="flex-1 overflow-y-auto px-6 py-6">
-                            <SyntheseEntry eleve={selectedEleve} />
-                        </div>
-                    </div>
-                </div>
+                <SyntheseModal
+                    eleve={selectedEleve}
+                    onClose={() => setSelectedEleve(null)}
+                />
             )}
         </AppLayout>
     );
