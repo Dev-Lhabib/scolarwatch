@@ -13,22 +13,21 @@ class ClasseSeeder extends Seeder
      */
     public function run(): void
     {
-        $enseignants = User::where('role', 'enseignant')->get();
+        $enseignants = User::query()
+            ->where('role', 'enseignant')
+            ->pluck('id', 'username');
 
-        Classe::factory()->create([
-            'nom' => '1AC-A',
-            'niveau' => '1AC',
-            'annee_scolaire' => '2025-2026',
-            'capacite' => 30,
-            'id_utilisateur_principal' => $enseignants[0]->id,
-        ]);
+        foreach (DemoData::classes() as $index => $definition) {
+            $principal = match ($index) {
+                10 => $enseignants->get('enseignant11'),
+                11 => null,
+                default => $enseignants->get('enseignant'.($index + 1)),
+            };
 
-        Classe::factory()->create([
-            'nom' => '1AC-B',
-            'niveau' => '1AC',
-            'annee_scolaire' => '2025-2026',
-            'capacite' => 30,
-            'id_utilisateur_principal' => $enseignants[1]->id,
-        ]);
+            Classe::create([
+                ...$definition,
+                'id_utilisateur_principal' => $principal,
+            ]);
+        }
     }
 }

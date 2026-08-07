@@ -41,6 +41,81 @@ The application combines a modern web architecture with artificial intelligence 
 - GitHub Container Registry (GHCR)
 - AWS EC2 (Ubuntu) — target
 
+## Getting Started
+
+### Prerequisites
+- Docker & Docker Compose (or PHP 8.4 + Composer + Node.js on the host)
+
+### Installation
+
+```bash
+git clone git@github.com:Dev-Lhabib/scolarwatch.git
+cd scolarwatch
+cp .env.example .env
+
+docker compose up -d
+docker compose exec app composer install
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate --seed
+```
+
+The `docker compose up -d` command starts the application, queue worker, MySQL, Redis, and phpMyAdmin.
+
+### Frontend
+
+```bash
+npm install
+npm run dev     # for development with hot reload
+npm run build   # for a production build
+```
+
+### Access
+
+| Service     | URL                          |
+|-------------|------------------------------|
+| Application | http://localhost:8000        |
+| phpMyAdmin  | http://localhost:8080        |
+| API health  | http://localhost:8000/api/health |
+
+### Seeded accounts
+
+After `php artisan migrate --seed`, the following accounts are available (password: `password`):
+
+| Role          | Username      | Email                           |
+|---------------|---------------|---------------------------------|
+| Administrator | `admin`       | `admin@scolarwatch.test`        |
+| Direction     | `direction`   | `direction@scolarwatch.test`    |
+| Teacher       | `enseignant1` | `enseignant1@scolarwatch.test`  |
+| Parent        | `parent1`     | `parent1@scolarwatch.test`      |
+
+The AI agent requires a Groq API key: set `GROQ_API_KEY` in `.env`.
+
+## Testing
+
+```bash
+docker compose exec app php artisan test --compact
+```
+
+The suite covers authentication, policies, CRUD endpoints, the AI synthesis flow, notifications, and the archive/bulk administration features.
+
+## API
+
+The API is a pure REST API served from `routes/api.php`, secured by Sanctum. A ready-to-use Postman collection is available at `docs/postman/ScolarWatch.postman_collection.json`.
+
+Key endpoints:
+- `POST /api/login` — authentication (email or username, rate-limited)
+- `GET /api/health` — database and Redis status checks
+- `/api/users`, `/api/eleves`, `/api/classes` — CRUD plus archive, restore, and force-delete endpoints
+- `POST /api/eleves/bulk-assign-class` — assign multiple students to a class in one operation
+
+## Documentation
+
+- `docs/cahier-des-charges.md` — functional specification
+- `docs/mcd.md`, `docs/mld.md` — conceptual and logical data models
+- `docs/diagrams/` — MCD, MLD, and architecture diagrams
+- `docs/labs/` — per-sprint lab reports
+- `docs/postman/` — Postman collection
+
 ## Architecture
 
 The application follows a modern layered architecture:
