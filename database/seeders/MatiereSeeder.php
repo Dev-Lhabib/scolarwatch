@@ -12,16 +12,7 @@ class MatiereSeeder extends Seeder
      */
     public function run(): void
     {
-        $matieres = [
-            ['nom' => 'Mathématiques', 'code' => 'MATH'],
-            ['nom' => 'Physique-Chimie', 'code' => 'PC'],
-            ['nom' => 'SVT', 'code' => 'SVT'],
-            ['nom' => 'Français', 'code' => 'FR'],
-            ['nom' => 'Arabe', 'code' => 'AR'],
-            ['nom' => 'Anglais', 'code' => 'ANG'],
-        ];
-
-        foreach ($matieres as $matiere) {
+        foreach (DemoData::matieres() as $matiere) {
             Matiere::create($matiere);
         }
     }

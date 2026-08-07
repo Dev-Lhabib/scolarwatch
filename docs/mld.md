@@ -1,6 +1,6 @@
 # MLD ScolarWatch — Socle
 
-Modèle Logique de Dérivé du MCD à 10 entités. Les colonnes `cree_par` et `updated_by` (traçabilité d'audit) sont ajoutées sur UTILISATEUR.
+Modèle Logique de Dérivé du MCD à 10 entités. Les colonnes `cree_par` et `updated_by` (traçabilité d'audit) sont ajoutées sur UTILISATEUR. La colonne `deleted_at` (archivage logique) n'existe que sur UTILISATEUR, CLASSE et ELEVE.
 
 ---
 
@@ -19,6 +19,7 @@ adresse
 role
 is_active
 id_matiere → MATIERE(id_matiere)
+deleted_at DATETIME NULL
 ```
 
 ### CLASSE
@@ -29,6 +30,7 @@ niveau
 annee_scolaire
 capacite
 id_utilisateur_principal → UTILISATEUR(id)
+deleted_at DATETIME NULL
 ```
 
 ### ELEVE
@@ -41,6 +43,7 @@ date_naissance
 code_massar
 photo
 id_classe → CLASSE(id_classe)
+deleted_at DATETIME NULL
 ```
 
 ### MATIERE

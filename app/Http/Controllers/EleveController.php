@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEleveRequest;
+use App\Models\Classe;
 use App\Models\Eleve;
+use Illuminate\Http\Request;
 
 class EleveController extends Controller
 {
@@ -77,5 +79,126 @@ class EleveController extends Controller
         $eleve->delete();
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * Display a listing of soft-deleted (archived) eleves.
+     */
+    public function archived()
+    {
+        $this->authorize('viewArchived', Eleve::class);
+
+        return response()->json(Eleve::onlyTrashed()->get());
+    }
+
+    /**
+     * Restore a soft-deleted (archived) eleve.
+     */
+    public function restore(Eleve $eleve)
+    {
+        $this->authorize('restore', $eleve);
+
+        $eleve->restore();
+
+        return response()->json($eleve);
+    }
+
+    /**
+     * Permanently delete a soft-deleted (archived) eleve.
+     */
+    public function forceDelete(Eleve $eleve)
+    {
+        $this->authorize('forceDelete', $eleve);
+
+        $eleve->forceDelete();
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * Archive (soft-delete) multiple eleves in one request.
+     */
+    public function bulkArchive(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer'],
+        ]);
+
+        $eleves = Eleve::whereIn('id_eleve', $validated['ids'])->get();
+
+        foreach ($eleves as $eleve) {
+            $this->authorize('delete', $eleve);
+        }
+
+        $eleves->each->delete();
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * Restore multiple archived eleves in one request.
+     */
+    public function bulkRestore(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer'],
+        ]);
+
+        $eleves = Eleve::onlyTrashed()->whereIn('id_eleve', $validated['ids'])->get();
+
+        foreach ($eleves as $eleve) {
+            $this->authorize('restore', $eleve);
+        }
+
+        $eleves->each->restore();
+
+        return response()->json($eleves);
+    }
+
+    /**
+     * Permanently delete multiple archived eleves in one request.
+     */
+    public function bulkForceDelete(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer'],
+        ]);
+
+        $eleves = Eleve::onlyTrashed()->whereIn('id_eleve', $validated['ids'])->get();
+
+        foreach ($eleves as $eleve) {
+            $this->authorize('forceDelete', $eleve);
+        }
+
+        $eleves->each->forceDelete();
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * Assign multiple eleves to one existing (active) classe by updating only their id_classe.
+     */
+    public function bulkAssignClass(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer'],
+            'id_classe' => ['required', 'integer', 'exists:classes,id_classe'],
+        ]);
+
+        $classe = Classe::findOrFail($validated['id_classe']);
+
+        $eleves = Eleve::whereIn('id_eleve', $validated['ids'])->get();
+
+        foreach ($eleves as $eleve) {
+            $this->authorize('update', $eleve);
+        }
+
+        $eleves->each->update(['id_classe' => $classe->id_classe]);
+
+        return response()->json($eleves);
     }
 }

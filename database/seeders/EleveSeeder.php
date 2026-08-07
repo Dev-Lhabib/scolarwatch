@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Classe;
 use App\Models\Eleve;
-use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Seeder;
 
 class EleveSeeder extends Seeder
@@ -15,14 +15,28 @@ class EleveSeeder extends Seeder
     public function run(): void
     {
         $classes = Classe::all();
-        $parents = User::where('role', 'parent')->get();
+        $prenoms = DemoData::prenoms();
+        $noms = DemoData::noms();
 
-        for ($i = 0; $i < 10; $i++) {
-            $eleve = Eleve::factory()->create([
-                'id_classe' => $classes[$i % $classes->count()]->id_classe,
+        for ($ordinal = 1; $ordinal <= DemoData::studentCount(); $ordinal++) {
+            $classe = $classes[DemoData::classeForOrdinal($ordinal)];
+            [$anneeDebut] = explode('-', $classe->annee_scolaire);
+
+            $dateNaissance = CarbonImmutable::create(
+                (int) $anneeDebut - DemoData::ageForNiveau($classe->niveau),
+                1 + (($ordinal * 3) % 12),
+                1 + (($ordinal * 7) % 27),
+            );
+
+            Eleve::create([
+                'nom' => $noms[($ordinal * 7) % count($noms)],
+                'prenom' => $prenoms[($ordinal - 1) % count($prenoms)],
+                'genre' => $ordinal % 2 === 0 ? 'F' : 'M',
+                'date_naissance' => $dateNaissance->format('Y-m-d'),
+                'code_massar' => 'M'.str_pad((string) (1000000 + $ordinal * 997), 8, '0', STR_PAD_LEFT),
+                'photo' => null,
+                'id_classe' => $classe->id_classe,
             ]);
-
-            $eleve->tuteurs()->attach($parents[$i]->id);
         }
     }
 }

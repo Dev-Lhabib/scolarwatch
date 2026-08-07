@@ -42,7 +42,7 @@ const NAV_LINKS: Record<AuthUser['role'], NavLink[]> = {
         { label: 'Utilisateurs', href: '/admin/users', icon: Users },
         {
             label: 'Archives',
-            href: '/admin/users/archives',
+            href: '/admin/archives',
             icon: Archive,
         },
         {

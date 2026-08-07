@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
+import Checkbox from '@/components/ui/Checkbox';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import { useRowSelection } from '@/hooks/useRowSelection';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 
@@ -25,6 +27,8 @@ export default function AdminClassesIndex() {
     const [error, setError] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<Classe | null>(null);
+    const [bulkDialogOpen, setBulkDialogOpen] = useState(false);
+    const [bulkArchiving, setBulkArchiving] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
@@ -60,6 +64,31 @@ export default function AdminClassesIndex() {
             .finally(() => setLoading(false));
     }, [refreshKey]);
 
+    const filteredClasses = useMemo(() => {
+        const query = search.trim().toLowerCase();
+
+        if (!query) {
+            return classes;
+        }
+
+        return classes.filter((classe) =>
+            [classe.nom, classe.niveau, classe.annee_scolaire]
+                .join(' ')
+                .toLowerCase()
+                .includes(query),
+        );
+    }, [classes, search]);
+
+    const {
+        selected,
+        selectedKeys,
+        toggleRow,
+        toggleAll,
+        clear,
+        allSelected,
+        hasSelection,
+    } = useRowSelection(filteredClasses.map((classe) => classe.id_classe));
+
     async function handleDelete(classe: Classe) {
         setDeletingId(classe.id_classe);
         setError(null);
@@ -89,20 +118,38 @@ export default function AdminClassesIndex() {
         }
     }
 
-    const filteredClasses = useMemo(() => {
-        const query = search.trim().toLowerCase();
-
-        if (!query) {
-            return classes;
+    async function handleBulkArchive() {
+        if (selectedKeys.length === 0) {
+            return;
         }
 
-        return classes.filter((classe) =>
-            [classe.nom, classe.niveau, classe.annee_scolaire]
-                .join(' ')
-                .toLowerCase()
-                .includes(query),
-        );
-    }, [classes, search]);
+        setBulkArchiving(true);
+        setError(null);
+
+        try {
+            const response = await apiFetch('/api/classes/bulk-archive', {
+                method: 'POST',
+                body: JSON.stringify({ ids: selectedKeys }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                setError(
+                    data.message ?? "Erreur lors de l'archivage des classes.",
+                );
+
+                return;
+            }
+
+            setRefreshKey((key) => key + 1);
+            clear();
+        } catch {
+            setError("Une erreur est survenue lors de l'archivage.");
+        } finally {
+            setBulkArchiving(false);
+            setBulkDialogOpen(false);
+        }
+    }
 
     return (
         <AppLayout>
@@ -116,9 +163,14 @@ export default function AdminClassesIndex() {
                         enregistrée{classes.length > 1 ? 's' : ''}.
                     </p>
                 </div>
-                <Button href="/dashboard/admin/classes/create">
-                    Nouvelle classe
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button href="/admin/archives" tone="secondary">
+                        Archives
+                    </Button>
+                    <Button href="/dashboard/admin/classes/create">
+                        Nouvelle classe
+                    </Button>
+                </div>
             </div>
 
             {error && (
@@ -137,10 +189,36 @@ export default function AdminClassesIndex() {
                 />
             </div>
 
+            {hasSelection && (
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm text-indigo-700 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-300">
+                    <span>
+                        {selectedKeys.length} classe
+                        {selectedKeys.length > 1 ? 's' : ''} sélectionnée
+                        {selectedKeys.length > 1 ? 's' : ''}.
+                    </span>
+                    <Button
+                        type="button"
+                        tone="danger"
+                        size="sm"
+                        onClick={() => setBulkDialogOpen(true)}
+                        disabled={bulkArchiving}
+                    >
+                        Archiver la sélection
+                    </Button>
+                </div>
+            )}
+
             <Card className="overflow-x-auto p-0">
                 <table className="w-full text-sm text-slate-900 dark:text-slate-100">
                     <thead>
                         <tr className="border-b border-slate-200 dark:border-slate-800">
+                            <th className="w-12 px-4 py-3">
+                                <Checkbox
+                                    checked={allSelected}
+                                    aria-label="Tout sélectionner"
+                                    onChange={toggleAll}
+                                />
+                            </th>
                             <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">
                                 Nom
                             </th>
@@ -167,6 +245,15 @@ export default function AdminClassesIndex() {
                                 key={classe.id_classe}
                                 className="border-b border-slate-200 dark:border-slate-800"
                             >
+                                <td className="px-4 py-3">
+                                    <Checkbox
+                                        checked={selected.has(classe.id_classe)}
+                                        aria-label={`Sélectionner ${classe.nom}`}
+                                        onChange={() =>
+                                            toggleRow(classe.id_classe)
+                                        }
+                                    />
+                                </td>
                                 <td className="px-4 py-3">{classe.nom}</td>
                                 <td className="px-4 py-3">{classe.niveau}</td>
                                 <td className="px-4 py-3">
@@ -203,7 +290,7 @@ export default function AdminClassesIndex() {
                         {!loading && filteredClasses.length === 0 && (
                             <tr>
                                 <td
-                                    colSpan={6}
+                                    colSpan={7}
                                     className="px-4 py-6 text-center text-slate-500 dark:text-slate-400"
                                 >
                                     Aucune classe trouvée.
@@ -213,7 +300,7 @@ export default function AdminClassesIndex() {
                         {loading && (
                             <tr>
                                 <td
-                                    colSpan={6}
+                                    colSpan={7}
                                     className="px-4 py-6 text-center text-slate-500 dark:text-slate-400"
                                 >
                                     Chargement...
@@ -229,7 +316,7 @@ export default function AdminClassesIndex() {
                 title="Supprimer la classe"
                 description={
                     deleteTarget != null
-                        ? `Êtes-vous sûr de vouloir supprimer la classe « ${deleteTarget.nom} » ? Cette action est irréversible.`
+                        ? `Êtes-vous sûr de vouloir supprimer la classe « ${deleteTarget.nom} » ? La classe sera déplacée vers les archives et pourra être restaurée.`
                         : undefined
                 }
                 confirmLabel="Supprimer"
@@ -242,6 +329,18 @@ export default function AdminClassesIndex() {
                     }
                 }}
                 onCancel={() => setDeleteTarget(null)}
+            />
+
+            <ConfirmDialog
+                open={bulkDialogOpen}
+                title="Archiver la sélection"
+                description={`Êtes-vous sûr de vouloir archiver ${selectedKeys.length} classe${selectedKeys.length > 1 ? 's' : ''} ? Elles seront déplacées vers les archives et pourront être restaurées.`}
+                confirmLabel="Archiver"
+                confirmVariant="danger"
+                loading={bulkArchiving}
+                loadingLabel="Archivage..."
+                onConfirm={handleBulkArchive}
+                onCancel={() => setBulkDialogOpen(false)}
             />
         </AppLayout>
     );

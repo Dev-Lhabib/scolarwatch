@@ -1,34 +1,35 @@
 <?php
 
+use App\Models\Classe;
 use App\Models\Eleve;
+use App\Models\User;
 
-it('seeds the T1 performance history for the first student', function () {
+it('seeds a deterministic demo performance history for the first student', function () {
     $this->seed();
 
     $eleve = Eleve::query()->first();
 
-    expect($eleve->notes()->where('trimestre', 'T1')->count())->toBe(4);
-    $valeurs = $eleve->notes()
-        ->where('trimestre', 'T1')
-        ->pluck('valeur')
-        ->map(fn ($valeur) => (float) $valeur)
-        ->sort()
-        ->values()
-        ->all();
-    expect($valeurs)->toBe([9.0, 12.0, 14.0, 15.0]);
-
+    // The first student follows the "bonne" profile: notes between 15 and 17.
     $notes = $eleve->notes()->where('trimestre', 'T1')->get();
+
+    expect($notes)->toHaveCount(30);
+
+    $valeurs = $notes->pluck('valeur')->map(fn ($valeur) => (float) $valeur);
+    expect($valeurs->every(fn (float $valeur) => $valeur >= 15 && $valeur <= 17))->toBeTrue();
+
     expect($notes->every(
         fn ($note) => $note->utilisateur->id_matiere === $note->id_matiere,
     ))->toBeTrue();
 
-    expect($eleve->absences()->count())->toBe(3);
-    expect($eleve->absences()->where('justifiee', true)->count())->toBeGreaterThan(0);
-    expect($eleve->absences()->where('justifiee', false)->count())->toBeGreaterThan(0);
+    expect($eleve->absences()->count())->toBe(2);
+    expect($eleve->retards()->count())->toBe(4);
+    expect($eleve->remarques()->where('trimestre', 'T1')->count())->toBe(3);
+});
 
-    expect($eleve->retards()->count())->toBe(2);
-    $minutes = $eleve->retards()->pluck('minutes_retard')->sort()->values()->all();
-    expect($minutes)->toBe([10, 20]);
+it('archives exactly the demo records for the archive interfaces', function () {
+    $this->seed();
 
-    expect($eleve->remarques()->where('trimestre', 'T1')->count())->toBe(4);
+    expect(User::onlyTrashed()->count())->toBe(2);
+    expect(Classe::onlyTrashed()->count())->toBe(2);
+    expect(Eleve::onlyTrashed()->count())->toBe(5);
 });

@@ -66,6 +66,103 @@ class ClasseController extends Controller
     }
 
     /**
+     * Display a listing of soft-deleted (archived) classes.
+     */
+    public function archived()
+    {
+        $this->authorize('viewArchived', Classe::class);
+
+        return response()->json(Classe::onlyTrashed()->get());
+    }
+
+    /**
+     * Restore a soft-deleted (archived) classe.
+     */
+    public function restore(Classe $classe)
+    {
+        $this->authorize('restore', $classe);
+
+        $classe->restore();
+
+        return response()->json($classe);
+    }
+
+    /**
+     * Permanently delete a soft-deleted (archived) classe.
+     */
+    public function forceDelete(Classe $classe)
+    {
+        $this->authorize('forceDelete', $classe);
+
+        $classe->forceDelete();
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * Archive (soft-delete) multiple classes in one request.
+     */
+    public function bulkArchive(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer'],
+        ]);
+
+        $classes = Classe::whereIn('id_classe', $validated['ids'])->get();
+
+        foreach ($classes as $classe) {
+            $this->authorize('delete', $classe);
+        }
+
+        $classes->each->delete();
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * Restore multiple archived classes in one request.
+     */
+    public function bulkRestore(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer'],
+        ]);
+
+        $classes = Classe::onlyTrashed()->whereIn('id_classe', $validated['ids'])->get();
+
+        foreach ($classes as $classe) {
+            $this->authorize('restore', $classe);
+        }
+
+        $classes->each->restore();
+
+        return response()->json($classes);
+    }
+
+    /**
+     * Permanently delete multiple archived classes in one request.
+     */
+    public function bulkForceDelete(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer'],
+        ]);
+
+        $classes = Classe::onlyTrashed()->whereIn('id_classe', $validated['ids'])->get();
+
+        foreach ($classes as $classe) {
+            $this->authorize('forceDelete', $classe);
+        }
+
+        $classes->each->forceDelete();
+
+        return response()->json(null, 204);
+    }
+
+    /**
      * Designate the professeur principal for this classe.
      */
     public function assignProfesseurPrincipal(Request $request, Classe $classe)
