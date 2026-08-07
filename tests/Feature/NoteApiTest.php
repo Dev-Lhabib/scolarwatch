@@ -228,7 +228,7 @@ it('allows an admin to delete a note', function () {
         ->deleteJson("/api/notes/{$note->id_note}");
 
     $response->assertNoContent();
-    $this->assertDatabaseMissing('notes', ['id_note' => $note->id_note]);
+    $this->assertSoftDeleted('notes', ['id_note' => $note->id_note]);
 });
 
 it('allows an enseignant to delete a note for their eleve and matiere', function () {
@@ -242,7 +242,7 @@ it('allows an enseignant to delete a note for their eleve and matiere', function
         ->deleteJson("/api/notes/{$note->id_note}");
 
     $response->assertNoContent();
-    $this->assertDatabaseMissing('notes', ['id_note' => $note->id_note]);
+    $this->assertSoftDeleted('notes', ['id_note' => $note->id_note]);
 });
 
 it('forbids an enseignant from deleting a note outside their classe', function () {

@@ -13,6 +13,8 @@ use App\Http\Controllers\RetardController;
 use App\Http\Controllers\SyntheseIAController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
@@ -20,13 +22,37 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/health', function () {
-    return response()->json(['status' => 'ok']);
+    $checks = [];
+
+    try {
+        DB::connection()->getPdo();
+        $checks['database'] = 'ok';
+    } catch (Throwable) {
+        $checks['database'] = 'unreachable';
+    }
+
+    try {
+        Redis::connection()->ping();
+        $checks['redis'] = 'ok';
+    } catch (Throwable) {
+        $checks['redis'] = 'unreachable';
+    }
+
+    $healthy = collect($checks)->every(fn (string $status) => $status === 'ok');
+
+    return response()->json([
+        'status' => $healthy ? 'ok' : 'degraded',
+        'checks' => $checks,
+    ], $healthy ? 200 : 503);
 });
 
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,1');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/users/archives', [UserController::class, 'archived']);
+    Route::patch('/users/{user}/restore', [UserController::class, 'restore'])->withTrashed();
+    Route::delete('/users/{user}/force', [UserController::class, 'forceDelete'])->withTrashed();
     Route::apiResource('users', UserController::class)->except(['store']);
     Route::post('/users', [UserController::class, 'store']);
     Route::apiResource('matieres', MatiereController::class);

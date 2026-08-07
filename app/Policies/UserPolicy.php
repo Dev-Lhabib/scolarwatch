@@ -90,4 +90,40 @@ class UserPolicy
 
         return Response::allow();
     }
+
+    /**
+     * Determine whether the user can restore a soft-deleted model.
+     */
+    public function restore(User $user, User $model): Response
+    {
+        if ($user->role !== 'admin') {
+            return Response::deny();
+        }
+
+        if ($model->isBootstrapAdministrator()) {
+            return Response::denyWithStatus(403, 'Le compte administrateur principal ne peut pas être restauré.');
+        }
+
+        return Response::allow();
+    }
+
+    /**
+     * Determine whether the user can permanently delete the model.
+     */
+    public function forceDelete(User $user, User $model): Response
+    {
+        if ($user->role !== 'admin') {
+            return Response::deny();
+        }
+
+        if ($model->isBootstrapAdministrator()) {
+            return Response::denyWithStatus(403, 'Le compte administrateur principal ne peut pas être supprimé définitivement.');
+        }
+
+        if ($user->id === $model->id) {
+            return Response::deny();
+        }
+
+        return Response::allow();
+    }
 }

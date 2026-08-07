@@ -6,33 +6,30 @@ import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 
-type User = {
+type ArchivedUser = {
     id: number;
     nom: string;
     prenom: string;
     username: string;
     email: string;
-    telephone: string | null;
-    adresse: string | null;
     role: 'admin' | 'enseignant' | 'direction' | 'parent';
-    is_active: boolean;
-    is_bootstrap_admin: boolean;
+    deleted_at: string | null;
 };
 
-const ROLE_LABELS: Record<User['role'], string> = {
+const ROLE_LABELS: Record<ArchivedUser['role'], string> = {
     admin: 'Admin',
     enseignant: 'Enseignant',
     direction: 'Direction',
     parent: 'Parent',
 };
 
-export default function AdminUsersIndex() {
-    const [users, setUsers] = useState<User[]>([]);
+export default function AdminUsersArchives() {
+    const [users, setUsers] = useState<ArchivedUser[]>([]);
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [deletingId, setDeletingId] = useState<number | null>(null);
-    const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
+    const [actionId, setActionId] = useState<number | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<ArchivedUser | null>(null);
     const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
@@ -44,7 +41,7 @@ export default function AdminUsersIndex() {
             return;
         }
 
-        apiFetch('/api/users')
+        apiFetch('/api/users/archives')
             .then(async (response) => {
                 setError(null);
                 const data = await response.json();
@@ -52,7 +49,7 @@ export default function AdminUsersIndex() {
                 if (!response.ok) {
                     setError(
                         data.message ??
-                            'Erreur lors du chargement des utilisateurs.',
+                            'Erreur lors du chargement des archives.',
                     );
 
                     return;
@@ -62,18 +59,45 @@ export default function AdminUsersIndex() {
             })
             .catch(() => {
                 setError(
-                    'Impossible de charger les utilisateurs. Vérifiez votre connexion.',
+                    'Impossible de charger les archives. Vérifiez votre connexion.',
                 );
             })
             .finally(() => setLoading(false));
     }, [refreshKey]);
 
-    async function handleDelete(user: User) {
-        setDeletingId(user.id);
+    async function handleRestore(user: ArchivedUser) {
+        setActionId(user.id);
         setError(null);
 
         try {
-            const response = await apiFetch(`/api/users/${user.id}`, {
+            const response = await apiFetch(`/api/users/${user.id}/restore`, {
+                method: 'PATCH',
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                setError(
+                    data.message ??
+                        "Erreur lors de la restauration de l'utilisateur.",
+                );
+
+                return;
+            }
+
+            setRefreshKey((key) => key + 1);
+        } catch {
+            setError('Une erreur est survenue lors de la restauration.');
+        } finally {
+            setActionId(null);
+        }
+    }
+
+    async function handleForceDelete(user: ArchivedUser) {
+        setActionId(user.id);
+        setError(null);
+
+        try {
+            const response = await apiFetch(`/api/users/${user.id}/force`, {
                 method: 'DELETE',
             });
 
@@ -91,7 +115,7 @@ export default function AdminUsersIndex() {
         } catch {
             setError('Une erreur est survenue lors de la suppression.');
         } finally {
-            setDeletingId(null);
+            setActionId(null);
             setDeleteTarget(null);
         }
     }
@@ -122,21 +146,16 @@ export default function AdminUsersIndex() {
             <div className="mb-6 flex items-center justify-between">
                 <div>
                     <h1 className="text-xl font-medium text-slate-900 dark:text-slate-100">
-                        Gestion des utilisateurs
+                        Archives des utilisateurs
                     </h1>
                     <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                         {users.length} utilisateur{users.length > 1 ? 's' : ''}{' '}
-                        enregistré{users.length > 1 ? 's' : ''}.
+                        archivé{users.length > 1 ? 's' : ''}.
                     </p>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Button href="/admin/users/archives" tone="secondary">
-                        Archives
-                    </Button>
-                    <Button href="/admin/users/create">
-                        Nouvel utilisateur
-                    </Button>
-                </div>
+                <Button href="/admin/users" tone="secondary">
+                    Retour à la liste
+                </Button>
             </div>
 
             {error && (
@@ -150,7 +169,7 @@ export default function AdminUsersIndex() {
                     type="search"
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
-                    placeholder="Rechercher un utilisateur..."
+                    placeholder="Rechercher un utilisateur archivé..."
                     className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
             </div>
@@ -175,7 +194,7 @@ export default function AdminUsersIndex() {
                                 Rôle
                             </th>
                             <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">
-                                Actif
+                                Archivé le
                             </th>
                             <th className="px-4 py-3 text-right font-medium text-slate-500 dark:text-slate-400">
                                 Actions
@@ -193,43 +212,35 @@ export default function AdminUsersIndex() {
                                 <td className="px-4 py-3">{user.username}</td>
                                 <td className="px-4 py-3">{user.email}</td>
                                 <td className="px-4 py-3">
-                                    {ROLE_LABELS[user.role]}
-                                </td>
-                                <td className="px-4 py-3">
-                                    <Badge
-                                        tone={
-                                            user.is_active
-                                                ? 'success'
-                                                : 'danger'
-                                        }
-                                    >
-                                        {user.is_active ? 'Actif' : 'Inactif'}
+                                    <Badge tone="default">
+                                        {ROLE_LABELS[user.role]}
                                     </Badge>
                                 </td>
+                                <td className="px-4 py-3">
+                                    {user.deleted_at
+                                        ? new Date(
+                                              user.deleted_at,
+                                          ).toLocaleDateString()
+                                        : '-'}
+                                </td>
                                 <td className="px-4 py-3 text-right">
-                                    <a
-                                        href={`/admin/users/${user.id}`}
-                                        className="mr-4 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRestore(user)}
+                                        disabled={actionId === user.id}
+                                        className="mr-4 text-sm font-medium text-indigo-600 hover:underline disabled:opacity-50 dark:text-indigo-400"
                                     >
-                                        Modifier
-                                    </a>
+                                        {actionId === user.id
+                                            ? 'Restauration...'
+                                            : 'Restaurer'}
+                                    </button>
                                     <button
                                         type="button"
                                         onClick={() => setDeleteTarget(user)}
-                                        disabled={
-                                            user.is_bootstrap_admin ||
-                                            deletingId === user.id
-                                        }
-                                        title={
-                                            user.is_bootstrap_admin
-                                                ? 'Le compte administrateur principal ne peut pas être supprimé.'
-                                                : undefined
-                                        }
-                                        className="text-sm font-medium text-slate-500 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:text-red-400"
+                                        disabled={actionId === user.id}
+                                        className="text-sm font-medium text-slate-500 hover:text-red-600 disabled:opacity-50 dark:text-slate-400 dark:hover:text-red-400"
                                     >
-                                        {deletingId === user.id
-                                            ? 'Suppression...'
-                                            : 'Supprimer'}
+                                        Supprimer définitivement
                                     </button>
                                 </td>
                             </tr>
@@ -240,7 +251,7 @@ export default function AdminUsersIndex() {
                                     colSpan={7}
                                     className="px-4 py-6 text-center text-slate-500 dark:text-slate-400"
                                 >
-                                    Aucun utilisateur trouvé.
+                                    Aucun utilisateur archivé.
                                 </td>
                             </tr>
                         )}
@@ -260,19 +271,19 @@ export default function AdminUsersIndex() {
 
             <ConfirmDialog
                 open={deleteTarget != null}
-                title="Supprimer l'utilisateur"
+                title="Supprimer définitivement"
                 description={
                     deleteTarget != null
-                        ? `Êtes-vous sûr de vouloir supprimer l'utilisateur « ${deleteTarget.prenom} ${deleteTarget.nom} » ? L'utilisateur sera déplacé vers les archives et pourra être restauré.`
+                        ? `Êtes-vous sûr de vouloir supprimer définitivement l'utilisateur « ${deleteTarget.prenom} ${deleteTarget.nom} » ? Cette action est irréversible.`
                         : undefined
                 }
-                confirmLabel="Supprimer"
+                confirmLabel="Supprimer définitivement"
                 confirmVariant="danger"
-                loading={deletingId != null}
+                loading={actionId != null}
                 loadingLabel="Suppression..."
                 onConfirm={() => {
                     if (deleteTarget != null) {
-                        handleDelete(deleteTarget);
+                        handleForceDelete(deleteTarget);
                     }
                 }}
                 onCancel={() => setDeleteTarget(null)}
