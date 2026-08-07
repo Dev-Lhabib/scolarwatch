@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
+import Checkbox from '@/components/ui/Checkbox';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import { useRowSelection } from '@/hooks/useRowSelection';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 
@@ -33,7 +35,10 @@ export default function AdminUsersIndex() {
     const [error, setError] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
+    const [bulkDialogOpen, setBulkDialogOpen] = useState(false);
+    const [bulkArchiving, setBulkArchiving] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
+    const [currentUserId] = useState(() => getAuthUser()?.id ?? null);
 
     useEffect(() => {
         const user = getAuthUser();
@@ -68,6 +73,41 @@ export default function AdminUsersIndex() {
             .finally(() => setLoading(false));
     }, [refreshKey]);
 
+    const filteredUsers = useMemo(() => {
+        const query = search.trim().toLowerCase();
+
+        if (!query) {
+            return users;
+        }
+
+        return users.filter((user) =>
+            [
+                user.nom,
+                user.prenom,
+                user.username,
+                user.email,
+                ROLE_LABELS[user.role],
+            ]
+                .join(' ')
+                .toLowerCase()
+                .includes(query),
+        );
+    }, [users, search]);
+
+    const {
+        selected,
+        selectedKeys,
+        toggleRow,
+        toggleAll,
+        clear,
+        allSelected,
+        hasSelection,
+    } = useRowSelection(filteredUsers.map((user) => user.id));
+
+    function isProtected(user: User): boolean {
+        return user.is_bootstrap_admin || user.id === currentUserId;
+    }
+
     async function handleDelete(user: User) {
         setDeletingId(user.id);
         setError(null);
@@ -96,26 +136,39 @@ export default function AdminUsersIndex() {
         }
     }
 
-    const filteredUsers = useMemo(() => {
-        const query = search.trim().toLowerCase();
-
-        if (!query) {
-            return users;
+    async function handleBulkArchive() {
+        if (selectedKeys.length === 0) {
+            return;
         }
 
-        return users.filter((user) =>
-            [
-                user.nom,
-                user.prenom,
-                user.username,
-                user.email,
-                ROLE_LABELS[user.role],
-            ]
-                .join(' ')
-                .toLowerCase()
-                .includes(query),
-        );
-    }, [users, search]);
+        setBulkArchiving(true);
+        setError(null);
+
+        try {
+            const response = await apiFetch('/api/users/bulk-archive', {
+                method: 'POST',
+                body: JSON.stringify({ ids: selectedKeys }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                setError(
+                    data.message ??
+                        "Erreur lors de l'archivage des utilisateurs.",
+                );
+
+                return;
+            }
+
+            setRefreshKey((key) => key + 1);
+            clear();
+        } catch {
+            setError("Une erreur est survenue lors de l'archivage.");
+        } finally {
+            setBulkArchiving(false);
+            setBulkDialogOpen(false);
+        }
+    }
 
     return (
         <AppLayout>
@@ -130,7 +183,7 @@ export default function AdminUsersIndex() {
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button href="/admin/users/archives" tone="secondary">
+                    <Button href="/admin/archives" tone="secondary">
                         Archives
                     </Button>
                     <Button href="/admin/users/create">
@@ -155,10 +208,36 @@ export default function AdminUsersIndex() {
                 />
             </div>
 
+            {hasSelection && (
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm text-indigo-700 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-300">
+                    <span>
+                        {selectedKeys.length} utilisateur
+                        {selectedKeys.length > 1 ? 's' : ''} sélectionné
+                        {selectedKeys.length > 1 ? 's' : ''}.
+                    </span>
+                    <Button
+                        type="button"
+                        tone="danger"
+                        size="sm"
+                        onClick={() => setBulkDialogOpen(true)}
+                        disabled={bulkArchiving}
+                    >
+                        Archiver la sélection
+                    </Button>
+                </div>
+            )}
+
             <Card className="overflow-x-auto p-0">
                 <table className="w-full text-sm text-slate-900 dark:text-slate-100">
                     <thead>
                         <tr className="border-b border-slate-200 dark:border-slate-800">
+                            <th className="w-12 px-4 py-3">
+                                <Checkbox
+                                    checked={allSelected}
+                                    aria-label="Tout sélectionner"
+                                    onChange={toggleAll}
+                                />
+                            </th>
                             <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">
                                 Nom
                             </th>
@@ -188,6 +267,19 @@ export default function AdminUsersIndex() {
                                 key={user.id}
                                 className="border-b border-slate-200 dark:border-slate-800"
                             >
+                                <td className="px-4 py-3">
+                                    <Checkbox
+                                        checked={selected.has(user.id)}
+                                        disabled={isProtected(user)}
+                                        title={
+                                            isProtected(user)
+                                                ? 'Ce compte ne peut pas être archivé.'
+                                                : undefined
+                                        }
+                                        aria-label={`Sélectionner ${user.prenom} ${user.nom}`}
+                                        onChange={() => toggleRow(user.id)}
+                                    />
+                                </td>
                                 <td className="px-4 py-3">{user.nom}</td>
                                 <td className="px-4 py-3">{user.prenom}</td>
                                 <td className="px-4 py-3">{user.username}</td>
@@ -217,11 +309,11 @@ export default function AdminUsersIndex() {
                                         type="button"
                                         onClick={() => setDeleteTarget(user)}
                                         disabled={
-                                            user.is_bootstrap_admin ||
+                                            isProtected(user) ||
                                             deletingId === user.id
                                         }
                                         title={
-                                            user.is_bootstrap_admin
+                                            isProtected(user)
                                                 ? 'Le compte administrateur principal ne peut pas être supprimé.'
                                                 : undefined
                                         }
@@ -237,7 +329,7 @@ export default function AdminUsersIndex() {
                         {!loading && filteredUsers.length === 0 && (
                             <tr>
                                 <td
-                                    colSpan={7}
+                                    colSpan={8}
                                     className="px-4 py-6 text-center text-slate-500 dark:text-slate-400"
                                 >
                                     Aucun utilisateur trouvé.
@@ -247,7 +339,7 @@ export default function AdminUsersIndex() {
                         {loading && (
                             <tr>
                                 <td
-                                    colSpan={7}
+                                    colSpan={8}
                                     className="px-4 py-6 text-center text-slate-500 dark:text-slate-400"
                                 >
                                     Chargement...
@@ -276,6 +368,18 @@ export default function AdminUsersIndex() {
                     }
                 }}
                 onCancel={() => setDeleteTarget(null)}
+            />
+
+            <ConfirmDialog
+                open={bulkDialogOpen}
+                title="Archiver la sélection"
+                description={`Êtes-vous sûr de vouloir archiver ${selectedKeys.length} utilisateur${selectedKeys.length > 1 ? 's' : ''} ? Ils seront déplacés vers les archives et pourront être restaurés.`}
+                confirmLabel="Archiver"
+                confirmVariant="danger"
+                loading={bulkArchiving}
+                loadingLabel="Archivage..."
+                onConfirm={handleBulkArchive}
+                onCancel={() => setBulkDialogOpen(false)}
             />
         </AppLayout>
     );

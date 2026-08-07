@@ -18,6 +18,7 @@ UTILISATEUR
     adresse
     role
     is_active
+    deleted_at
 
 ELEVE
     # id_eleve
@@ -27,6 +28,7 @@ ELEVE
     date_naissance
     code_massar
     photo
+    deleted_at
 
 CLASSE
     # id_classe
@@ -34,6 +36,7 @@ CLASSE
     niveau
     annee_scolaire
     capacite
+    deleted_at
 
 MATIERE
     # id_matiere
@@ -88,6 +91,8 @@ NOTIFICATION
 ```
 
 **Remarque :** `cree_par` / `updated_by` (traçabilité d'audit sur UTILISATEUR) restent des colonnes techniques exclues du MCD, ajoutées uniquement au MLD.
+
+**Remarque :** `deleted_at` (archivage logique) n'est présent que sur UTILISATEUR, ELEVE et CLASSE. MATIERE, NOTE, ABSENCE, RETARD, REMARQUE, SYNTHESE_IA et NOTIFICATION ne sont pas archivables.
 
 ---
 

@@ -162,7 +162,7 @@ it('allows the professeur principal to delete a remarque for their eleve', funct
         ->deleteJson("/api/remarques/{$remarque->id_remarque}");
 
     $response->assertNoContent();
-    $this->assertSoftDeleted('remarques', ['id_remarque' => $remarque->id_remarque]);
+    $this->assertDatabaseMissing('remarques', ['id_remarque' => $remarque->id_remarque]);
 });
 
 it('forbids an enseignant from deleting a remarque outside their classe', function () {

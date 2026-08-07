@@ -58,4 +58,28 @@ class ElevePolicy
     {
         return $user->role === 'admin';
     }
+
+    /**
+     * Determine whether the user can view the archived eleves (admin archive feature).
+     */
+    public function viewArchived(User $user): bool
+    {
+        return $user->role === 'admin';
+    }
+
+    /**
+     * Determine whether the user can restore a soft-deleted model.
+     */
+    public function restore(User $user, Eleve $eleve): bool
+    {
+        return $user->role === 'admin';
+    }
+
+    /**
+     * Determine whether the user can permanently delete the model.
+     */
+    public function forceDelete(User $user, Eleve $eleve): bool
+    {
+        return $user->role === 'admin';
+    }
 }

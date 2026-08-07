@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
+import Checkbox from '@/components/ui/Checkbox';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import Select from '@/components/ui/Select';
+import { useRowSelection } from '@/hooks/useRowSelection';
 import AppLayout from '@/layouts/AppLayout';
 import { apiFetch, getAuthUser } from '@/lib/auth';
 
@@ -20,6 +23,8 @@ type Classe = {
     nom: string;
 };
 
+type BulkDialog = 'archive' | 'assign' | null;
+
 export default function AdminElevesIndex() {
     const [eleves, setEleves] = useState<Eleve[]>([]);
     const [classes, setClasses] = useState<Classe[]>([]);
@@ -28,6 +33,9 @@ export default function AdminElevesIndex() {
     const [error, setError] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<Eleve | null>(null);
+    const [bulkDialog, setBulkDialog] = useState<BulkDialog>(null);
+    const [bulkBusy, setBulkBusy] = useState(false);
+    const [assignTarget, setAssignTarget] = useState('');
     const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
@@ -65,6 +73,39 @@ export default function AdminElevesIndex() {
             .finally(() => setLoading(false));
     }, [refreshKey]);
 
+    const classeMap = useMemo(
+        () =>
+            Object.fromEntries(
+                classes.map((classe) => [classe.id_classe, classe.nom]),
+            ),
+        [classes],
+    );
+
+    const filteredEleves = useMemo(() => {
+        const query = search.trim().toLowerCase();
+
+        if (!query) {
+            return eleves;
+        }
+
+        return eleves.filter((eleve) =>
+            [eleve.nom, eleve.prenom, eleve.code_massar ?? '']
+                .join(' ')
+                .toLowerCase()
+                .includes(query),
+        );
+    }, [eleves, search]);
+
+    const {
+        selected,
+        selectedKeys,
+        toggleRow,
+        toggleAll,
+        clear,
+        allSelected,
+        hasSelection,
+    } = useRowSelection(filteredEleves.map((eleve) => eleve.id_eleve));
+
     async function handleDelete(eleve: Eleve) {
         setDeletingId(eleve.id_eleve);
         setError(null);
@@ -92,28 +133,75 @@ export default function AdminElevesIndex() {
         }
     }
 
-    const classeMap = useMemo(
-        () =>
-            Object.fromEntries(
-                classes.map((classe) => [classe.id_classe, classe.nom]),
-            ),
-        [classes],
-    );
-
-    const filteredEleves = useMemo(() => {
-        const query = search.trim().toLowerCase();
-
-        if (!query) {
-            return eleves;
+    async function handleBulkArchive() {
+        if (selectedKeys.length === 0) {
+            return;
         }
 
-        return eleves.filter((eleve) =>
-            [eleve.nom, eleve.prenom, eleve.code_massar ?? '']
-                .join(' ')
-                .toLowerCase()
-                .includes(query),
-        );
-    }, [eleves, search]);
+        setBulkBusy(true);
+        setError(null);
+
+        try {
+            const response = await apiFetch('/api/eleves/bulk-archive', {
+                method: 'POST',
+                body: JSON.stringify({ ids: selectedKeys }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                setError(
+                    data.message ?? "Erreur lors de l'archivage des élèves.",
+                );
+
+                return;
+            }
+
+            setRefreshKey((key) => key + 1);
+            clear();
+        } catch {
+            setError("Une erreur est survenue lors de l'archivage.");
+        } finally {
+            setBulkBusy(false);
+            setBulkDialog(null);
+        }
+    }
+
+    async function handleBulkAssign() {
+        if (selectedKeys.length === 0 || !assignTarget) {
+            return;
+        }
+
+        setBulkBusy(true);
+        setError(null);
+
+        try {
+            const response = await apiFetch('/api/eleves/bulk-assign-class', {
+                method: 'POST',
+                body: JSON.stringify({
+                    ids: selectedKeys,
+                    id_classe: Number(assignTarget),
+                }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                setError(
+                    data.message ?? "Erreur lors de l'affectation des élèves.",
+                );
+
+                return;
+            }
+
+            setRefreshKey((key) => key + 1);
+            clear();
+        } catch {
+            setError("Une erreur est survenue lors de l'affectation.");
+        } finally {
+            setBulkBusy(false);
+            setBulkDialog(null);
+            setAssignTarget('');
+        }
+    }
 
     return (
         <AppLayout>
@@ -127,9 +215,14 @@ export default function AdminElevesIndex() {
                         enregistré{eleves.length > 1 ? 's' : ''}.
                     </p>
                 </div>
-                <Button href="/dashboard/admin/eleves/create">
-                    Nouvel élève
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button href="/admin/archives" tone="secondary">
+                        Archives
+                    </Button>
+                    <Button href="/dashboard/admin/eleves/create">
+                        Nouvel élève
+                    </Button>
+                </div>
             </div>
 
             {error && (
@@ -148,10 +241,65 @@ export default function AdminElevesIndex() {
                 />
             </div>
 
+            {hasSelection && (
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm text-indigo-700 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-300">
+                    <span>
+                        {selectedKeys.length} élève
+                        {selectedKeys.length > 1 ? 's' : ''} sélectionné
+                        {selectedKeys.length > 1 ? 's' : ''}.
+                    </span>
+                    <div className="flex flex-wrap items-center gap-2">
+                        <Select
+                            value={assignTarget}
+                            onChange={(event) =>
+                                setAssignTarget(event.target.value)
+                            }
+                            className="w-48"
+                            aria-label="Classe de destination"
+                        >
+                            <option value="">Affecter à la classe...</option>
+                            {classes.map((classe) => (
+                                <option
+                                    key={classe.id_classe}
+                                    value={classe.id_classe}
+                                >
+                                    {classe.nom}
+                                </option>
+                            ))}
+                        </Select>
+                        <Button
+                            type="button"
+                            tone="secondary"
+                            size="sm"
+                            onClick={() => setBulkDialog('assign')}
+                            disabled={!assignTarget || bulkBusy}
+                        >
+                            Affecter
+                        </Button>
+                        <Button
+                            type="button"
+                            tone="danger"
+                            size="sm"
+                            onClick={() => setBulkDialog('archive')}
+                            disabled={bulkBusy}
+                        >
+                            Archiver la sélection
+                        </Button>
+                    </div>
+                </div>
+            )}
+
             <Card className="overflow-x-auto p-0">
                 <table className="w-full text-sm text-slate-900 dark:text-slate-100">
                     <thead>
                         <tr className="border-b border-slate-200 dark:border-slate-800">
+                            <th className="w-12 px-4 py-3">
+                                <Checkbox
+                                    checked={allSelected}
+                                    aria-label="Tout sélectionner"
+                                    onChange={toggleAll}
+                                />
+                            </th>
                             <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">
                                 Nom
                             </th>
@@ -181,6 +329,15 @@ export default function AdminElevesIndex() {
                                 key={eleve.id_eleve}
                                 className="border-b border-slate-200 dark:border-slate-800"
                             >
+                                <td className="px-4 py-3">
+                                    <Checkbox
+                                        checked={selected.has(eleve.id_eleve)}
+                                        aria-label={`Sélectionner ${eleve.prenom} ${eleve.nom}`}
+                                        onChange={() =>
+                                            toggleRow(eleve.id_eleve)
+                                        }
+                                    />
+                                </td>
                                 <td className="px-4 py-3">{eleve.nom}</td>
                                 <td className="px-4 py-3">{eleve.prenom}</td>
                                 <td className="px-4 py-3">
@@ -221,7 +378,7 @@ export default function AdminElevesIndex() {
                         {!loading && filteredEleves.length === 0 && (
                             <tr>
                                 <td
-                                    colSpan={7}
+                                    colSpan={8}
                                     className="px-4 py-6 text-center text-slate-500 dark:text-slate-400"
                                 >
                                     Aucun élève trouvé.
@@ -231,7 +388,7 @@ export default function AdminElevesIndex() {
                         {loading && (
                             <tr>
                                 <td
-                                    colSpan={7}
+                                    colSpan={8}
                                     className="px-4 py-6 text-center text-slate-500 dark:text-slate-400"
                                 >
                                     Chargement...
@@ -247,7 +404,7 @@ export default function AdminElevesIndex() {
                 title="Supprimer l'élève"
                 description={
                     deleteTarget != null
-                        ? `Êtes-vous sûr de vouloir supprimer l'élève « ${deleteTarget.prenom} ${deleteTarget.nom} » ? Cette action est irréversible.`
+                        ? `Êtes-vous sûr de vouloir supprimer l'élève « ${deleteTarget.prenom} ${deleteTarget.nom} » ? L'élève sera déplacé vers les archives et pourra être restauré.`
                         : undefined
                 }
                 confirmLabel="Supprimer"
@@ -260,6 +417,29 @@ export default function AdminElevesIndex() {
                     }
                 }}
                 onCancel={() => setDeleteTarget(null)}
+            />
+
+            <ConfirmDialog
+                open={bulkDialog === 'archive'}
+                title="Archiver la sélection"
+                description={`Êtes-vous sûr de vouloir archiver ${selectedKeys.length} élève${selectedKeys.length > 1 ? 's' : ''} ? Ils seront déplacés vers les archives et pourront être restaurés.`}
+                confirmLabel="Archiver"
+                confirmVariant="danger"
+                loading={bulkBusy}
+                loadingLabel="Archivage..."
+                onConfirm={handleBulkArchive}
+                onCancel={() => setBulkDialog(null)}
+            />
+
+            <ConfirmDialog
+                open={bulkDialog === 'assign'}
+                title="Affecter les élèves"
+                description={`Affecter ${selectedKeys.length} élève${selectedKeys.length > 1 ? 's' : ''} à la classe « ${classeMap[Number(assignTarget)] ?? ''} » ?`}
+                confirmLabel="Affecter"
+                loading={bulkBusy}
+                loadingLabel="Affectation..."
+                onConfirm={handleBulkAssign}
+                onCancel={() => setBulkDialog(null)}
             />
         </AppLayout>
     );

@@ -7,9 +7,13 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     private const TABLES = [
-        'users',
-        'eleves',
-        'classes',
+        'matieres',
+        'notes',
+        'absences',
+        'retards',
+        'remarques',
+        'syntheses_ia',
+        'notifications',
     ];
 
     /**
@@ -18,8 +22,12 @@ return new class extends Migration
     public function up(): void
     {
         foreach (self::TABLES as $table) {
+            if (! Schema::hasColumn($table, 'deleted_at')) {
+                continue;
+            }
+
             Schema::table($table, function (Blueprint $table) {
-                $table->softDeletes();
+                $table->dropSoftDeletes();
             });
         }
     }
@@ -30,8 +38,12 @@ return new class extends Migration
     public function down(): void
     {
         foreach (self::TABLES as $table) {
+            if (Schema::hasColumn($table, 'deleted_at')) {
+                continue;
+            }
+
             Schema::table($table, function (Blueprint $table) {
-                $table->dropSoftDeletes();
+                $table->softDeletes();
             });
         }
     }

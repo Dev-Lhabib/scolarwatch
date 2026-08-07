@@ -157,7 +157,7 @@ it('allows the professeur principal to delete a retard for their eleve', functio
         ->deleteJson("/api/retards/{$retard->id_retard}");
 
     $response->assertNoContent();
-    $this->assertSoftDeleted('retards', ['id_retard' => $retard->id_retard]);
+    $this->assertDatabaseMissing('retards', ['id_retard' => $retard->id_retard]);
 });
 
 it('forbids an enseignant from deleting a retard outside their classe', function () {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -74,6 +75,69 @@ class UserController extends Controller
         $this->authorize('forceDelete', $user);
 
         $user->forceDelete();
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * Archive (soft-delete) multiple users in one request.
+     */
+    public function bulkArchive(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer'],
+        ]);
+
+        $users = User::whereIn('id', $validated['ids'])->get();
+
+        foreach ($users as $user) {
+            $this->authorize('delete', $user);
+        }
+
+        $users->each->delete();
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * Restore multiple archived users in one request.
+     */
+    public function bulkRestore(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer'],
+        ]);
+
+        $users = User::onlyTrashed()->whereIn('id', $validated['ids'])->get();
+
+        foreach ($users as $user) {
+            $this->authorize('restore', $user);
+        }
+
+        $users->each->restore();
+
+        return response()->json($users);
+    }
+
+    /**
+     * Permanently delete multiple archived users in one request.
+     */
+    public function bulkForceDelete(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer'],
+        ]);
+
+        $users = User::onlyTrashed()->whereIn('id', $validated['ids'])->get();
+
+        foreach ($users as $user) {
+            $this->authorize('forceDelete', $user);
+        }
+
+        $users->each->forceDelete();
 
         return response()->json(null, 204);
     }

@@ -154,7 +154,7 @@ it('allows the professeur principal to delete an absence for their eleve', funct
         ->deleteJson("/api/absences/{$absence->id_absence}");
 
     $response->assertNoContent();
-    $this->assertSoftDeleted('absences', ['id_absence' => $absence->id_absence]);
+    $this->assertDatabaseMissing('absences', ['id_absence' => $absence->id_absence]);
 });
 
 it('forbids an enseignant from deleting an absence outside their classe', function () {

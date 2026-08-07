@@ -88,7 +88,7 @@ it('allows an admin to delete a matiere', function () {
 
     $response->assertNoContent();
 
-    $this->assertSoftDeleted('matieres', ['id_matiere' => $matiere->id_matiere]);
+    $this->assertDatabaseMissing('matieres', ['id_matiere' => $matiere->id_matiere]);
 });
 
 it('forbids a non-admin from deleting a matiere', function () {
