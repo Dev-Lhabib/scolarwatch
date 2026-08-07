@@ -15,7 +15,7 @@ The application combines a modern web architecture with artificial intelligence 
 - 📊 School analytics and reporting
 - 🐳 Docker-based development environment
 - ⚙️ CI/CD with GitHub Actions
-- ☁️ Production deployment on Azure VM
+- ☁️ Production deployment on AWS EC2
 
 ## Tech Stack
 
@@ -36,7 +36,7 @@ The application combines a modern web architecture with artificial intelligence 
 - Docker & Docker Compose
 - GitHub Actions (CI/CD)
 - GitHub Container Registry (GHCR)
-- Azure Virtual Machine
+- AWS EC2 (Ubuntu)
 
 ## Architecture
 

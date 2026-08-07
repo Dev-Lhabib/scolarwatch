@@ -237,7 +237,7 @@ it('allows an admin to delete a classe', function () {
 
     $response->assertNoContent();
 
-    $this->assertDatabaseMissing('classes', ['id_classe' => $classe->id_classe]);
+    $this->assertSoftDeleted('classes', ['id_classe' => $classe->id_classe]);
 });
 
 it('forbids a non-admin from deleting a classe', function () {

@@ -1,6 +1,7 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import {
     AlarmClock,
+    Archive,
     BarChart3,
     Bell,
     BookOpen,
@@ -39,6 +40,11 @@ const NAV_LINKS: Record<AuthUser['role'], NavLink[]> = {
     admin: [
         { label: 'Dashboard', href: '/dashboard/admin', icon: LayoutDashboard },
         { label: 'Utilisateurs', href: '/admin/users', icon: Users },
+        {
+            label: 'Archives',
+            href: '/admin/users/archives',
+            icon: Archive,
+        },
         {
             label: 'Classes',
             href: '/dashboard/admin/classes',
@@ -147,6 +153,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         return url === href || url.startsWith(`${href}/`);
     }
 
+    const activeHref = links
+        .filter((link) => linkIsActive(link.href))
+        .sort((a, b) => b.href.length - a.href.length)[0]?.href;
+
     return (
         <>
             <Head title="ScolarWatch" />
@@ -177,7 +187,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                     <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
                         {links.map((link) => {
                             const Icon = link.icon;
-                            const active = linkIsActive(link.href);
+                            const active = link.href === activeHref;
 
                             return (
                                 <Link

@@ -45,6 +45,40 @@ class UserController extends Controller
     }
 
     /**
+     * Display a listing of soft-deleted (archived) users.
+     */
+    public function archived()
+    {
+        $this->authorize('viewAny', User::class);
+
+        return response()->json(User::onlyTrashed()->get());
+    }
+
+    /**
+     * Restore a soft-deleted (archived) user.
+     */
+    public function restore(User $user)
+    {
+        $this->authorize('restore', $user);
+
+        $user->restore();
+
+        return response()->json($user);
+    }
+
+    /**
+     * Permanently delete a soft-deleted (archived) user.
+     */
+    public function forceDelete(User $user)
+    {
+        $this->authorize('forceDelete', $user);
+
+        $user->forceDelete();
+
+        return response()->json(null, 204);
+    }
+
+    /**
      * Update the specified user in storage.
      */
     public function update(UpdateUserRequest $request, User $user)

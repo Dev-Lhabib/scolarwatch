@@ -10,6 +10,8 @@ services:
     environment:
       PHP_OPCACHE_ENABLE: 0
       AUTORUN_ENABLED: "false"   # we run migrations manually, not on container start
+      DB_HOST: mysql
+      REDIS_HOST: redis
     depends_on:
       mysql:
         condition: service_healthy
@@ -25,12 +27,14 @@ services:
     image: serversideup/php:8.4-fpm-nginx
     container_name: scolarwatch_queue
     restart: unless-stopped
-    command: php artisan queue:work --tries=3
+    command: php artisan queue:work --tries=3 --timeout=120
     volumes:
       - .:/var/www/html
     environment:
       PHP_OPCACHE_ENABLE: 0
       AUTORUN_ENABLED: "false"
+      DB_HOST: mysql
+      REDIS_HOST: redis
     depends_on:
       mysql:
         condition: service_healthy

@@ -161,7 +161,7 @@ it('allows an admin to delete a user', function () {
 
     $response->assertNoContent();
 
-    $this->assertDatabaseMissing('users', ['id' => $user->id]);
+    $this->assertSoftDeleted('users', ['id' => $user->id]);
 });
 
 it('forbids an admin from deleting themselves', function () {

@@ -160,7 +160,7 @@ it('allows an admin to delete an eleve', function () {
 
     $response->assertNoContent();
 
-    $this->assertDatabaseMissing('eleves', ['id_eleve' => $eleve->id_eleve]);
+    $this->assertSoftDeleted('eleves', ['id_eleve' => $eleve->id_eleve]);
 });
 
 it('forbids a non-admin from deleting an eleve', function () {
