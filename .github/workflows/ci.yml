@@ -14,9 +14,9 @@ concurrency:
 env:
   APP_ENV: testing
   APP_DEBUG: true
-  APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+  APP_KEY: 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA='
   DB_CONNECTION: sqlite
-  DB_DATABASE: :memory:
+  DB_DATABASE: ':memory:'
   QUEUE_CONNECTION: sync
 
 jobs:
@@ -34,7 +34,6 @@ jobs:
           extensions: pdo, pdo_sqlite, sqlite3, mbstring, xml, curl, fileinfo, zip, intl, redis
           coverage: none
           tools: composer:v2
-          cache: composer
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -71,7 +70,6 @@ jobs:
           extensions: mbstring, xml
           coverage: none
           tools: composer:v2
-          cache: composer
 
       - name: Install PHP dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
