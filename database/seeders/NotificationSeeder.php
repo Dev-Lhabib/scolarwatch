@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Notification;
 use App\Models\SyntheseIA;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;

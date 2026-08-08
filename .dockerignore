@@ -1,0 +1,64 @@
+# Version control
+.git
+.github
+
+# Dependencies (built in dedicated stages)
+node_modules
+vendor
+
+# Frontend build output (produced in the Node stage)
+public/build
+public/hot
+public/fonts-manifest.dev.json
+public/storage
+
+# Laravel runtime caches
+bootstrap/cache/*.php
+bootstrap/ssr
+storage/logs/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+storage/pail
+storage/*.key
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+auth.json
+
+# Tests & tooling (not needed in the image)
+tests
+.phpunit.cache
+.phpunit.result.cache
+coverage
+phpstan.neon
+pint.json
+boost.json
+eslint.config.js
+prettier.config.*
+.prettierrc*
+tsconfig.json
+AGENTS.md
+.dev-notes
+
+# IDE / editor
+.idea
+.vscode
+.fleet
+.nova
+.zed
+.phpactor.json
+
+# Docs / boards
+docs
+taskboards.md
+taskboard.md
+README.md
+
+# Misc
+*.log
+Homestead.json
+Homestead.yaml

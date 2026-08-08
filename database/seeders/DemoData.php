@@ -12,9 +12,7 @@ use RuntimeException;
  */
 final class DemoData
 {
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
      * The ten matieres of the demo establishment.
@@ -199,7 +197,7 @@ final class DemoData
             'bonne' => [
                 ['categorie' => 'participation', 'contenu' => 'Participe régulièrement et montre un intérêt constant pour les cours.'],
                 ['categorie' => 'comportement', 'contenu' => 'Bon comportement général, quelques bavardages ponctuels.'],
-                ['categorie' => 'assiduite', 'contenu' => "Travail sérieux et régulier, peut encore gagner en rigueur."],
+                ['categorie' => 'assiduite', 'contenu' => 'Travail sérieux et régulier, peut encore gagner en rigueur.'],
             ],
             'moyen' => [
                 ['categorie' => 'participation', 'contenu' => "Participation irrégulière, hésite à s'exprimer en classe."],
@@ -209,7 +207,7 @@ final class DemoData
             'risque' => [
                 ['categorie' => 'participation', 'contenu' => "Désinvestissement notable en classe, peu d'implication dans les activités."],
                 ['categorie' => 'comportement', 'contenu' => 'Comportement perturbateur ponctuel qui gêne le déroulement du cours.'],
-                ['categorie' => 'assiduite', 'contenu' => "Absentéisme préoccupant, manque de régularité dans le travail personnel."],
+                ['categorie' => 'assiduite', 'contenu' => 'Absentéisme préoccupant, manque de régularité dans le travail personnel.'],
             ],
             'critique' => [
                 ['categorie' => 'assiduite', 'contenu' => 'Absentéisme important mettant en péril la poursuite de sa scolarité.'],
@@ -253,12 +251,12 @@ final class DemoData
                 'facteurs_risque' => ['Moyenne générale dans la moyenne basse', 'Assiduité irrégulière'],
                 'signaux_textuels' => ["Résultats moyens, doit consolider ses bases et s'organiser davantage."],
                 'recommandations' => ['Entretien avec le professeur principal', 'Encadrement renforcé à la maison'],
-                'message_parent' => "Risque modéré de décrochage scolaire. Un suivi rapproché est recommandé.",
+                'message_parent' => 'Risque modéré de décrochage scolaire. Un suivi rapproché est recommandé.',
             ],
             'risque' => [
                 'niveau_alerte' => 'moyen',
                 'facteurs_risque' => ['Absences répétées', 'Baisse des résultats', 'Désinvestissement en classe'],
-                'signaux_textuels' => ["Absentéisme préoccupant, manque de régularité dans le travail personnel."],
+                'signaux_textuels' => ['Absentéisme préoccupant, manque de régularité dans le travail personnel.'],
                 'recommandations' => ['Convocation des parents', 'Entretien avec le professeur principal'],
                 'message_parent' => "Risque élevé de décrochage scolaire. Une rencontre avec l'établissement est nécessaire.",
             ],
@@ -270,7 +268,7 @@ final class DemoData
                     'Résultats critiques, situation de décrochage scolaire avancée.',
                 ],
                 'recommandations' => ['Convocation urgente des parents', 'Entretien avec la direction', 'Plan de soutien personnalisé'],
-                'message_parent' => "Risque élevé de décrochage scolaire. La direction vous convoque pour un entretien urgent.",
+                'message_parent' => 'Risque élevé de décrochage scolaire. La direction vous convoque pour un entretien urgent.',
             ],
         };
     }
