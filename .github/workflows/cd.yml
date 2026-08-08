@@ -36,7 +36,7 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ghcr.io/${{ github.repository }}
+  IMAGE_NAME: ghcr.io/${{ lower(github.repository) }}
 
 jobs:
   build-and-push:
