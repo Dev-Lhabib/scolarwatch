@@ -1,0 +1,137 @@
+name: CD
+
+# Continuous delivery pipeline.
+#
+# Runs on release tags ONLY (v1.3.0, v1.3.1, ...) — NOT on every push to main.
+# Pipeline: CI (tests + Pint) -> build -> push both production images to GHCR.
+#
+# Images pushed to ghcr.io/dev-lhabib/scolarwatch:
+#   app-<short-sha>    immutable, per commit (rollback target)
+#   app-vX.Y.Z         per release tag
+#   app-latest         floating, latest released version
+#   nginx-<short-sha>  immutable, per commit (rollback target)
+#   nginx-vX.Y.Z       per release tag
+#   nginx-latest       floating, latest released version
+#
+# docker-compose.prod.yml consumes these via SCOLA_IMAGE_TAG / SCOLA_NGINX_TAG
+# (defaults: app-latest / nginx-latest). The nginx image is built with the
+# PROD_IMAGE build arg pointing at the app image pushed in the same run.
+#
+# SSH deployment to the EC2 host is intentionally NOT implemented yet (Phase 2).
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+  checks: read
+
+concurrency:
+  group: cd-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ghcr.io/${{ github.repository }}
+
+jobs:
+  build-and-push:
+    name: Build & push production images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compute short SHA
+        id: sha
+        run: echo "short=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for CI checks (tests + Pint)
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          commit="$(git rev-parse HEAD)"
+          echo "Waiting for CI checks on ${commit}..."
+          for i in $(seq 1 60); do
+            checks="$(gh api "repos/${{ github.repository }}/commits/${commit}/check-runs" \
+              --jq '[.check_runs[] | select(.name == "Tests (PHP 8.4, Node 22)" or .name == "Pint (code style)") | "\(.name)=\(.status)/\(.conclusion)"] | join("; ")' \
+              2>/dev/null || true)"
+            if echo "$checks" | grep -qE 'in_progress|queued|pending'; then
+              echo "attempt ${i}: CI still running - ${checks:-no CI runs yet}"
+              sleep 10
+              continue
+            fi
+            if [ -z "$checks" ]; then
+              echo "attempt ${i}: no CI check-runs found yet for ${commit}"
+              sleep 10
+              continue
+            fi
+            if echo "$checks" | grep -qE '=completed/(failure|cancelled|timed_out|action_required)'; then
+              echo "CI check failed: ${checks}" >&2
+              exit 1
+            fi
+            echo "CI checks green: ${checks}"
+            exit 0
+          done
+          echo "Timed out waiting for CI checks on ${commit}." >&2
+          exit 1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (app image)
+        id: meta-app
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern=app-v{{version}}
+            type=raw,value=app-${{ steps.sha.outputs.short }}
+            type=raw,value=app-latest
+          flavor: latest=false
+
+      - name: Extract metadata (nginx image)
+        id: meta-nginx
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern=nginx-v{{version}}
+            type=raw,value=nginx-${{ steps.sha.outputs.short }}
+            type=raw,value=nginx-latest
+          flavor: latest=false
+
+      - name: Build and push app image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta-app.outputs.tags }}
+          labels: ${{ steps.meta-app.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push nginx image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/nginx.Dockerfile
+          push: true
+          tags: ${{ steps.meta-nginx.outputs.tags }}
+          labels: ${{ steps.meta-nginx.outputs.labels }}
+          build-args: PROD_IMAGE=${{ env.IMAGE_NAME }}:app-${{ steps.sha.outputs.short }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

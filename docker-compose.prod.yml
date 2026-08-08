@@ -3,6 +3,14 @@
 # Run from the project root with:
 #     docker compose --env-file .env.production -f docker-compose.prod.yml up -d
 #
+# All app/nginx images are pulled from GHCR (ghcr.io/dev-lhabib/scolarwatch) —
+# no source code is required on the deployment host. The exact release is pinned
+# via SCOLA_IMAGE_TAG / SCOLA_NGINX_TAG (defaults: app-latest / nginx-latest);
+# the CD pipeline sets them to the release/SHA tag being deployed (rollback =
+# redeploy with a previous tag). Build them manually with `docker build`:
+#     docker build -t scolarwatch:prod -f Dockerfile .
+#     docker build -t scolarwatch:nginx --build-arg PROD_IMAGE=scolarwatch:prod -f docker/nginx.Dockerfile .
+#
 # .env.production is the single source of truth for app config and secrets
 # (copy .env.production.example to .env.production, set real values, then run
 # `docker compose ... exec app php artisan key:generate`).
@@ -14,7 +22,7 @@ name: scolarwatch-prod
 
 services:
   app:
-    image: scolarwatch:prod
+    image: ghcr.io/dev-lhabib/scolarwatch:${SCOLA_IMAGE_TAG:-app-latest}
     restart: unless-stopped
     env_file: .env.production
     volumes:
@@ -33,7 +41,7 @@ services:
       start_period: 5s
 
   queue:
-    image: scolarwatch:prod
+    image: ghcr.io/dev-lhabib/scolarwatch:${SCOLA_IMAGE_TAG:-app-latest}
     restart: unless-stopped
     command: ["php", "artisan", "queue:work", "redis", "--tries=3", "--timeout=120"]
     env_file: .env.production
@@ -56,15 +64,10 @@ services:
         condition: service_healthy
 
   nginx:
-    build:
-      context: .
-      dockerfile: docker/nginx.Dockerfile
-    image: scolarwatch:nginx
+    image: ghcr.io/dev-lhabib/scolarwatch:${SCOLA_NGINX_TAG:-nginx-latest}
     restart: unless-stopped
     ports:
       - "${APP_PORT:-8080}:80"
-    volumes:
-      - ./docker/nginx/prod.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - app
     healthcheck:
