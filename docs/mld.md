@@ -18,8 +18,8 @@ telephone
 adresse
 role
 is_active
-id_matiere → MATIERE(id_matiere)
 deleted_at DATETIME NULL
+id_matiere → MATIERE(id_matiere)
 ```
 
 ### CLASSE
@@ -29,8 +29,8 @@ nom
 niveau
 annee_scolaire
 capacite
-id_utilisateur_principal → UTILISATEUR(id)
 deleted_at DATETIME NULL
+id_utilisateur_principal → UTILISATEUR(id)
 ```
 
 ### ELEVE
@@ -42,8 +42,8 @@ genre
 date_naissance
 code_massar
 photo
-id_classe → CLASSE(id_classe)
 deleted_at DATETIME NULL
+id_classe → CLASSE(id_classe)
 ```
 
 ### MATIERE
