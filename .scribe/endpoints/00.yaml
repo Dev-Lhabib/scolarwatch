@@ -1,0 +1,208 @@
+name: Authentication
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/user
+    metadata:
+      custom: []
+      groupName: Authentication
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: "L'utilisateur actuellement authentifié via le jeton Sanctum."
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "id": 1,
+           "nom": "Admin",
+           "prenom": "ScolarWatch",
+           "username": "admin",
+           "telephone": null,
+           "adresse": null,
+           "role": "admin",
+           "is_active": true,
+           "id_matiere": null,
+           "email": "admin@scolarwatch.test",
+           "created_at": "2025-09-01T09:00:00.000000Z",
+           "updated_at": "2025-09-01T09:00:00.000000Z",
+           "is_bootstrap_admin": true
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/login
+    metadata:
+      custom: []
+      groupName: Authentication
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Authenticate the user and issue a Sanctum token.'
+      description: |-
+        L'identifiant peut être une adresse email ou un nom d'utilisateur. L'endpoint
+        est limité à 6 requêtes par minute.
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      identifiant:
+        custom: []
+        name: identifiant
+        description: "Email ou nom d'utilisateur du compte."
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      password:
+        custom: []
+        name: password
+        description: 'Mot de passe du compte.'
+        required: true
+        example: '|]|{+-'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      identifiant: architecto
+      password: '|]|{+-'
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "user": {
+               "id": 1,
+               "nom": "Admin",
+               "prenom": "ScolarWatch",
+               "username": "admin",
+               "telephone": null,
+               "adresse": null,
+               "role": "admin",
+               "is_active": true,
+               "id_matiere": null,
+               "email": "admin@scolarwatch.test",
+               "created_at": "2025-09-01T09:00:00.000000Z",
+               "updated_at": "2025-09-01T09:00:00.000000Z",
+               "is_bootstrap_admin": true
+           },
+           "token": "1|abc123..."
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: |-
+          {
+           "message": "Identifiants incorrects.",
+           "errors": {
+               "identifiant": ["Identifiants incorrects."]
+           }
+          }
+        headers: []
+        description: 'Identifiants incorrects'
+      -
+        custom: []
+        status: 422
+        content: |-
+          {
+           "message": "Ce compte a été désactivé.",
+           "errors": {
+               "identifiant": ["Ce compte a été désactivé."]
+           }
+          }
+        headers: []
+        description: 'Compte désactivé'
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/logout
+    metadata:
+      custom: []
+      groupName: Authentication
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Revoke the current access token.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "message": "Déconnexion réussie."
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null

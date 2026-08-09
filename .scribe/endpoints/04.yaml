@@ -1,0 +1,1064 @@
+name: Classes
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/classes/archives
+    metadata:
+      custom: []
+      groupName: Classes
+      groupDescription: ''
+      subgroup: Archivage
+      subgroupDescription: ''
+      title: 'Display a listing of soft-deleted (archived) classes.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          [
+           {
+               "id_classe": 9,
+               "nom": "3ème C",
+               "niveau": "3ème",
+               "annee_scolaire": "2024-2025",
+               "capacite": 25,
+               "id_utilisateur_principal": null,
+               "created_at": "2024-09-01T09:00:00.000000Z",
+               "updated_at": "2025-07-05T09:00:00.000000Z",
+               "deleted_at": "2025-07-05T09:00:00.000000Z"
+           }
+          ]
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PATCH
+    uri: 'api/classes/{classe_id_classe}/restore'
+    metadata:
+      custom: []
+      groupName: Classes
+      groupDescription: ''
+      subgroup: Archivage
+      subgroupDescription: ''
+      title: 'Restore a soft-deleted (archived) classe.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      classe_id_classe:
+        custom: []
+        name: classe_id_classe
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      classe:
+        custom: []
+        name: classe
+        description: "L'ID de la classe archivée."
+        required: true
+        example: 9
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      classe_id_classe: 1
+      classe: 9
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "id_classe": 9,
+           "nom": "3ème C",
+           "niveau": "3ème",
+           "annee_scolaire": "2024-2025",
+           "capacite": 25,
+           "id_utilisateur_principal": null,
+           "created_at": "2024-09-01T09:00:00.000000Z",
+           "updated_at": "2025-07-05T09:00:00.000000Z",
+           "deleted_at": null
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/classes/{classe_id_classe}/force'
+    metadata:
+      custom: []
+      groupName: Classes
+      groupDescription: ''
+      subgroup: Archivage
+      subgroupDescription: ''
+      title: 'Permanently delete a soft-deleted (archived) classe.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      classe_id_classe:
+        custom: []
+        name: classe_id_classe
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      classe:
+        custom: []
+        name: classe
+        description: "L'ID de la classe archivée."
+        required: true
+        example: 9
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      classe_id_classe: 1
+      classe: 9
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: ''
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/classes/bulk-archive
+    metadata:
+      custom: []
+      groupName: Classes
+      groupDescription: ''
+      subgroup: Archivage
+      subgroupDescription: ''
+      title: 'Archive (soft-delete) multiple classes in one request.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      ids:
+        custom: []
+        name: ids
+        description: 'Les IDs des classes à archiver.'
+        required: true
+        example:
+          - 1
+          - 2
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      ids:
+        - 1
+        - 2
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: ''
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/classes/bulk-restore
+    metadata:
+      custom: []
+      groupName: Classes
+      groupDescription: ''
+      subgroup: Archivage
+      subgroupDescription: ''
+      title: 'Restore multiple archived classes in one request.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      ids:
+        custom: []
+        name: ids
+        description: 'Les IDs des classes archivées à restaurer.'
+        required: true
+        example:
+          - 1
+          - 2
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      ids:
+        - 1
+        - 2
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          [
+           {
+               "id_classe": 1,
+               "nom": "6ème A",
+               "niveau": "6ème",
+               "annee_scolaire": "2025-2026",
+               "capacite": 30,
+               "id_utilisateur_principal": 2,
+               "created_at": "2025-09-01T09:00:00.000000Z",
+               "updated_at": "2025-09-03T09:00:00.000000Z",
+               "deleted_at": null
+           }
+          ]
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/classes/bulk-force-delete
+    metadata:
+      custom: []
+      groupName: Classes
+      groupDescription: ''
+      subgroup: Archivage
+      subgroupDescription: ''
+      title: 'Permanently delete multiple archived classes in one request.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      ids:
+        custom: []
+        name: ids
+        description: 'Les IDs des classes archivées à supprimer définitivement.'
+        required: true
+        example:
+          - 1
+          - 2
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      ids:
+        - 1
+        - 2
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: ''
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PATCH
+    uri: 'api/classes/{classe_id_classe}/professeur-principal'
+    metadata:
+      custom: []
+      groupName: Classes
+      groupDescription: ''
+      subgroup: Gestion
+      subgroupDescription: ''
+      title: 'Designate the professeur principal for this classe.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      classe_id_classe:
+        custom: []
+        name: classe_id_classe
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      classe:
+        custom: []
+        name: classe
+        description: "L'ID de la classe."
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      classe_id_classe: 1
+      classe: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      id_utilisateur_principal:
+        custom: []
+        name: id_utilisateur_principal
+        description: "L'ID de l'utilisateur (enseignant) à désigner."
+        required: true
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      id_utilisateur_principal: 2
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "id_classe": 1,
+           "nom": "6ème A",
+           "niveau": "6ème",
+           "annee_scolaire": "2025-2026",
+           "capacite": 30,
+           "id_utilisateur_principal": 2,
+           "created_at": "2025-09-01T09:00:00.000000Z",
+           "updated_at": "2025-09-04T09:00:00.000000Z",
+           "professeur_principal": {
+               "id": 2,
+               "nom": "Doe",
+               "prenom": "Jean",
+               "role": "enseignant",
+               "is_active": true,
+               "id_matiere": 1,
+               "email": "jean.doe@scolarwatch.test"
+           }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/classes/{classe_id_classe}/enseignants'
+    metadata:
+      custom: []
+      groupName: Classes
+      groupDescription: ''
+      subgroup: Gestion
+      subgroupDescription: ''
+      title: 'Assign an enseignant to teach in this classe.'
+      description: "L'enseignant est ajouté sans retirer les affectations existantes."
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      classe_id_classe:
+        custom: []
+        name: classe_id_classe
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      classe:
+        custom: []
+        name: classe
+        description: "L'ID de la classe."
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      classe_id_classe: 1
+      classe: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      id_utilisateur:
+        custom: []
+        name: id_utilisateur
+        description: "L'ID de l'utilisateur (enseignant) à affecter."
+        required: true
+        example: 3
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      id_utilisateur: 3
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "id_classe": 1,
+           "nom": "6ème A",
+           "niveau": "6ème",
+           "annee_scolaire": "2025-2026",
+           "capacite": 30,
+           "id_utilisateur_principal": 2,
+           "created_at": "2025-09-01T09:00:00.000000Z",
+           "updated_at": "2025-09-01T09:00:00.000000Z",
+           "enseignants": [
+               {
+                   "id": 3,
+                   "nom": "Smith",
+                   "prenom": "Alice",
+                   "role": "enseignant",
+                   "is_active": true,
+                   "id_matiere": 2,
+                   "email": "alice.smith@scolarwatch.test"
+               }
+           ]
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/classes
+    metadata:
+      custom: []
+      groupName: Classes
+      groupDescription: ''
+      subgroup: Gestion
+      subgroupDescription: ''
+      title: 'Display a listing of the resource.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          [
+           {
+               "id_classe": 1,
+               "nom": "6ème A",
+               "niveau": "6ème",
+               "annee_scolaire": "2025-2026",
+               "capacite": 30,
+               "id_utilisateur_principal": 2,
+               "created_at": "2025-09-01T09:00:00.000000Z",
+               "updated_at": "2025-09-01T09:00:00.000000Z",
+               "professeur_principal": {
+                   "id": 2,
+                   "nom": "Doe",
+                   "prenom": "Jean",
+                   "username": "jdoe",
+                   "telephone": "0661234567",
+                   "adresse": null,
+                   "role": "enseignant",
+                   "is_active": true,
+                   "id_matiere": 1,
+                   "email": "jean.doe@scolarwatch.test",
+                   "created_at": "2025-09-01T09:00:00.000000Z",
+                   "updated_at": "2025-09-01T09:00:00.000000Z",
+                   "is_bootstrap_admin": false
+               },
+               "enseignants": []
+           }
+          ]
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/classes
+    metadata:
+      custom: []
+      groupName: Classes
+      groupDescription: ''
+      subgroup: Gestion
+      subgroupDescription: ''
+      title: 'Store a newly created resource in storage.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      nom:
+        custom: []
+        name: nom
+        description: 'Must not be greater than 255 characters.'
+        required: true
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      niveau:
+        custom: []
+        name: niveau
+        description: 'Must not be greater than 50 characters.'
+        required: true
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      annee_scolaire:
+        custom: []
+        name: annee_scolaire
+        description: 'Must match the regex /\A\d{4}-\d{4}\z/. Must not be greater than 20 characters.'
+        required: true
+        example: gzmiyvdljnikhway
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      capacite:
+        custom: []
+        name: capacite
+        description: 'Must be at least 1.'
+        required: true
+        example: 73
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id_utilisateur_principal:
+        custom: []
+        name: id_utilisateur_principal
+        description: 'Must match an existing stored value.'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      nom: b
+      niveau: 'n'
+      annee_scolaire: gzmiyvdljnikhway
+      capacite: 73
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: |-
+          {
+           "id_classe": 4,
+           "nom": "5ème B",
+           "niveau": "5ème",
+           "annee_scolaire": "2025-2026",
+           "capacite": 28,
+           "id_utilisateur_principal": null,
+           "created_at": "2025-09-01T10:00:00.000000Z",
+           "updated_at": "2025-09-01T10:00:00.000000Z"
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/classes/{classe_id_classe}'
+    metadata:
+      custom: []
+      groupName: Classes
+      groupDescription: ''
+      subgroup: Gestion
+      subgroupDescription: ''
+      title: 'Display the specified resource.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      classe_id_classe:
+        custom: []
+        name: classe_id_classe
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      classe:
+        custom: []
+        name: classe
+        description: "L'ID de la classe."
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      classe_id_classe: 1
+      classe: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "id_classe": 1,
+           "nom": "6ème A",
+           "niveau": "6ème",
+           "annee_scolaire": "2025-2026",
+           "capacite": 30,
+           "id_utilisateur_principal": 2,
+           "created_at": "2025-09-01T09:00:00.000000Z",
+           "updated_at": "2025-09-01T09:00:00.000000Z",
+           "professeur_principal": {
+               "id": 2,
+               "nom": "Doe",
+               "prenom": "Jean",
+               "role": "enseignant",
+               "is_active": true,
+               "id_matiere": 1,
+               "email": "jean.doe@scolarwatch.test"
+           },
+           "enseignants": [
+               {
+                   "id": 3,
+                   "nom": "Smith",
+                   "prenom": "Alice",
+                   "role": "enseignant",
+                   "is_active": true,
+                   "id_matiere": 2,
+                   "email": "alice.smith@scolarwatch.test"
+               }
+           ],
+           "eleves": [
+               {
+                   "id_eleve": 10,
+                   "nom": "Bernard",
+                   "prenom": "Léa",
+                   "genre": "F",
+                   "date_naissance": "2014-03-12",
+                   "code_massar": "M123456789",
+                   "photo": null,
+                   "id_classe": 1,
+                   "created_at": "2025-09-01T09:00:00.000000Z",
+                   "updated_at": "2025-09-01T09:00:00.000000Z"
+               }
+           ]
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'api/classes/{classe_id_classe}'
+    metadata:
+      custom: []
+      groupName: Classes
+      groupDescription: ''
+      subgroup: Gestion
+      subgroupDescription: ''
+      title: 'Update the specified resource in storage.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      classe_id_classe:
+        custom: []
+        name: classe_id_classe
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      classe:
+        custom: []
+        name: classe
+        description: "L'ID de la classe à modifier."
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      classe_id_classe: 1
+      classe: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      nom:
+        custom: []
+        name: nom
+        description: 'Must not be greater than 255 characters.'
+        required: true
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      niveau:
+        custom: []
+        name: niveau
+        description: 'Must not be greater than 50 characters.'
+        required: true
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      annee_scolaire:
+        custom: []
+        name: annee_scolaire
+        description: 'Must match the regex /\A\d{4}-\d{4}\z/. Must not be greater than 20 characters.'
+        required: true
+        example: gzmiyvdljnikhway
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      capacite:
+        custom: []
+        name: capacite
+        description: 'Must be at least 1.'
+        required: true
+        example: 73
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id_utilisateur_principal:
+        custom: []
+        name: id_utilisateur_principal
+        description: 'Must match an existing stored value.'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      nom: b
+      niveau: 'n'
+      annee_scolaire: gzmiyvdljnikhway
+      capacite: 73
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "id_classe": 1,
+           "nom": "6ème A",
+           "niveau": "6ème",
+           "annee_scolaire": "2025-2026",
+           "capacite": 32,
+           "id_utilisateur_principal": 2,
+           "created_at": "2025-09-01T09:00:00.000000Z",
+           "updated_at": "2025-09-03T09:00:00.000000Z"
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/classes/{classe_id_classe}'
+    metadata:
+      custom: []
+      groupName: Classes
+      groupDescription: ''
+      subgroup: Gestion
+      subgroupDescription: ''
+      title: 'Remove the specified resource from storage.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      classe_id_classe:
+        custom: []
+        name: classe_id_classe
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      classe:
+        custom: []
+        name: classe
+        description: "L'ID de la classe à supprimer."
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      classe_id_classe: 1
+      classe: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: ''
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
