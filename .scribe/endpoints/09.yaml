@@ -1,0 +1,469 @@
+name: Retards
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/retards
+    metadata:
+      custom: []
+      groupName: Retards
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Display a listing of the resource.'
+      description: "Les enseignants ne voient que les retards qu'ils ont eux-mêmes saisis."
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          [
+           {
+               "id_retard": 20,
+               "date_retard": "2025-10-20",
+               "justifiee": false,
+               "minutes_retard": 15,
+               "motif": null,
+               "id_eleve": 10,
+               "id_utilisateur": 2,
+               "created_at": "2025-10-20T08:15:00.000000Z",
+               "updated_at": "2025-10-20T08:15:00.000000Z"
+           }
+          ]
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/retards
+    metadata:
+      custom: []
+      groupName: Retards
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Store a newly created resource in storage.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      date_retard:
+        custom: []
+        name: date_retard
+        description: 'Must be a valid date.'
+        required: true
+        example: '2026-08-09T11:16:38'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      justifiee:
+        custom: []
+        name: justifiee
+        description: ''
+        required: false
+        example: true
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      minutes_retard:
+        custom: []
+        name: minutes_retard
+        description: 'Must be at least 1.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      motif:
+        custom: []
+        name: motif
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      id_eleve:
+        custom: []
+        name: id_eleve
+        description: 'Must match an existing stored value.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      date_retard: '2026-08-09T11:16:38'
+      justifiee: true
+      minutes_retard: 16
+      motif: 'n'
+      id_eleve: architecto
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: |-
+          {
+           "id_retard": 21,
+           "date_retard": "2025-10-21",
+           "justifiee": true,
+           "minutes_retard": 5,
+           "motif": "Transport en panne",
+           "id_eleve": 12,
+           "id_utilisateur": 2,
+           "created_at": "2025-10-21T08:05:00.000000Z",
+           "updated_at": "2025-10-21T08:05:00.000000Z"
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: |-
+          {
+           "message": "Cet élève a déjà un retard à cette date.",
+           "errors": {
+               "date_retard": ["Cet élève a déjà un retard à cette date."]
+           }
+          }
+        headers: []
+        description: 'Retard déjà déclaré ce jour'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/retards/{id_retard}'
+    metadata:
+      custom: []
+      groupName: Retards
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Display the specified resource.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id_retard:
+        custom: []
+        name: id_retard
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      retard:
+        custom: []
+        name: retard
+        description: "L'ID du retard."
+        required: true
+        example: 20
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id_retard: 1
+      retard: 20
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "id_retard": 20,
+           "date_retard": "2025-10-20",
+           "justifiee": false,
+           "minutes_retard": 15,
+           "motif": null,
+           "id_eleve": 10,
+           "id_utilisateur": 2,
+           "created_at": "2025-10-20T08:15:00.000000Z",
+           "updated_at": "2025-10-20T08:15:00.000000Z",
+           "eleve": {
+               "id_eleve": 10,
+               "nom": "Bernard",
+               "prenom": "Léa",
+               "genre": "F",
+               "date_naissance": "2014-03-12",
+               "code_massar": "M123456789",
+               "photo": null,
+               "id_classe": 1
+           }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'api/retards/{id_retard}'
+    metadata:
+      custom: []
+      groupName: Retards
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update the specified resource in storage.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id_retard:
+        custom: []
+        name: id_retard
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      retard:
+        custom: []
+        name: retard
+        description: "L'ID du retard à modifier."
+        required: true
+        example: 20
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id_retard: 1
+      retard: 20
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      date_retard:
+        custom: []
+        name: date_retard
+        description: 'Must be a valid date.'
+        required: true
+        example: '2026-08-09T11:16:38'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      justifiee:
+        custom: []
+        name: justifiee
+        description: ''
+        required: false
+        example: true
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      minutes_retard:
+        custom: []
+        name: minutes_retard
+        description: 'Must be at least 1.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      motif:
+        custom: []
+        name: motif
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      id_eleve:
+        custom: []
+        name: id_eleve
+        description: 'Must match an existing stored value.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      date_retard: '2026-08-09T11:16:38'
+      justifiee: true
+      minutes_retard: 16
+      motif: 'n'
+      id_eleve: architecto
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "id_retard": 20,
+           "date_retard": "2025-10-20",
+           "justifiee": true,
+           "minutes_retard": 10,
+           "motif": "Certificat fourni",
+           "id_eleve": 10,
+           "id_utilisateur": 2,
+           "created_at": "2025-10-20T08:15:00.000000Z",
+           "updated_at": "2025-10-21T09:00:00.000000Z"
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/retards/{id_retard}'
+    metadata:
+      custom: []
+      groupName: Retards
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Remove the specified resource from storage.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id_retard:
+        custom: []
+        name: id_retard
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      retard:
+        custom: []
+        name: retard
+        description: "L'ID du retard à supprimer."
+        required: true
+        example: 20
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id_retard: 1
+      retard: 20
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: ''
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null

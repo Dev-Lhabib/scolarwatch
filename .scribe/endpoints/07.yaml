@@ -1,0 +1,483 @@
+name: Notes
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/notes
+    metadata:
+      custom: []
+      groupName: Notes
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Display a listing of the resource.'
+      description: |-
+        Enseignants only see the notes they have recorded themselves. Admins and
+        direction see every note. This keeps the dashboard "Notes" count, the API
+        response and the saisie table in agreement.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          [
+           {
+               "id_note": 55,
+               "valeur": "15.50",
+               "trimestre": "T1",
+               "date": "2025-10-06",
+               "id_eleve": 10,
+               "id_matiere": 1,
+               "id_utilisateur": 2,
+               "created_at": "2025-10-06T09:00:00.000000Z",
+               "updated_at": "2025-10-06T09:00:00.000000Z"
+           }
+          ]
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/notes
+    metadata:
+      custom: []
+      groupName: Notes
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Store a newly created resource in storage.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      valeur:
+        custom: []
+        name: valeur
+        description: 'Must be at least 0. Must not be greater than 20.'
+        required: true
+        example: 16
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      trimestre:
+        custom: []
+        name: trimestre
+        description: 'Must not be greater than 20 characters.'
+        required: true
+        example: ngzmiyvdljnikhwa
+        type: string
+        enumValues:
+          - T1
+          - T2
+          - T3
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      date:
+        custom: []
+        name: date
+        description: 'Must be a valid date.'
+        required: true
+        example: '2026-08-09T11:16:38'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id_eleve:
+        custom: []
+        name: id_eleve
+        description: 'Must match an existing stored value.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id_matiere:
+        custom: []
+        name: id_matiere
+        description: 'Must match an existing stored value.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      valeur: 16
+      trimestre: ngzmiyvdljnikhwa
+      date: '2026-08-09T11:16:38'
+      id_eleve: architecto
+      id_matiere: architecto
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: |-
+          {
+           "id_note": 56,
+           "valeur": "18.00",
+           "trimestre": "T1",
+           "date": "2025-10-08",
+           "id_eleve": 10,
+           "id_matiere": 1,
+           "id_utilisateur": 2,
+           "created_at": "2025-10-08T09:00:00.000000Z",
+           "updated_at": "2025-10-08T09:00:00.000000Z"
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: |-
+          {
+           "message": "Une note existe déjà pour cet élève, cette matière, ce trimestre et cette date.",
+           "errors": {
+               "id_eleve": ["Une note existe déjà pour cet élève, cette matière, ce trimestre et cette date."]
+           }
+          }
+        headers: []
+        description: 'Note déjà saisie ou maximum atteint'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/notes/{id_note}'
+    metadata:
+      custom: []
+      groupName: Notes
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Display the specified resource.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id_note:
+        custom: []
+        name: id_note
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      note:
+        custom: []
+        name: note
+        description: "L'ID de la note."
+        required: true
+        example: 55
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id_note: 1
+      note: 55
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "id_note": 55,
+           "valeur": "15.50",
+           "trimestre": "T1",
+           "date": "2025-10-06",
+           "id_eleve": 10,
+           "id_matiere": 1,
+           "id_utilisateur": 2,
+           "created_at": "2025-10-06T09:00:00.000000Z",
+           "updated_at": "2025-10-06T09:00:00.000000Z",
+           "eleve": {
+               "id_eleve": 10,
+               "nom": "Bernard",
+               "prenom": "Léa",
+               "genre": "F",
+               "date_naissance": "2014-03-12",
+               "code_massar": "M123456789",
+               "photo": null,
+               "id_classe": 1
+           },
+           "matiere": {
+               "id_matiere": 1,
+               "nom": "Mathématiques",
+               "code": "MATH"
+           }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'api/notes/{id_note}'
+    metadata:
+      custom: []
+      groupName: Notes
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update the specified resource in storage.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id_note:
+        custom: []
+        name: id_note
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      note:
+        custom: []
+        name: note
+        description: "L'ID de la note à modifier."
+        required: true
+        example: 55
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id_note: 1
+      note: 55
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      valeur:
+        custom: []
+        name: valeur
+        description: 'Must be at least 0. Must not be greater than 20.'
+        required: true
+        example: 16
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      trimestre:
+        custom: []
+        name: trimestre
+        description: 'Must not be greater than 20 characters.'
+        required: true
+        example: ngzmiyvdljnikhwa
+        type: string
+        enumValues:
+          - T1
+          - T2
+          - T3
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      date:
+        custom: []
+        name: date
+        description: 'Must be a valid date.'
+        required: true
+        example: '2026-08-09T11:16:38'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id_eleve:
+        custom: []
+        name: id_eleve
+        description: 'Must match an existing stored value.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id_matiere:
+        custom: []
+        name: id_matiere
+        description: 'Must match an existing stored value.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      valeur: 16
+      trimestre: ngzmiyvdljnikhwa
+      date: '2026-08-09T11:16:38'
+      id_eleve: architecto
+      id_matiere: architecto
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "id_note": 55,
+           "valeur": "16.00",
+           "trimestre": "T1",
+           "date": "2025-10-06",
+           "id_eleve": 10,
+           "id_matiere": 1,
+           "id_utilisateur": 2,
+           "created_at": "2025-10-06T09:00:00.000000Z",
+           "updated_at": "2025-10-07T10:00:00.000000Z"
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/notes/{id_note}'
+    metadata:
+      custom: []
+      groupName: Notes
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Remove the specified resource from storage.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id_note:
+        custom: []
+        name: id_note
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      note:
+        custom: []
+        name: note
+        description: "L'ID de la note à supprimer."
+        required: true
+        example: 55
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id_note: 1
+      note: 55
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: ''
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null

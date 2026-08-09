@@ -8,10 +8,33 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * Gestion des utilisateurs (comptes de l'établissement) et de leur archivage.
+ *
+ * @group Utilisateurs
+ */
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
+     *
+     * @subgroup Gestion
+     *
+     * @response {
+     *  "id": 1,
+     *  "nom": "Admin",
+     *  "prenom": "ScolarWatch",
+     *  "username": "admin",
+     *  "telephone": null,
+     *  "adresse": null,
+     *  "role": "admin",
+     *  "is_active": true,
+     *  "id_matiere": null,
+     *  "email": "admin@scolarwatch.test",
+     *  "created_at": "2025-09-01T09:00:00.000000Z",
+     *  "updated_at": "2025-09-01T09:00:00.000000Z",
+     *  "is_bootstrap_admin": true
+     * }
      */
     public function index()
     {
@@ -22,6 +45,24 @@ class UserController extends Controller
 
     /**
      * Store a newly created user in storage.
+     *
+     * @subgroup Gestion
+     *
+     * @response status=201 {
+     *  "id": 4,
+     *  "nom": "Doe",
+     *  "prenom": "Jean",
+     *  "username": "jdoe",
+     *  "telephone": "0661234567",
+     *  "adresse": "12 rue de l'école",
+     *  "role": "enseignant",
+     *  "is_active": true,
+     *  "id_matiere": 1,
+     *  "email": "jean.doe@scolarwatch.test",
+     *  "created_at": "2025-09-01T10:00:00.000000Z",
+     *  "updated_at": "2025-09-01T10:00:00.000000Z",
+     *  "is_bootstrap_admin": false
+     * }
      */
     public function store(StoreUserRequest $request)
     {
@@ -37,6 +78,26 @@ class UserController extends Controller
 
     /**
      * Display the specified user.
+     *
+     * @subgroup Gestion
+     *
+     * @urlParam user integer required L'ID de l'utilisateur. Example: 4
+     *
+     * @response {
+     *  "id": 4,
+     *  "nom": "Doe",
+     *  "prenom": "Jean",
+     *  "username": "jdoe",
+     *  "telephone": "0661234567",
+     *  "adresse": "12 rue de l'école",
+     *  "role": "enseignant",
+     *  "is_active": true,
+     *  "id_matiere": 1,
+     *  "email": "jean.doe@scolarwatch.test",
+     *  "created_at": "2025-09-01T10:00:00.000000Z",
+     *  "updated_at": "2025-09-01T10:00:00.000000Z",
+     *  "is_bootstrap_admin": false
+     * }
      */
     public function show(User $user)
     {
@@ -47,6 +108,27 @@ class UserController extends Controller
 
     /**
      * Display a listing of soft-deleted (archived) users.
+     *
+     * @subgroup Archivage
+     *
+     * @response [
+     *  {
+     *      "id": 7,
+     *      "nom": "Martin",
+     *      "prenom": "Claire",
+     *      "username": "cmartin",
+     *      "telephone": null,
+     *      "adresse": null,
+     *      "role": "parent",
+     *      "is_active": false,
+     *      "id_matiere": null,
+     *      "email": "claire.martin@scolarwatch.test",
+     *      "created_at": "2025-09-01T09:00:00.000000Z",
+     *      "updated_at": "2025-09-05T09:00:00.000000Z",
+     *      "is_bootstrap_admin": false,
+     *      "deleted_at": "2025-09-10T09:00:00.000000Z"
+     *  }
+     * ]
      */
     public function archived()
     {
@@ -57,6 +139,27 @@ class UserController extends Controller
 
     /**
      * Restore a soft-deleted (archived) user.
+     *
+     * @subgroup Archivage
+     *
+     * @urlParam user integer required L'ID de l'utilisateur archivé. Example: 7
+     *
+     * @response {
+     *  "id": 7,
+     *  "nom": "Martin",
+     *  "prenom": "Claire",
+     *  "username": "cmartin",
+     *  "telephone": null,
+     *  "adresse": null,
+     *  "role": "parent",
+     *  "is_active": false,
+     *  "id_matiere": null,
+     *  "email": "claire.martin@scolarwatch.test",
+     *  "created_at": "2025-09-01T09:00:00.000000Z",
+     *  "updated_at": "2025-09-05T09:00:00.000000Z",
+     *  "is_bootstrap_admin": false,
+     *  "deleted_at": null
+     * }
      */
     public function restore(User $user)
     {
@@ -69,6 +172,12 @@ class UserController extends Controller
 
     /**
      * Permanently delete a soft-deleted (archived) user.
+     *
+     * @subgroup Archivage
+     *
+     * @urlParam user integer required L'ID de l'utilisateur archivé. Example: 7
+     *
+     * @response status=204
      */
     public function forceDelete(User $user)
     {
@@ -81,6 +190,12 @@ class UserController extends Controller
 
     /**
      * Archive (soft-delete) multiple users in one request.
+     *
+     * @subgroup Archivage
+     *
+     * @bodyParam ids integer[] required Les IDs des utilisateurs à archiver. Example: [4,7]
+     *
+     * @response status=204
      */
     public function bulkArchive(Request $request)
     {
@@ -102,6 +217,29 @@ class UserController extends Controller
 
     /**
      * Restore multiple archived users in one request.
+     *
+     * @subgroup Archivage
+     *
+     * @bodyParam ids integer[] required Les IDs des utilisateurs archivés à restaurer. Example: [4,7]
+     *
+     * @response [
+     *  {
+     *      "id": 4,
+     *      "nom": "Doe",
+     *      "prenom": "Jean",
+     *      "username": "jdoe",
+     *      "telephone": "0661234567",
+     *      "adresse": "12 rue de l'école",
+     *      "role": "enseignant",
+     *      "is_active": true,
+     *      "id_matiere": 1,
+     *      "email": "jean.doe@scolarwatch.test",
+     *      "created_at": "2025-09-01T10:00:00.000000Z",
+     *      "updated_at": "2025-09-01T10:00:00.000000Z",
+     *      "is_bootstrap_admin": false,
+     *      "deleted_at": null
+     *  }
+     * ]
      */
     public function bulkRestore(Request $request)
     {
@@ -123,6 +261,12 @@ class UserController extends Controller
 
     /**
      * Permanently delete multiple archived users in one request.
+     *
+     * @subgroup Archivage
+     *
+     * @bodyParam ids integer[] required Les IDs des utilisateurs archivés à supprimer définitivement. Example: [4,7]
+     *
+     * @response status=204
      */
     public function bulkForceDelete(Request $request)
     {
@@ -144,6 +288,28 @@ class UserController extends Controller
 
     /**
      * Update the specified user in storage.
+     *
+     * Le mot de passe est facultatif : s'il est vide, il reste inchangé.
+     *
+     * @subgroup Gestion
+     *
+     * @urlParam user integer required L'ID de l'utilisateur à modifier. Example: 4
+     *
+     * @response {
+     *  "id": 4,
+     *  "nom": "Doe",
+     *  "prenom": "Jean",
+     *  "username": "jdoe",
+     *  "telephone": "0661234567",
+     *  "adresse": "12 rue de l'école",
+     *  "role": "enseignant",
+     *  "is_active": true,
+     *  "id_matiere": 1,
+     *  "email": "jean.doe@scolarwatch.test",
+     *  "created_at": "2025-09-01T10:00:00.000000Z",
+     *  "updated_at": "2025-09-02T08:30:00.000000Z",
+     *  "is_bootstrap_admin": false
+     * }
      */
     public function update(UpdateUserRequest $request, User $user)
     {
@@ -164,6 +330,12 @@ class UserController extends Controller
 
     /**
      * Remove the specified user from storage.
+     *
+     * @subgroup Gestion
+     *
+     * @urlParam user integer required L'ID de l'utilisateur à supprimer. Example: 4
+     *
+     * @response status=204
      */
     public function destroy(User $user)
     {

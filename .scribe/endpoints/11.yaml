@@ -1,0 +1,139 @@
+name: Notifications
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/notifications
+    metadata:
+      custom: []
+      groupName: Notifications
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: |-
+        Display the notifications addressed to the authenticated user,
+        newest first.
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          [
+           {
+               "id_notification": 5,
+               "titre": "Concernant la scolarité de Léa Bernard",
+               "message": "Léa rencontre des difficultés...",
+               "statut_envoi": "envoye",
+               "envoye_le": "2025-11-03T09:00:00.000000Z",
+               "lu": false,
+               "id_utilisateur_destinataire": 6,
+               "id_synthese": 2,
+               "created_at": "2025-11-03T09:00:00.000000Z",
+               "updated_at": "2025-11-03T09:00:00.000000Z"
+           }
+          ]
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PATCH
+    uri: 'api/notifications/{notification_id_notification}/lue'
+    metadata:
+      custom: []
+      groupName: Notifications
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: |-
+        Mark a notification as read. Idempotent: an already-read notification
+        is returned unchanged.
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      notification_id_notification:
+        custom: []
+        name: notification_id_notification
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      notification:
+        custom: []
+        name: notification
+        description: "L'ID de la notification."
+        required: true
+        example: 5
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      notification_id_notification: 1
+      notification: 5
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "id_notification": 5,
+           "titre": "Concernant la scolarité de Léa Bernard",
+           "message": "Léa rencontre des difficultés...",
+           "statut_envoi": "envoye",
+           "envoye_le": "2025-11-03T09:00:00.000000Z",
+           "lu": true,
+           "id_utilisateur_destinataire": 6,
+           "id_synthese": 2,
+           "created_at": "2025-11-03T09:00:00.000000Z",
+           "updated_at": "2025-11-04T08:00:00.000000Z"
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null

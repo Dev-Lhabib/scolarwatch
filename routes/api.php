@@ -17,10 +17,53 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
+/**
+ * L'utilisateur actuellement authentifié via le jeton Sanctum.
+ *
+ * @group Authentication
+ *
+ * @response {
+ *  "id": 1,
+ *  "nom": "Admin",
+ *  "prenom": "ScolarWatch",
+ *  "username": "admin",
+ *  "telephone": null,
+ *  "adresse": null,
+ *  "role": "admin",
+ *  "is_active": true,
+ *  "id_matiere": null,
+ *  "email": "admin@scolarwatch.test",
+ *  "created_at": "2025-09-01T09:00:00.000000Z",
+ *  "updated_at": "2025-09-01T09:00:00.000000Z",
+ *  "is_bootstrap_admin": true
+ * }
+ */
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+/**
+ * État de santé de l'application (base de données et Redis).
+ *
+ * @group Health
+ *
+ * @unauthenticated
+ *
+ * @response scenario="Tout est opérationnel" {
+ *  "status": "ok",
+ *  "checks": {
+ *      "database": "ok",
+ *      "redis": "ok"
+ *  }
+ * }
+ * @response status=503 scenario="Au moins un service indisponible" {
+ *  "status": "degraded",
+ *  "checks": {
+ *      "database": "unreachable",
+ *      "redis": "ok"
+ *  }
+ * }
+ */
 Route::get('/health', function () {
     $checks = [];
 

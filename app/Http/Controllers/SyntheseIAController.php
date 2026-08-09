@@ -11,10 +11,39 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
 
+/**
+ * Synthèses IA de décrochage scolaire.
+ *
+ * @group Synthèses IA
+ */
 class SyntheseIAController extends Controller
 {
     /**
      * Trigger a new synthese IA for the given eleve and trimestre.
+     *
+     * La génération est lancée de façon asynchrone (job en file d'attente) :
+     * l'endpoint retourne immédiatement la synthèse créée au statut `en_attente`.
+     *
+     * @urlParam eleve integer required L'ID de l'élève. Example: 10
+     *
+     * @bodyParam trimestre string required Le trimestre concerné (T1, T2, T3). Example: T1
+     *
+     * @response status=202 {
+     *  "id_synthese": 3,
+     *  "trimestre": "T1",
+     *  "statut": "en_attente",
+     *  "niveau_alerte": null,
+     *  "niveau_alerte_corrige": null,
+     *  "facteurs_risque": null,
+     *  "signaux_textuels": null,
+     *  "recommandations": null,
+     *  "message_parent": null,
+     *  "genere_le": null,
+     *  "id_eleve": 10,
+     *  "id_utilisateur_demandeur": 2,
+     *  "created_at": "2025-11-03T09:00:00.000000Z",
+     *  "updated_at": "2025-11-03T09:00:00.000000Z"
+     * }
      */
     public function store(Request $request, Eleve $eleve)
     {
@@ -38,6 +67,36 @@ class SyntheseIAController extends Controller
 
     /**
      * Get the status and result of the synthese IA for a given eleve and trimestre.
+     *
+     * Retourne la synthèse la plus récente de l'élève pour le trimestre donné.
+     *
+     * @urlParam eleve integer required L'ID de l'élève. Example: 10
+     *
+     * @queryParam trimestre string required Le trimestre concerné (T1, T2, T3). Example: T1
+     *
+     * @response {
+     *  "id_synthese": 3,
+     *  "trimestre": "T1",
+     *  "statut": "termine",
+     *  "niveau_alerte": "moyen",
+     *  "niveau_alerte_corrige": null,
+     *  "facteurs_risque": [
+     *      "Absentéisme",
+     *      "Baisse des notes"
+     *  ],
+     *  "signaux_textuels": [
+     *      "Plusieurs retards en mathématiques."
+     *  ],
+     *  "recommandations": [
+     *      "Planifier un entretien avec les parents."
+     *  ],
+     *  "message_parent": "Votre enfant rencontre des difficultés...",
+     *  "genere_le": "2025-11-03T09:15:00.000000Z",
+     *  "id_eleve": 10,
+     *  "id_utilisateur_demandeur": 2,
+     *  "created_at": "2025-11-03T09:00:00.000000Z",
+     *  "updated_at": "2025-11-03T09:15:00.000000Z"
+     * }
      */
     public function show(Request $request, Eleve $eleve)
     {
@@ -58,6 +117,34 @@ class SyntheseIAController extends Controller
     /**
      * Correct the AI-proposed niveau_alerte. The original niveau_alerte is never
      * overwritten, preserving traceability of what the AI originally proposed.
+     *
+     * @urlParam synthese integer required L'ID de la synthèse. Example: 3
+     *
+     * @bodyParam niveau_alerte_corrige string required La valeur corrigée : `faible`, `moyen` ou `eleve`. Example: eleve
+     *
+     * @response {
+     *  "id_synthese": 3,
+     *  "trimestre": "T1",
+     *  "statut": "termine",
+     *  "niveau_alerte": "moyen",
+     *  "niveau_alerte_corrige": "eleve",
+     *  "facteurs_risque": [
+     *      "Absentéisme",
+     *      "Baisse des notes"
+     *  ],
+     *  "signaux_textuels": [
+     *      "Plusieurs retards en mathématiques."
+     *  ],
+     *  "recommandations": [
+     *      "Planifier un entretien avec les parents."
+     *  ],
+     *  "message_parent": "Votre enfant rencontre des difficultés...",
+     *  "genere_le": "2025-11-03T09:15:00.000000Z",
+     *  "id_eleve": 10,
+     *  "id_utilisateur_demandeur": 2,
+     *  "created_at": "2025-11-03T09:00:00.000000Z",
+     *  "updated_at": "2025-11-04T09:00:00.000000Z"
+     * }
      */
     public function corrigerNiveauAlerte(Request $request, SyntheseIA $synthese)
     {
@@ -75,6 +162,19 @@ class SyntheseIAController extends Controller
     /**
      * Validate and send the synthese's message to all tuteurs of the eleve.
      * Creates a Notification record per parent and dispatches the mail notification.
+     *
+     * @urlParam synthese integer required L'ID de la synthèse. Example: 3
+     *
+     * @response scenario="Envoi réussi" {
+     *  "message": "Notifications envoyées.",
+     *  "nombre_tuteurs": 2
+     * }
+     * @response status=422 scenario="Aucun message à envoyer" {
+     *  "message": "La synthèse n'a pas encore de message à envoyer."
+     * }
+     * @response status=422 scenario="Aucun tuteur associé" {
+     *  "message": "Aucun tuteur associé à cet élève."
+     * }
      */
     public function envoyer(SyntheseIA $synthese)
     {

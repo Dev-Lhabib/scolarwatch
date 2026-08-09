@@ -1,0 +1,1047 @@
+name: Élèves
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/eleves/archives
+    metadata:
+      custom: []
+      groupName: Élèves
+      groupDescription: ''
+      subgroup: Archivage
+      subgroupDescription: ''
+      title: 'Display a listing of soft-deleted (archived) eleves.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          [
+           {
+               "id_eleve": 40,
+               "nom": "Petit",
+               "prenom": "Hugo",
+               "genre": "M",
+               "date_naissance": "2014-11-02",
+               "code_massar": null,
+               "photo": null,
+               "id_classe": 1,
+               "created_at": "2024-09-01T09:00:00.000000Z",
+               "updated_at": "2025-07-05T09:00:00.000000Z",
+               "deleted_at": "2025-07-05T09:00:00.000000Z"
+           }
+          ]
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PATCH
+    uri: 'api/eleves/{eleve_id_eleve}/restore'
+    metadata:
+      custom: []
+      groupName: Élèves
+      groupDescription: ''
+      subgroup: Archivage
+      subgroupDescription: ''
+      title: 'Restore a soft-deleted (archived) eleve.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      eleve_id_eleve:
+        custom: []
+        name: eleve_id_eleve
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      eleve:
+        custom: []
+        name: eleve
+        description: "L'ID de l'élève archivé."
+        required: true
+        example: 40
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      eleve_id_eleve: 1
+      eleve: 40
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "id_eleve": 40,
+           "nom": "Petit",
+           "prenom": "Hugo",
+           "genre": "M",
+           "date_naissance": "2014-11-02",
+           "code_massar": null,
+           "photo": null,
+           "id_classe": 1,
+           "created_at": "2024-09-01T09:00:00.000000Z",
+           "updated_at": "2025-07-05T09:00:00.000000Z",
+           "deleted_at": null
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/eleves/{eleve_id_eleve}/force'
+    metadata:
+      custom: []
+      groupName: Élèves
+      groupDescription: ''
+      subgroup: Archivage
+      subgroupDescription: ''
+      title: 'Permanently delete a soft-deleted (archived) eleve.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      eleve_id_eleve:
+        custom: []
+        name: eleve_id_eleve
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      eleve:
+        custom: []
+        name: eleve
+        description: "L'ID de l'élève archivé."
+        required: true
+        example: 40
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      eleve_id_eleve: 1
+      eleve: 40
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: ''
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/eleves/bulk-archive
+    metadata:
+      custom: []
+      groupName: Élèves
+      groupDescription: ''
+      subgroup: Archivage
+      subgroupDescription: ''
+      title: 'Archive (soft-delete) multiple eleves in one request.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      ids:
+        custom: []
+        name: ids
+        description: 'Les IDs des élèves à archiver.'
+        required: true
+        example:
+          - 10
+          - 12
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      ids:
+        - 10
+        - 12
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: ''
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/eleves/bulk-restore
+    metadata:
+      custom: []
+      groupName: Élèves
+      groupDescription: ''
+      subgroup: Archivage
+      subgroupDescription: ''
+      title: 'Restore multiple archived eleves in one request.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      ids:
+        custom: []
+        name: ids
+        description: 'Les IDs des élèves archivés à restaurer.'
+        required: true
+        example:
+          - 10
+          - 12
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      ids:
+        - 10
+        - 12
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          [
+           {
+               "id_eleve": 10,
+               "nom": "Bernard",
+               "prenom": "Léa",
+               "genre": "F",
+               "date_naissance": "2014-03-12",
+               "code_massar": "M123456789",
+               "photo": null,
+               "id_classe": 1,
+               "created_at": "2025-09-01T09:00:00.000000Z",
+               "updated_at": "2025-09-05T09:00:00.000000Z",
+               "deleted_at": null
+           }
+          ]
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/eleves/bulk-force-delete
+    metadata:
+      custom: []
+      groupName: Élèves
+      groupDescription: ''
+      subgroup: Archivage
+      subgroupDescription: ''
+      title: 'Permanently delete multiple archived eleves in one request.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      ids:
+        custom: []
+        name: ids
+        description: 'Les IDs des élèves archivés à supprimer définitivement.'
+        required: true
+        example:
+          - 10
+          - 12
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      ids:
+        - 10
+        - 12
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: ''
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/eleves/bulk-assign-class
+    metadata:
+      custom: []
+      groupName: Élèves
+      groupDescription: ''
+      subgroup: Gestion
+      subgroupDescription: ''
+      title: 'Assign multiple eleves to one existing (active) classe by updating only their id_classe.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      ids:
+        custom: []
+        name: ids
+        description: 'Les IDs des élèves à affecter.'
+        required: true
+        example:
+          - 10
+          - 12
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      id_classe:
+        custom: []
+        name: id_classe
+        description: "L'ID de la classe de destination."
+        required: true
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      ids:
+        - 10
+        - 12
+      id_classe: 2
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          [
+           {
+               "id_eleve": 10,
+               "nom": "Bernard",
+               "prenom": "Léa",
+               "genre": "F",
+               "date_naissance": "2014-03-12",
+               "code_massar": "M123456789",
+               "photo": null,
+               "id_classe": 2,
+               "created_at": "2025-09-01T09:00:00.000000Z",
+               "updated_at": "2025-09-05T09:00:00.000000Z"
+           }
+          ]
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/eleves
+    metadata:
+      custom: []
+      groupName: Élèves
+      groupDescription: ''
+      subgroup: Gestion
+      subgroupDescription: ''
+      title: 'Display a listing of the resource.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          [
+           {
+               "id_eleve": 10,
+               "nom": "Bernard",
+               "prenom": "Léa",
+               "genre": "F",
+               "date_naissance": "2014-03-12",
+               "code_massar": "M123456789",
+               "photo": null,
+               "id_classe": 1,
+               "created_at": "2025-09-01T09:00:00.000000Z",
+               "updated_at": "2025-09-01T09:00:00.000000Z"
+           }
+          ]
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/eleves
+    metadata:
+      custom: []
+      groupName: Élèves
+      groupDescription: ''
+      subgroup: Gestion
+      subgroupDescription: ''
+      title: 'Store a newly created resource in storage.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      nom:
+        custom: []
+        name: nom
+        description: 'Must not be greater than 255 characters.'
+        required: true
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      prenom:
+        custom: []
+        name: prenom
+        description: 'Must not be greater than 255 characters.'
+        required: true
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      genre:
+        custom: []
+        name: genre
+        description: ''
+        required: true
+        example: F
+        type: string
+        enumValues:
+          - M
+          - F
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      date_naissance:
+        custom: []
+        name: date_naissance
+        description: 'Must be a valid date. Must be a date before <code>today</code>.'
+        required: true
+        example: '2022-09-02'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      code_massar:
+        custom: []
+        name: code_massar
+        description: 'Must not be greater than 20 characters.'
+        required: false
+        example: ngzmiyvdljnikhwa
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      photo:
+        custom: []
+        name: photo
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      id_classe:
+        custom: []
+        name: id_classe
+        description: 'Must match an existing stored value.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      tuteur_ids:
+        custom: []
+        name: tuteur_ids
+        description: 'Must match an existing stored value.'
+        required: false
+        example: null
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      nom: b
+      prenom: 'n'
+      genre: F
+      date_naissance: '2022-09-02'
+      code_massar: ngzmiyvdljnikhwa
+      photo: architecto
+      id_classe: architecto
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: |-
+          {
+           "id_eleve": 12,
+           "nom": "Durand",
+           "prenom": "Noah",
+           "genre": "M",
+           "date_naissance": "2013-07-21",
+           "code_massar": "M987654321",
+           "photo": null,
+           "id_classe": 1,
+           "created_at": "2025-09-02T10:00:00.000000Z",
+           "updated_at": "2025-09-02T10:00:00.000000Z",
+           "tuteurs": [
+               {
+                   "id": 7,
+                   "nom": "Durand",
+                   "prenom": "Marie",
+                   "role": "parent",
+                   "is_active": true,
+                   "email": "marie.durand@scolarwatch.test"
+               }
+           ],
+           "classe": {
+               "id_classe": 1,
+               "nom": "6ème A",
+               "niveau": "6ème",
+               "annee_scolaire": "2025-2026",
+               "capacite": 30,
+               "id_utilisateur_principal": 2
+           }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/eleves/{eleve_id_eleve}'
+    metadata:
+      custom: []
+      groupName: Élèves
+      groupDescription: ''
+      subgroup: Gestion
+      subgroupDescription: ''
+      title: 'Display the specified resource.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      eleve_id_eleve:
+        custom: []
+        name: eleve_id_eleve
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      eleve:
+        custom: []
+        name: eleve
+        description: "L'ID de l'élève."
+        required: true
+        example: 10
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      eleve_id_eleve: 1
+      eleve: 10
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "id_eleve": 10,
+           "nom": "Bernard",
+           "prenom": "Léa",
+           "genre": "F",
+           "date_naissance": "2014-03-12",
+           "code_massar": "M123456789",
+           "photo": null,
+           "id_classe": 1,
+           "created_at": "2025-09-01T09:00:00.000000Z",
+           "updated_at": "2025-09-01T09:00:00.000000Z",
+           "classe": {
+               "id_classe": 1,
+               "nom": "6ème A",
+               "niveau": "6ème",
+               "annee_scolaire": "2025-2026",
+               "capacite": 30,
+               "id_utilisateur_principal": 2
+           },
+           "tuteurs": [
+               {
+                   "id": 6,
+                   "nom": "Bernard",
+                   "prenom": "Paul",
+                   "role": "parent",
+                   "is_active": true,
+                   "email": "paul.bernard@scolarwatch.test"
+               }
+           ]
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'api/eleves/{eleve_id_eleve}'
+    metadata:
+      custom: []
+      groupName: Élèves
+      groupDescription: ''
+      subgroup: Gestion
+      subgroupDescription: ''
+      title: 'Update the specified resource in storage.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      eleve_id_eleve:
+        custom: []
+        name: eleve_id_eleve
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      eleve:
+        custom: []
+        name: eleve
+        description: "L'ID de l'élève à modifier."
+        required: true
+        example: 10
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      eleve_id_eleve: 1
+      eleve: 10
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      nom:
+        custom: []
+        name: nom
+        description: 'Must not be greater than 255 characters.'
+        required: true
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      prenom:
+        custom: []
+        name: prenom
+        description: 'Must not be greater than 255 characters.'
+        required: true
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      genre:
+        custom: []
+        name: genre
+        description: ''
+        required: true
+        example: F
+        type: string
+        enumValues:
+          - M
+          - F
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      date_naissance:
+        custom: []
+        name: date_naissance
+        description: 'Must be a valid date. Must be a date before <code>today</code>.'
+        required: true
+        example: '2022-09-02'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      code_massar:
+        custom: []
+        name: code_massar
+        description: 'Must not be greater than 20 characters.'
+        required: false
+        example: ngzmiyvdljnikhwa
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      photo:
+        custom: []
+        name: photo
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      id_classe:
+        custom: []
+        name: id_classe
+        description: 'Must match an existing stored value.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      tuteur_ids:
+        custom: []
+        name: tuteur_ids
+        description: 'Must match an existing stored value.'
+        required: false
+        example: null
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      nom: b
+      prenom: 'n'
+      genre: F
+      date_naissance: '2022-09-02'
+      code_massar: ngzmiyvdljnikhwa
+      photo: architecto
+      id_classe: architecto
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "id_eleve": 10,
+           "nom": "Bernard",
+           "prenom": "Léa",
+           "genre": "F",
+           "date_naissance": "2014-03-12",
+           "code_massar": "M123456789",
+           "photo": null,
+           "id_classe": 2,
+           "created_at": "2025-09-01T09:00:00.000000Z",
+           "updated_at": "2025-09-05T09:00:00.000000Z",
+           "tuteurs": [
+               {
+                   "id": 6,
+                   "nom": "Bernard",
+                   "prenom": "Paul",
+                   "role": "parent",
+                   "is_active": true,
+                   "email": "paul.bernard@scolarwatch.test"
+               }
+           ],
+           "classe": {
+               "id_classe": 2,
+               "nom": "5ème A",
+               "niveau": "5ème",
+               "annee_scolaire": "2025-2026",
+               "capacite": 30,
+               "id_utilisateur_principal": null
+           }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/eleves/{eleve_id_eleve}'
+    metadata:
+      custom: []
+      groupName: Élèves
+      groupDescription: ''
+      subgroup: Gestion
+      subgroupDescription: ''
+      title: 'Remove the specified resource from storage.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      eleve_id_eleve:
+        custom: []
+        name: eleve_id_eleve
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      eleve:
+        custom: []
+        name: eleve
+        description: "L'ID de l'élève à supprimer."
+        required: true
+        example: 10
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      eleve_id_eleve: 1
+      eleve: 10
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: ''
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
