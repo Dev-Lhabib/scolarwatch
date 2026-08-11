@@ -29,8 +29,7 @@ RUN composer install \
 # ---------- Stage 2: Node (frontend assets) ----------
 FROM php:8.4-cli-alpine AS node
 
-ENV APP_ENV=production \
-    APP_KEY=base64:QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE=
+ENV APP_ENV=production
 
 RUN apk add --no-cache nodejs npm
 
@@ -42,7 +41,12 @@ RUN npm ci
 
 COPY . .
 
-RUN php artisan package:discover --ansi \
+# A throwaway APP_KEY is generated per build so the framework can boot during
+# package discovery and Wayfinder generation. The real APP_KEY is supplied at
+# container runtime via docker-compose.prod.yml's env_file and is never baked
+# into the image.
+RUN APP_KEY="$(php artisan key:generate --show)" \
+    && php artisan package:discover --ansi \
     && php artisan wayfinder:generate --ansi \
     && npm run build
 
