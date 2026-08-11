@@ -1,11 +1,12 @@
 <?php
 
-use Knuckles\Scribe\Config\AuthIn;
-use Knuckles\Scribe\Config\Defaults;
-use Knuckles\Scribe\Extracting\Strategies;
-
-use function Knuckles\Scribe\Config\configureStrategy;
-use function Knuckles\Scribe\Config\removeStrategies;
+// NOTE: This config file must stay boot-safe without dev dependencies. It is
+// loaded eagerly by every artisan command (and every request), including when
+// vendor was installed with `composer install --no-dev` (production builds).
+// Strategy references are therefore plain string literals instead of Scribe's
+// `Defaults::*`/`AuthIn::*` enum and class constants, which only exist when
+// knuckleswtf/scribe (require-dev) is installed. Keep them in sync with
+// vendor/knuckleswtf/scribe/src/Config/Defaults.php on upgrades.
 
 // Only the most common configs are shown. See the https://scribe.knuckles.wtf/laravel/reference/config for all.
 
@@ -114,7 +115,7 @@ return [
         'default' => true,
 
         // Where is the auth value meant to be sent in a request?
-        'in' => AuthIn::BEARER->value,
+        'in' => 'bearer',
 
         // The name of the auth parameter (e.g. token, key, apiKey) or header (e.g. Authorization, Api-Key).
         'name' => 'Authorization',
@@ -235,42 +236,72 @@ return [
     ],
 
     // The strategies Scribe will use to extract information about your routes at each stage.
-    // Use configureStrategy() to specify settings for a strategy in the list.
-    // Use removeStrategies() to remove an included strategy.
+    // Strategy entries are class FQNs (strings) or [FQN, settings] tuples, inline
+    // copies of Scribe's shipped defaults so no dev-only classes are referenced.
     'strategies' => [
         'metadata' => [
-            ...Defaults::METADATA_STRATEGIES,
+            'Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks',
+            'Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromMetadataAttributes',
         ],
         'headers' => [
-            ...Defaults::HEADERS_STRATEGIES,
-            Strategies\StaticData::withSettings(data: [
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-            ]),
+            'Knuckles\Scribe\Extracting\Strategies\Headers\GetFromHeaderAttribute',
+            'Knuckles\Scribe\Extracting\Strategies\Headers\GetFromHeaderTag',
+            [
+                'Knuckles\Scribe\Extracting\Strategies\StaticData',
+                [
+                    'only' => [],
+                    'except' => [],
+                    'data' => [
+                        'Content-Type' => 'application/json',
+                        'Accept' => 'application/json',
+                    ],
+                ],
+            ],
         ],
         'urlParameters' => [
-            ...Defaults::URL_PARAMETERS_STRATEGIES,
+            'Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLaravelAPI',
+            'Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamAttribute',
+            'Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamTag',
         ],
         'queryParameters' => [
-            ...Defaults::QUERY_PARAMETERS_STRATEGIES,
+            'Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromFormRequest',
+            'Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromInlineValidator',
+            'Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromQueryParamAttribute',
+            'Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromQueryParamTag',
         ],
         'bodyParameters' => [
-            ...Defaults::BODY_PARAMETERS_STRATEGIES,
+            'Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromFormRequest',
+            'Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromInlineValidator',
+            'Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamAttribute',
+            'Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamTag',
         ],
-        'responses' => configureStrategy(
-            Defaults::RESPONSES_STRATEGIES,
+        'responses' => [
+            'Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseAttributes',
+            'Knuckles\Scribe\Extracting\Strategies\Responses\UseTransformerTags',
+            'Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags',
+            'Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseTag',
+            'Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseFileTag',
             // Response calls are disabled: examples are authored explicitly via @response
             // annotations so generation is deterministic and does not depend on a live
             // database or a valid access token.
-            Strategies\Responses\ResponseCalls::withSettings(
-                only: [],
-                config: [
-                    'app.debug' => false,
-                ]
-            )
-        ),
+            [
+                'Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls',
+                [
+                    'only' => [],
+                    'except' => [],
+                    'config' => [
+                        'app.debug' => false,
+                    ],
+                    'queryParams' => [],
+                    'bodyParams' => [],
+                    'fileParams' => [],
+                    'cookies' => [],
+                ],
+            ],
+        ],
         'responseFields' => [
-            ...Defaults::RESPONSE_FIELDS_STRATEGIES,
+            'Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldAttribute',
+            'Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag',
         ],
     ],
 
